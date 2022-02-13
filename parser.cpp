@@ -29,6 +29,7 @@ namespace prsr {
             std::cout << "Setting name of main document to default\n";
             mainPath = "word/document.xml";
         }
+
         if (zip_stat(zip, mainPath.c_str(), 0, &file_info) == -1)
             throw runtime_error("Error: Cannot get info about " + mainPath + " file");
         char buffer2[file_info.size];
@@ -86,102 +87,25 @@ namespace prsr {
             }
             mainElement = mainElement->NextSiblingElement();
         }
-
+        cout<<counter<<'\n';
         free(mainElement);
+
     }
 
     void parser::parseParagraph(XMLElement *paragraph) {
-        XMLElement *paragraphProperties = paragraph->FirstChildElement("w:pPr");
-        if (paragraphProperties != nullptr) {
-            XMLElement *paragraphProperty = paragraphProperties->FirstChildElement();
-            while (paragraphProperty != nullptr) {
-                if (!strcmp(paragraphProperty->Value(), "w:framePr")) {
-                    //Defines the paragraph as a text frame, which is a free-standing paragraph similar to a text box
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:ind")) {
-                    //TODO Indention
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:jc")) {
-                    //TODO alignment
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:keepLines")) {//skip
-                    //Specifies that all lines of the paragraph are to be kept on a single page when possible. It is an empty element
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:keepNext")) {//skip
-                    //Specifies that the paragraph (or at least part of it) should be rendered on the same page as the next paragraph when possible
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:numPr")) {//skip
-                    //Specifies that the paragraph should be numbered
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:outlineLvl")) {//idk
-                    //Specifies the outline level associated with the paragraph
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:pBdr")) {
-                    //TODO borders
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:pStyle")) {
-                    //TODO add grepping styles from word/styles.xml
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:rPr")) {//skip
-                    //styles of text, skip
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:sectPr")) {//skip
-                    //TODO? idk, should be outside paragraph properties
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:shd")) {//skip
-                    //background, skip
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:spacing")) {
-                    //TODO spacing
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:tabs")) {
-                    //TODO tabulation
-                }
-                if (!strcmp(paragraphProperty->Value(), "w:textAlignment")) {//skip
-                    //alignment of characters on each line(if they have different size), skip
-                }
-                cout << paragraphProperty->Value() << endl;
-                paragraphProperty = paragraphProperty->NextSiblingElement();
+        XMLElement *property = paragraph->FirstChildElement();
+        while(property != nullptr){
+            if (!strcmp(property->Value(), "w:pPr")) {
+                parseParagraphProperties(property);
+            } else if (!strcmp(property->Value(), "w:r")) {
+                parseTextProperties(property);
+            } else {
+                //throw runtime_error(string("Unexpected child element: ") + string(property->Value()));
             }
-            free(paragraphProperty);
+            property = property->NextSiblingElement();
         }
-        XMLElement *textProperties = paragraph->FirstChildElement("w:r");
-        if (textProperties != nullptr) {
-            XMLElement *textProperty = textProperties->FirstChildElement();
-            while (textProperty != nullptr) {
-                if (!strcmp(textProperty->Value(), "w:br")) {
-                    //TODO? Line Break
-                }
-                if (!strcmp(textProperty->Value(), "w:cr")) {
-                    //TODO Default line break
-                }
-                if (!strcmp(textProperty->Value(), "w:drawing")) {
-                    //TODO later, images
-                }
-                if (!strcmp(textProperty->Value(), "w:noBreakHyphen")) {
-                    //idk, maybe skip
-                }
-                if (!strcmp(textProperty->Value(), "w:rPr")) {
-                    //style of text, skip
-                }
-                if (!strcmp(textProperty->Value(), "w:softHyphen")) {
-                    //never used, optional hyphen character may be added which may appear as a regular hyphen when needed to break the line
-                }
-                if (!strcmp(textProperty->Value(), "w:sym")) {
-                    //additional symbol, idk, maybe skip
-                }
-                if (!strcmp(textProperty->Value(), "w:t")) {
-                    //TODO main text, add handler for xml:space
-                }
-                if (!strcmp(textProperty->Value(), "w:tab")) {
-                    //TODO tabulation
-                }
-                cout << textProperty->Value() << endl;
-                textProperty = textProperty->NextSiblingElement();
-            }
-            XMLPrinter printer;
-            paragraph->Accept(&printer);
-        }
+        cout<<endl;
+        free(property);
     }
 
     void parser::parseTable(XMLElement *table) {
@@ -190,6 +114,96 @@ namespace prsr {
 
     void parser::parseSection(XMLElement *section) {
 
+    }
+
+    void parser::parseParagraphProperties(XMLElement *properties) {
+        XMLElement *paragraphProperty = properties->FirstChildElement();
+        while (paragraphProperty != nullptr) {
+            if (!strcmp(paragraphProperty->Value(), "w:framePr")) {
+                //Defines the paragraph as a text frame, which is a free-standing paragraph similar to a text box
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:ind")) {
+                //TODO Indention
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:jc")) {
+                //TODO alignment
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:keepLines")) {//skip
+                //Specifies that all lines of the paragraph are to be kept on a single page when possible. It is an empty element
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:keepNext")) {//skip
+                //Specifies that the paragraph (or at least part of it) should be rendered on the same page as the next paragraph when possible
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:numPr")) {//skip
+                //Specifies that the paragraph should be numbered
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:outlineLvl")) {//idk
+                //Specifies the outline level associated with the paragraph
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:pBdr")) {
+                //TODO borders
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:pStyle")) {
+                //TODO add grepping styles from word/styles.xml
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:rPr")) {//skip
+                //styles of text, skip
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:sectPr")) {//skip
+                //TODO? idk, should be outside paragraph properties
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:shd")) {//skip
+                //background, skip
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:spacing")) {
+                //TODO spacing
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:tabs")) {
+                //TODO tabulation
+            }
+            if (!strcmp(paragraphProperty->Value(), "w:textAlignment")) {//skip
+                //alignment of characters on each line(if they have different size), skip
+            }
+            paragraphProperty = paragraphProperty->NextSiblingElement();
+        }
+        free(paragraphProperty);
+    }
+
+    void parser::parseTextProperties(XMLElement *properties) {
+        XMLElement *textProperty = properties->FirstChildElement();
+        while (textProperty != nullptr) {
+            if (!strcmp(textProperty->Value(), "w:br")) {
+                //TODO? Line Break
+            }
+            if (!strcmp(textProperty->Value(), "w:cr")) {
+                //TODO Default line break
+            }
+            if (!strcmp(textProperty->Value(), "w:drawing")) {
+                //TODO later, images
+            }
+            if (!strcmp(textProperty->Value(), "w:noBreakHyphen")) {
+                //idk, maybe skip
+            }
+            if (!strcmp(textProperty->Value(), "w:rPr")) {
+                //style of text, skip
+            }
+            if (!strcmp(textProperty->Value(), "w:softHyphen")) {
+                //never used, optional hyphen character may be added which may appear as a regular hyphen when needed to break the line
+            }
+            if (!strcmp(textProperty->Value(), "w:sym")) {
+                //additional symbol, idk, maybe skip
+            }
+            if (!strcmp(textProperty->Value(), "w:t")) {
+                if(textProperty->GetText()!=nullptr)
+                    cout<<textProperty->GetText();
+                //TODO main text, add handler for xml:space
+            }
+            if (!strcmp(textProperty->Value(), "w:tab")) {
+                //TODO tabulation
+            }
+            textProperty = textProperty->NextSiblingElement();
+        }
+        free(textProperty);
     }
 
 

@@ -18,6 +18,7 @@ namespace prsr {
 
     class parser {
     private:
+        int counter = 0;
         string name;
         XMLDocument mainDoc;
         bool isInitialized;
@@ -29,6 +30,8 @@ namespace prsr {
         void parseContentTypes(XMLDocument *xmlDocument);
         void parseMainDoc();
         void parseParagraph(XMLElement *paragraph);
+        void parseParagraphProperties(XMLElement *properties);
+        void parseTextProperties(XMLElement *properties);
         void parseTable(XMLElement *table);
         void parseSection(XMLElement *section);
     };

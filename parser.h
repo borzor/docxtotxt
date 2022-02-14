@@ -19,21 +19,60 @@ namespace prsr {
     class parser {
     private:
         int counter = 0;
+        map<string, int> textProperties;
+        map<string, int> paragraphProperties;
         string name;
         XMLDocument mainDoc;
         bool isInitialized;
         map<string, string> content_types;
     public:
-        explicit parser(const std::string &name);
-        void doInit(const std::string &path);
+        explicit parser(string name);
+
+        void doInit(const string &path);
+
         void checkInit() const;
+
         void parseContentTypes(XMLDocument *xmlDocument);
+
         void parseMainDoc();
+
         void parseParagraph(XMLElement *paragraph);
+
         void parseParagraphProperties(XMLElement *properties);
+
         void parseTextProperties(XMLElement *properties);
+
         void parseTable(XMLElement *table);
+
         void parseSection(XMLElement *section);
+    };
+
+    enum paragraphProperty {
+        framePr,
+        ind,
+        jc,
+        keepLines,
+        keepNext,
+        numPr,
+        outlineLvl,
+        pBdr,
+        pStyle,
+        rPr,
+        sectPr,
+        shd,
+        spacing,
+        tabs,
+        textAlignment
+    };
+    enum textProperty {
+        br,
+        cr,
+        drawing,
+        noBreakHyphen,
+        softHyphen,
+        sym,
+        t,
+        tab
     };
 }
 

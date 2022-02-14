@@ -3,13 +3,14 @@
 //
 
 #include <string>
+#include <utility>
 #include <vector>
 #include "parser.h"
 
 
 namespace prsr {
 
-    void parser::doInit(const std::string &path) {
+    void parser::doInit(const string &path) {
         int err;
         struct zip_stat file_info{};
         XMLDocument content;
@@ -33,7 +34,7 @@ namespace prsr {
         if (zip_stat(zip, mainPath.c_str(), 0, &file_info) == -1)
             throw runtime_error("Error: Cannot get info about " + mainPath + " file");
         char buffer2[file_info.size];
-        if(zip_fread(zip_fopen(zip, mainPath.c_str(), 0), &buffer2, file_info.size) == -1)
+        if (zip_fread(zip_fopen(zip, mainPath.c_str(), 0), &buffer2, file_info.size) == -1)
             throw runtime_error("Error: Cannot read " + mainPath + " file");
         if (this->mainDoc.Parse(buffer2) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse " + mainPath + " file");
@@ -58,7 +59,7 @@ namespace prsr {
             auto pos3 = tmp.find('\"', pos2 + 1);
             auto pos4 = tmp.find('\"', pos3 + 1);
             tmp2 = tmp.substr(pos1 + 1, pos2 - pos1 - 1);
-            if(tmp2.starts_with('/'))
+            if (tmp2.starts_with('/'))
                 tmp2.erase(0, 1);
             this->content_types.emplace(tmp.substr(pos3 + 1, pos4 - pos3 - 1), tmp2);
             printer.ClearBuffer();
@@ -67,34 +68,58 @@ namespace prsr {
         free(current_element);
     }
 
-    parser::parser(const std::string &name) {
-        this->name = name;
-        this->isInitialized = false;
+    parser::parser(string name) :
+            name(std::move(name)),
+            isInitialized(false) {
+        this->paragraphProperties = {{"w:framePr",       framePr},
+                                     {"w:ind",           ind},
+                                     {"w:jc",            jc},
+                                     {"w:keepLines",     keepLines},
+                                     {"w:keepNext",      keepNext},
+                                     {"w:numPr",         numPr},
+                                     {"w:outlineLvl",    outlineLvl},
+                                     {"w:pBdr",          pBdr},
+                                     {"w:pStyle",        pStyle},
+                                     {"w:rPr",           rPr},
+                                     {"w:sectPr",        sectPr},
+                                     {"w:shd",           shd},
+                                     {"w:spacing",       spacing},
+                                     {"w:tabs",          tabs},
+                                     {"w:textAlignment", textAlignment}};
+        this->textProperties = {{"w:br",            br},
+                                {"w:cr",            cr},
+                                {"w:drawing",       drawing},
+                                {"w:noBreakHyphen", noBreakHyphen},
+                                {"w:rPr",           rPr},
+                                {"w:softHyphen",    softHyphen},
+                                {"w:sym",           sym},
+                                {"w:t",             t},
+                                {"w:tab",           tab},};
     }
 
     void parser::parseMainDoc() {
         checkInit();
         XMLElement *mainElement = mainDoc.RootElement()->FirstChildElement()->FirstChildElement();
-        while(mainElement != nullptr){
+        while (mainElement != nullptr) {
             if (!strcmp(mainElement->Value(), "w:p")) {
                 parseParagraph(mainElement);
             } else if (!strcmp(mainElement->Value(), "w:tbl")) {
                 parseTable(mainElement);
-            } else if(!strcmp(mainElement->Value(), "w:sectPr")){
+            } else if (!strcmp(mainElement->Value(), "w:sectPr")) {
                 parseSection(mainElement);//TODO maybe should be at start if needed to save page settings
             } else {
                 throw runtime_error(string("Unexpected main element: ") + string(mainElement->Value()));
             }
             mainElement = mainElement->NextSiblingElement();
         }
-        cout<<counter<<'\n';
+        cout << counter << '\n';
         free(mainElement);
 
     }
 
     void parser::parseParagraph(XMLElement *paragraph) {
         XMLElement *property = paragraph->FirstChildElement();
-        while(property != nullptr){
+        while (property != nullptr) {
             if (!strcmp(property->Value(), "w:pPr")) {
                 parseParagraphProperties(property);
             } else if (!strcmp(property->Value(), "w:r")) {
@@ -104,7 +129,7 @@ namespace prsr {
             }
             property = property->NextSiblingElement();
         }
-        cout<<endl;
+        cout << endl;
         free(property);
     }
 
@@ -119,50 +144,37 @@ namespace prsr {
     void parser::parseParagraphProperties(XMLElement *properties) {
         XMLElement *paragraphProperty = properties->FirstChildElement();
         while (paragraphProperty != nullptr) {
-            if (!strcmp(paragraphProperty->Value(), "w:framePr")) {
-                //Defines the paragraph as a text frame, which is a free-standing paragraph similar to a text box
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:ind")) {
-                //TODO Indention
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:jc")) {
-                //TODO alignment
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:keepLines")) {//skip
-                //Specifies that all lines of the paragraph are to be kept on a single page when possible. It is an empty element
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:keepNext")) {//skip
-                //Specifies that the paragraph (or at least part of it) should be rendered on the same page as the next paragraph when possible
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:numPr")) {//skip
-                //Specifies that the paragraph should be numbered
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:outlineLvl")) {//idk
-                //Specifies the outline level associated with the paragraph
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:pBdr")) {
-                //TODO borders
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:pStyle")) {
-                //TODO add grepping styles from word/styles.xml
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:rPr")) {//skip
-                //styles of text, skip
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:sectPr")) {//skip
-                //TODO? idk, should be outside paragraph properties
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:shd")) {//skip
-                //background, skip
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:spacing")) {
-                //TODO spacing
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:tabs")) {
-                //TODO tabulation
-            }
-            if (!strcmp(paragraphProperty->Value(), "w:textAlignment")) {//skip
-                //alignment of characters on each line(if they have different size), skip
+            switch (this->paragraphProperties[paragraphProperty->Value()]) {
+                case framePr:
+                    break;//Defines the paragraph as a text frame, which is a free-standing paragraph similar to a text box
+                case ind:
+                    break; //TODO Indention
+                case jc:
+                    break; //TODO alignment
+                case keepLines:
+                    break;//Specifies that all lines of the paragraph are to be kept on a single page when possible. It is an empty element
+                case keepNext:
+                    break;//Specifies that the paragraph (or at least part of it) should be rendered on the same page as the next paragraph when possible
+                case numPr:
+                    break;//Specifies that the paragraph should be numbered
+                case outlineLvl:
+                    break;//Specifies the outline level associated with the paragraph
+                case pBdr:
+                    break;//TODO borders
+                case pStyle:
+                    break;//TODO add grepping styles from word/styles.xml
+                case rPr:
+                    break;//styles of text, skip
+                case sectPr:
+                    break;//TODO? idk, should be outside paragraph properties
+                case shd:
+                    break;//background, skip
+                case spacing:
+                    break;//TODO spacing
+                case tabs:
+                    break;//TODO tabulation
+                case textAlignment:
+                    break;//alignment of characters on each line(if they have different size), skip
             }
             paragraphProperty = paragraphProperty->NextSiblingElement();
         }
@@ -172,34 +184,26 @@ namespace prsr {
     void parser::parseTextProperties(XMLElement *properties) {
         XMLElement *textProperty = properties->FirstChildElement();
         while (textProperty != nullptr) {
-            if (!strcmp(textProperty->Value(), "w:br")) {
-                //TODO? Line Break
-            }
-            if (!strcmp(textProperty->Value(), "w:cr")) {
-                //TODO Default line break
-            }
-            if (!strcmp(textProperty->Value(), "w:drawing")) {
-                //TODO later, images
-            }
-            if (!strcmp(textProperty->Value(), "w:noBreakHyphen")) {
-                //idk, maybe skip
-            }
-            if (!strcmp(textProperty->Value(), "w:rPr")) {
-                //style of text, skip
-            }
-            if (!strcmp(textProperty->Value(), "w:softHyphen")) {
-                //never used, optional hyphen character may be added which may appear as a regular hyphen when needed to break the line
-            }
-            if (!strcmp(textProperty->Value(), "w:sym")) {
-                //additional symbol, idk, maybe skip
-            }
-            if (!strcmp(textProperty->Value(), "w:t")) {
-                if(textProperty->GetText()!=nullptr)
-                    cout<<textProperty->GetText();
-                //TODO main text, add handler for xml:space
-            }
-            if (!strcmp(textProperty->Value(), "w:tab")) {
-                //TODO tabulation
+            switch (this->textProperties[textProperty->Value()]) {
+                case br:
+                    break;//TODO? Line Break
+                case cr:
+                    break;//TODO Default line break
+                case drawing:
+                    break;//TODO later, images
+                case noBreakHyphen:
+                    break;//idk, maybe skip
+                case rPr:
+                    break;//style of text, skip
+                case softHyphen:
+                    break;//never used, optional hyphen character may be added which may appear as a regular hyphen when needed to break the line
+                case sym:
+                    break;//additional symbol, idk, maybe skip
+                case t:
+                    if (textProperty->GetText() != nullptr)cout << textProperty->GetText();
+                    break;//TODO main text, add handler for xml:space
+                case tab:
+                    break;//TODO tabulation
             }
             textProperty = textProperty->NextSiblingElement();
         }

@@ -11,10 +11,20 @@
 
 #ifndef DOCXTOTXT_PARAGRAPHBUFFER_H
 #define DOCXTOTXT_PARAGRAPHBUFFER_H
+#define SIZE_OF_PAGE 99
+//TODO CHANGE IT
 
 namespace paragraph {
     using namespace std;
     using namespace tinyxml2;
+    struct line{
+        string text;
+        size_t length = 0;
+    };
+    enum language{
+        enUS,
+        RU
+    };
     enum paragraphProperty {
         framePr,
         ind,
@@ -42,7 +52,7 @@ namespace paragraph {
         t,
         tab
     };
-    enum paragraphJustify{
+    enum paragraphJustify {
         left,
         right,
         center,
@@ -76,19 +86,21 @@ namespace paragraph {
 
     class ParagraphParser {
     private:
-        vector<string> paragraphBuffer;
+        vector<line> paragraphBuffer;
         paragraphJustify justify;
 
     public:
+        ParagraphParser();
+
         void parseParagraph(XMLElement *paragraph);
 
         void parseParagraphProperties(XMLElement *properties);
 
         void parseTextProperties(XMLElement *properties);
 
-        void addText(const string& text);
+        void addText(const string &text, language language);
 
-        void setJustify(const string& justify);
+        void setJustify(const string &justify);
 
         void writeResult(ofstream &outfile, bool toFile);
     };

@@ -1,14 +1,80 @@
 //
 // Created by boris on 2/20/22.
 //
-
 #include "ParagraphParser.h"
-#include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
-#include <unistd.h> // for STDOUT_FILENO
-namespace paragraph {
+#include <iomanip>
+#include <math.h>
 
-    void ParagraphParser::addText(const string &text) {
-        this->paragraphBuffer.push_back(text);
+namespace paragraph {
+    void Tokenize(const string &str, vector<string> &tokens, const string &delimiters = " ") {
+        string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+        string::size_type pos = str.find_first_of(delimiters, lastPos);
+        while (string::npos != pos || string::npos != lastPos) {
+            tokens.push_back(str.substr(lastPos, pos - lastPos));
+            lastPos = str.find_first_not_of(delimiters, pos);
+            pos = str.find_first_of(delimiters, lastPos);
+        }
+    }
+
+    void ParagraphParser::addText(const string &text, language language) {
+        if (text[0] == ' ') {
+            paragraphBuffer.back().text.append(" ");
+            paragraphBuffer.back().length += 1;
+        }
+        switch (language) {
+            case RU: {
+                vector<string> tmp;
+                Tokenize(text, tmp);
+                for (const auto &token: tmp) {
+                    if (paragraphBuffer.back().length + token.length() / 2 < SIZE_OF_PAGE) {
+                        if (&token != &tmp.back()) {
+                            paragraphBuffer.back().text.append(token).append(" ");
+                            paragraphBuffer.back().length += ceil((double)token.length() / 2) + 1;
+                        } else {
+                            paragraphBuffer.back().text.append(token);
+                            paragraphBuffer.back().length += ceil((double)token.length() / 2);
+                        }
+                    } else {
+                        line tmp;
+                        tmp.text = token;
+                        tmp.length = token.length() / 2;
+                        paragraphBuffer.push_back(tmp);
+                    }
+                }
+                if (text.back() == ' ') {
+                    paragraphBuffer.back().text.append(" ");
+                    paragraphBuffer.back().length += 1;
+                }
+                break;
+            }
+            case enUS: {
+                vector<string> tmp;
+                Tokenize(text, tmp);
+                for (const auto &token: tmp) {
+                    if (paragraphBuffer.back().length + token.length() < SIZE_OF_PAGE) {
+                        if (&token != &tmp.back()) {
+                            paragraphBuffer.back().text.append(token).append(" ");
+                            paragraphBuffer.back().length += token.length() + 1;
+                        } else {
+                            paragraphBuffer.back().text.append(token);
+                            paragraphBuffer.back().length += token.length();
+                        }
+
+                    } else {
+                        line tmp;
+                        tmp.text = token;
+                        tmp.length = token.length();
+                        paragraphBuffer.push_back(tmp);
+                    }
+                }
+                if (text.back() == ' ') {
+                    paragraphBuffer.back().text.append(" ");
+                    paragraphBuffer.back().length += 1;
+                }
+                break;
+            }
+        }
+
     }
 
     void ParagraphParser::parseParagraph(XMLElement *paragraph) {
@@ -71,6 +137,7 @@ namespace paragraph {
 
     void ParagraphParser::parseTextProperties(XMLElement *properties) {
         XMLElement *textProperty = properties->FirstChildElement();
+        language language = RU;
         while (textProperty != nullptr) {
             switch (textProperties[textProperty->Value()]) {
                 case br:
@@ -82,6 +149,7 @@ namespace paragraph {
                 case noBreakHyphen:
                     break;//idk, maybe skip
                 case rPr:
+                    //TODO GET <w:lang w:val="en-US"/> TO SET LANGUAGE TO ENG
                     break;//style of text, skip
                 case softHyphen:
                     break;//never used, optional hyphen character may be added which may appear as a regular hyphen when needed to break the line
@@ -89,9 +157,9 @@ namespace paragraph {
                     break;//additional symbol, idk, maybe skip
                 case t:
                     if (textProperty->GetText() != nullptr) {
-                        addText(textProperty->GetText());
+                        addText(textProperty->GetText(), language);
                     } else
-                        addText(" ");
+                        addText(" ", language);
                     break;
                 case tab:
                     break;//TODO tabulation
@@ -116,32 +184,45 @@ namespace paragraph {
 
     void ParagraphParser::writeResult(ofstream &outStream, bool toFile) {
         if (!this->paragraphBuffer.empty()) {
-            if(toFile){
+            if (toFile) {
 
-            } else{
+            } else {
 
             }
             switch (this->justify) {//TODO IDK HOW TO GET WIDTH FOR STREAM SO JUSTIFY WILL WORK
                 case left:
-                    outStream.setf(ios_base::left);
+                    for (auto &s: paragraphBuffer) {
+                        outStream << s.text << '\n';
+                    }
                     break;
                 case right:
-                    outStream.setf(ios_base::right);
+                    for (auto &s: paragraphBuffer) {
+                        outStream << setw(SIZE_OF_PAGE + strlen(s.text.c_str()) - s.length)<< s.text << '\n';
+                    }
                     break;
                 case center:
+                    for (auto &s: paragraphBuffer) {
+                        outStream << setw((strlen(s.text.c_str()) + SIZE_OF_PAGE / 2 - s.length / 2)) << s.text << endl;
+                    }
                     break;
                 case both:
+                    for (auto &s: paragraphBuffer) {
+                        outStream << s.text << '\n';
+                    }
                     break;
                 case distribute:
                     break;
             }
-            for (const auto &e: paragraphBuffer) {
-                outStream << e;
-            }
-            outStream << '\n';
-            outStream.unsetf(ios_base::adjustfield);
+
+
         }
 
+    }
+
+    ParagraphParser::ParagraphParser() {
+        line a;
+        paragraphBuffer.push_back(a);
+        justify = left;//by default
     }
 
 

@@ -2,8 +2,10 @@
 // Created by boris on 2/20/22.
 //
 #include "ParagraphParser.h"
+#include "SectionParser.h"
 #include <iomanip>
 #include <math.h>
+#include "DrawingParser.h"
 
 namespace paragraph {
     void Tokenize(const string &str, vector<string> &tokens, const string &delimiters = " ") {
@@ -22,22 +24,23 @@ namespace paragraph {
             paragraphBuffer.back().length += 1;
         }
         switch (language) {
-            case RU: {
+            case ruRU: {
                 vector<string> tmp;
                 Tokenize(text, tmp);
                 for (const auto &token: tmp) {
-                    if (paragraphBuffer.back().length + token.length() / 2 < SIZE_OF_PAGE) {
+                    if (paragraphBuffer.back().length + token.length() / 2 < amountOfCharacters) {
                         if (&token != &tmp.back()) {
                             paragraphBuffer.back().text.append(token).append(" ");
-                            paragraphBuffer.back().length += ceil((double)token.length() / 2) + 1;
+                            paragraphBuffer.back().length += ceil((double) token.length() / 2) + 1;
                         } else {
                             paragraphBuffer.back().text.append(token);
-                            paragraphBuffer.back().length += ceil((double)token.length() / 2);
+                            paragraphBuffer.back().length += ceil((double) token.length() / 2);
                         }
                     } else {
                         line tmp;
                         tmp.text = token;
-                        tmp.length = token.length() / 2;
+                        tmp.text.append(" ");
+                        tmp.length = ceil((double) token.length() / 2) + 1;
                         paragraphBuffer.push_back(tmp);
                     }
                 }
@@ -51,7 +54,7 @@ namespace paragraph {
                 vector<string> tmp;
                 Tokenize(text, tmp);
                 for (const auto &token: tmp) {
-                    if (paragraphBuffer.back().length + token.length() < SIZE_OF_PAGE) {
+                    if (paragraphBuffer.back().length + token.length() < amountOfCharacters) {
                         if (&token != &tmp.back()) {
                             paragraphBuffer.back().text.append(token).append(" ");
                             paragraphBuffer.back().length += token.length() + 1;
@@ -100,27 +103,29 @@ namespace paragraph {
                 case framePr:
                     break;//Defines the paragraph as a text frame, which is a free-standing paragraph similar to a text box
                 case ind:
-                    break; //TODO Indention
+                    if (paragraphProperty->FirstAttribute() != nullptr)
+                        setIndentation(paragraphProperty);
+                    break;
                 case jc:
                     if (paragraphProperty->FirstAttribute() != nullptr)
                         setJustify(paragraphProperty->FirstAttribute()->Value());
-                    break; //TODO alignment
+                    break;
                 case keepLines:
                     break;//Specifies that all lines of the paragraph are to be kept on a single page when possible. It is an empty element
                 case keepNext:
                     break;//Specifies that the paragraph (or at least part of it) should be rendered on the same page as the next paragraph when possible
                 case numPr:
-                    break;//Specifies that the paragraph should be numbered
+                    break;//TODO check for numId and ilvl and somehow link paragraphs into enumeration
                 case outlineLvl:
                     break;//Specifies the outline level associated with the paragraph
                 case pBdr:
-                    break;//TODO borders
+                    break;//borders, idk
                 case pStyle:
                     break;//TODO add grepping styles from word/styles.xml
                 case rPr:
                     break;//styles of text, skip
                 case sectPr:
-                    break;//TODO? idk, should be outside paragraph properties
+                    break;//idk, should be outside paragraph properties
                 case shd:
                     break;//background, skip
                 case spacing:
@@ -137,20 +142,36 @@ namespace paragraph {
 
     void ParagraphParser::parseTextProperties(XMLElement *properties) {
         XMLElement *textProperty = properties->FirstChildElement();
-        language language = RU;
+        language language = ruRU;
         while (textProperty != nullptr) {
             switch (textProperties[textProperty->Value()]) {
                 case br:
                     break;//TODO? Line Break
                 case cr:
                     break;//TODO Default line break
-                case drawing:
-                    break;//TODO later, images
+                case drawing: {
+                    auto drawingParser = Drawing::DrawingParser(textProperty);
+                    size_t height, width;
+                    drawingParser.parseDrawing();
+                    drawingParser.getDrawingSize(height, width);
+                    insertImage(height, width);
+                    break;
+                }
                 case noBreakHyphen:
                     break;//idk, maybe skip
-                case rPr:
-                    //TODO GET <w:lang w:val="en-US"/> TO SET LANGUAGE TO ENG
-                    break;//style of text, skip
+                case rPr://styles of text
+                    if (textProperty->FirstChildElement("w:lang") != nullptr)
+                        switch (languages[textProperty->FirstChildElement("w:lang")->Value()]) {
+                            case ruRU:
+                                language = static_cast<enum language>(languages[textProperty->FirstChildElement(
+                                        "w:lang")->Value()]);
+                                break;
+                            case enUS:
+                                language = static_cast<enum language> (languages[textProperty->FirstChildElement(
+                                        "w:lang")->Value()]);
+                                break;
+                        }
+                    break;
                 case softHyphen:
                     break;//never used, optional hyphen character may be added which may appear as a regular hyphen when needed to break the line
                 case sym:
@@ -169,18 +190,6 @@ namespace paragraph {
         free(textProperty);
     }
 
-    void ParagraphParser::setJustify(const string &justify) {
-        if (!strcmp(justify.c_str(), "left"))
-            this->justify = left;
-        else if (!strcmp(justify.c_str(), "right"))
-            this->justify = right;
-        else if (!strcmp(justify.c_str(), "center"))
-            this->justify = center;
-        else if (!strcmp(justify.c_str(), "both"))
-            this->justify = both;
-        else if (!strcmp(justify.c_str(), "distribute"))
-            this->justify = distribute;
-    }
 
     void ParagraphParser::writeResult(ofstream &outStream, bool toFile) {
         if (!this->paragraphBuffer.empty()) {
@@ -197,12 +206,13 @@ namespace paragraph {
                     break;
                 case right:
                     for (auto &s: paragraphBuffer) {
-                        outStream << setw(SIZE_OF_PAGE + strlen(s.text.c_str()) - s.length)<< s.text << '\n';
+                        outStream << setw(amountOfCharacters + strlen(s.text.c_str()) - s.length) << s.text << '\n';
                     }
                     break;
                 case center:
                     for (auto &s: paragraphBuffer) {
-                        outStream << setw((strlen(s.text.c_str()) + SIZE_OF_PAGE / 2 - s.length / 2)) << s.text << endl;
+                        outStream << setw((strlen(s.text.c_str()) + amountOfCharacters / 2 - s.length / 2)) << s.text
+                                  << endl;
                     }
                     break;
                 case both:
@@ -219,10 +229,57 @@ namespace paragraph {
 
     }
 
-    ParagraphParser::ParagraphParser() {
+    ParagraphParser::ParagraphParser(const size_t amountOfCharacters) {
+        this->amountOfCharacters = amountOfCharacters;
         line a;
         paragraphBuffer.push_back(a);
         justify = left;//by default
+    }
+
+    void ParagraphParser::setIndentation(XMLElement *element) {
+        if (element->Attribute("w:firstLine") != nullptr) {//TWIP_TO_CHARACTER
+            auto tmp = atoi(element->Attribute("w:firstLine")) / TWIP_TO_CHARACTER;
+            paragraphBuffer.front().text.insert(0, tmp, ' ');
+            paragraphBuffer.front().length += tmp;
+        } else if (element->Attribute("w:hanging") != nullptr && element->Attribute("w:left") != nullptr) {
+            auto tmp = (atoi(element->Attribute("w:hanging")) - atoi(element->Attribute("w:left"))) / TWIP_TO_CHARACTER;
+            paragraphBuffer.front().text.insert(0, tmp, ' ');
+            paragraphBuffer.front().length += tmp;
+        }
+    }
+
+    void ParagraphParser::setJustify(const string &justify) {
+        if (!strcmp(justify.c_str(), "left"))
+            this->justify = left;
+        else if (!strcmp(justify.c_str(), "right"))
+            this->justify = right;
+        else if (!strcmp(justify.c_str(), "center"))
+            this->justify = center;
+        else if (!strcmp(justify.c_str(), "both"))
+            this->justify = both;
+        else if (!strcmp(justify.c_str(), "distribute"))
+            this->justify = distribute;
+    }
+
+    void ParagraphParser::insertImage(size_t &height, size_t &width) {
+        height /= 76200;
+        width /= 76200;
+        auto leftBorder = (this->amountOfCharacters - width) / 2;
+        auto center = height / 2;
+        string path = "Here should be image № ";//TODO grep image number and save it if necessary
+        for (int i = 0; i < height; i++) {
+            line tmp;
+            tmp.text.insert(0, leftBorder, ' ');
+            if (i != center) {
+                tmp.text.insert(leftBorder, width, '#');
+            } else {
+                tmp.text.insert(leftBorder, (width - path.length()) / 2, '#');
+                tmp.text.append(path);
+                tmp.text.insert(tmp.text.length(), leftBorder + width - tmp.text.length() + 2, '#');
+            }
+            tmp.length += amountOfCharacters;
+            paragraphBuffer.push_back(tmp);
+        }
     }
 
 

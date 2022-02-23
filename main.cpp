@@ -1,4 +1,4 @@
-#include "MainDocParser.h"
+#include "mainDoc/MainDocParser.h"
 
 int main(int argc, char *argv[]) {
     prsr::MainDocParser parser("testParser");

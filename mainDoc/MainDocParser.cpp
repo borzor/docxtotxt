@@ -7,7 +7,6 @@
 #include "MainDocParser.h"
 
 
-
 namespace prsr {
 
     void MainDocParser::doInit(const string &path) {
@@ -78,19 +77,20 @@ namespace prsr {
     void MainDocParser::parseMainDoc() {
         checkInit();
         XMLElement *mainElement = mainDoc.RootElement()->FirstChildElement()->FirstChildElement();
+        XMLElement *section = mainDoc.RootElement()->FirstChildElement()->FirstChildElement("w:sectPr");
+        auto sectionParser = section::SectionParser();
+        sectionParser.parseSection(section);
         ofstream outFile("test_output_file.txt");
         while (mainElement != nullptr) {
-            auto result = ParagraphParser();
+            auto paragraphParser = paragraph::ParagraphParser(sectionParser.getDocWidth());//todo one object for each element, make method to clear fields
             if (!strcmp(mainElement->Value(), "w:p")) {
-                result.parseParagraph(mainElement);
+                paragraphParser.parseParagraph(mainElement);
             } else if (!strcmp(mainElement->Value(), "w:tbl")) {
                 parseTable(mainElement);
-            } else if (!strcmp(mainElement->Value(), "w:sectPr")) {
-                parseSection(mainElement);//TODO maybe should be at start if needed to save page settings
-            } else {
-                throw runtime_error(string("Unexpected main element: ") + string(mainElement->Value()));
+            } else {//TODO think about this
+                //throw runtime_error(string("Unexpected main element: ") + string(mainElement->Value()));
             }
-            result.writeResult(outFile, toFile);
+            paragraphParser.writeResult(outFile, toFile);
             mainElement = mainElement->NextSiblingElement();
         }
         free(mainElement);
@@ -98,17 +98,11 @@ namespace prsr {
     }
 
 
-    void MainDocParser::parseImage(XMLElement *image) {
-
-    }
 
     void MainDocParser::parseTable(XMLElement *table) {
 
     }
 
-    void MainDocParser::parseSection(XMLElement *section) {
-
-    }
 
 
 }

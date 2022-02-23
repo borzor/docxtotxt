@@ -7,5 +7,5 @@ set(CMAKE_MODULE_PATH "/usr/share/cmake-3.16/Modules" ${CMAKE_MODULE_PATH})
 find_package(TinyXML2 REQUIRED)
 find_package(LibZip REQUIRED)
 
-add_executable(docxtotxt main.cpp MainDocParser.cpp MainDocParser.h ParagraphParser.cpp ParagraphParser.h)
+add_executable(docxtotxt main.cpp mainDoc/MainDocParser.cpp mainDoc/MainDocParser.h mainDoc/ParagraphParser.cpp mainDoc/ParagraphParser.h mainDoc/SectionParser.cpp mainDoc/SectionParser.h mainDoc/DrawingParser.cpp mainDoc/DrawingParser.h)
 target_link_libraries(docxtotxt PUBLIC tinyxml2::tinyxml2 zip)

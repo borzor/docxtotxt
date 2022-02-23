@@ -7,11 +7,12 @@
 #define MAIN_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
 
 #include "ParagraphParser.h"
+#include "SectionParser.h"
 
 namespace prsr {
     using namespace std;
     using namespace tinyxml2;
-    using namespace paragraph;
+
     class MainDocParser {
     private:
         int counter = 0;
@@ -35,9 +36,6 @@ namespace prsr {
 
         void parseTable(XMLElement *table);
 
-        void parseSection(XMLElement *section);
-
-        void parseImage(XMLElement *image);
     };
 
 

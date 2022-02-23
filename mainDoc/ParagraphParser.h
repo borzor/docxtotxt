@@ -11,8 +11,6 @@
 
 #ifndef DOCXTOTXT_PARAGRAPHBUFFER_H
 #define DOCXTOTXT_PARAGRAPHBUFFER_H
-#define SIZE_OF_PAGE 99
-//TODO CHANGE IT
 
 namespace paragraph {
     using namespace std;
@@ -23,7 +21,7 @@ namespace paragraph {
     };
     enum language{
         enUS,
-        RU
+        ruRU
     };
     enum paragraphProperty {
         framePr,
@@ -83,14 +81,17 @@ namespace paragraph {
                                               {"w:sym",           sym},
                                               {"w:t",             t},
                                               {"w:tab",           tab},};
+    static map<string, int> languages = {{"en-US", enUS} ,
+                                         {"ru-RU", ruRU}};
 
     class ParagraphParser {
     private:
-        vector<line> paragraphBuffer;
+        vector<line> paragraphBuffer;//TODO try wstring
         paragraphJustify justify;
+        size_t amountOfCharacters;
 
     public:
-        ParagraphParser();
+        explicit ParagraphParser(size_t amountOfCharacters);
 
         void parseParagraph(XMLElement *paragraph);
 
@@ -101,6 +102,10 @@ namespace paragraph {
         void addText(const string &text, language language);
 
         void setJustify(const string &justify);
+
+        void setIndentation(XMLElement *element);
+
+        void insertImage(size_t &height, size_t &width);
 
         void writeResult(ofstream &outfile, bool toFile);
     };

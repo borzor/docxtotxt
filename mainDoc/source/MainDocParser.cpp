@@ -4,7 +4,7 @@
 
 #include <string>
 #include <utility>
-#include "MainDocParser.h"
+#include "../headers/MainDocParser.h"
 
 
 namespace prsr {

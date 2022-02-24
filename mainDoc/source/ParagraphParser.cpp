@@ -1,11 +1,11 @@
 //
 // Created by boris on 2/20/22.
 //
-#include "ParagraphParser.h"
-#include "SectionParser.h"
+#include "../headers/ParagraphParser.h"
+#include "../headers/SectionParser.h"
 #include <iomanip>
 #include <math.h>
-#include "DrawingParser.h"
+#include "../headers/DrawingParser.h"
 
 namespace paragraph {
     void Tokenize(const string &str, vector<string> &tokens, const string &delimiters = " ") {

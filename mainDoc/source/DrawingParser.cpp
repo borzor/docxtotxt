@@ -2,7 +2,7 @@
 // Created by boris on 2/22/22.
 //
 
-#include "DrawingParser.h"
+#include "../headers/DrawingParser.h"
 
 namespace Drawing {
     DrawingParser::DrawingParser(tinyxml2::XMLElement *drawing) {

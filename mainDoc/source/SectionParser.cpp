@@ -2,7 +2,7 @@
 // Created by boris on 2/21/22.
 //
 
-#include "SectionParser.h"
+#include "../headers/SectionParser.h"
 
 namespace section {
     void SectionParser::parseSection(XMLElement *section) {

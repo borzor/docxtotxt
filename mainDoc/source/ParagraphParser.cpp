@@ -1,11 +1,12 @@
 //
 // Created by boris on 2/20/22.
 //
-#include "ParagraphParser.h"
-#include "SectionParser.h"
+#include "../headers/ParagraphParser.h"
+#include "../headers/SectionParser.h"
+#include "../headers/MainDocParser.h"
 #include <iomanip>
 #include <math.h>
-#include "DrawingParser.h"
+
 
 namespace paragraph {
     void Tokenize(const string &str, vector<string> &tokens, const string &delimiters = " ") {
@@ -150,11 +151,13 @@ namespace paragraph {
                 case cr:
                     break;//TODO Default line break
                 case drawing: {
-                    auto drawingParser = Drawing::DrawingParser(textProperty);
                     size_t height, width;
-                    drawingParser.parseDrawing();
+                    drawingParser.parseDrawing(textProperty);
                     drawingParser.getDrawingSize(height, width);
-                    insertImage(height, width);
+                    if (saveDraws)
+                        insertImage(height, width, imageRelationship[drawingParser.getDrawingId()]);
+                    else
+                        insertImage(height, width);
                     break;
                 }
                 case noBreakHyphen:
@@ -229,8 +232,11 @@ namespace paragraph {
 
     }
 
-    ParagraphParser::ParagraphParser(const size_t amountOfCharacters) {
+    ParagraphParser::ParagraphParser(const size_t amountOfCharacters, bool saveDraws,
+                                     map<string, string> &imageRelationship)
+            : drawingParser(saveDraws), imageRelationship(imageRelationship) {
         this->amountOfCharacters = amountOfCharacters;
+        this->saveDraws = saveDraws;
         line a;
         paragraphBuffer.push_back(a);
         justify = left;//by default
@@ -261,26 +267,41 @@ namespace paragraph {
             this->justify = distribute;
     }
 
-    void ParagraphParser::insertImage(size_t &height, size_t &width) {
+
+    void ParagraphParser::insertImage(size_t &height, size_t &width, const string &imageName) {
         height /= 76200;
         width /= 76200;
         auto leftBorder = (this->amountOfCharacters - width) / 2;
-        auto center = height / 2;
-        string path = "Here should be image № ";//TODO grep image number and save it if necessary
+        auto center = height / 2 - 1;
+        string path = "Here should be image";
         for (int i = 0; i < height; i++) {
             line tmp;
             tmp.text.insert(0, leftBorder, ' ');
-            if (i != center) {
+            if (i == center + 1) {
+                if (saveDraws) {
+                    string imageInfo = string("Image saved to path: ") + PATH_TO_SAVE_IMAGES + '/' + imageName;
+                    if (imageInfo.length() > width) {
+                        tmp.text.append(imageInfo);
+                    } else {
+                        tmp.text.insert(leftBorder, (width - imageInfo.length()) / 2, '#');
+                        tmp.text.append( imageInfo);
+                        tmp.text.insert(tmp.text.length(), leftBorder + width - tmp.text.length(), '#');
+                    }
+                }
+            } else if (i != center) {
                 tmp.text.insert(leftBorder, width, '#');
             } else {
-                tmp.text.insert(leftBorder, (width - path.length()) / 2, '#');
-                tmp.text.append(path);
-                tmp.text.insert(tmp.text.length(), leftBorder + width - tmp.text.length() + 2, '#');
+                if (path.length() > width) {
+                    tmp.text.append(path);
+                } else {
+                    tmp.text.insert(leftBorder, (width - path.length()) / 2, '#');
+                    tmp.text.append(path);
+                    tmp.text.insert(tmp.text.length(), leftBorder + width - tmp.text.length(), '#');
+                }
             }
             tmp.length += amountOfCharacters;
             paragraphBuffer.push_back(tmp);
         }
     }
-
 
 }

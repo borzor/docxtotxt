@@ -4,7 +4,8 @@
 
 #include <string>
 #include <utility>
-#include "MainDocParser.h"
+#include "../headers/MainDocParser.h"
+#include <sys/stat.h>
 
 
 namespace prsr {
@@ -13,7 +14,9 @@ namespace prsr {
         toFile = false;
         int err;
         struct zip_stat file_info{};
+        zip_stat_init(&file_info);
         XMLDocument content;
+        string mainPath, imagesPath;
         zip_t *zip = zip_open(path.c_str(), 0, &err);
         if (zip == nullptr)
             throw runtime_error("Error: Cannot unzip file, error number: " + to_string(err));
@@ -25,10 +28,35 @@ namespace prsr {
         if (content.Parse(buffer) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse [Content_Types].xml file");
         parseContentTypes(&content);
-        auto mainPath = this->content_types.find(MAIN_FILE)->second;
+        mainPath = this->content_types.find(MAIN_FILE)->second;
         if (mainPath.empty()) {
             std::cout << "Setting name of main document to default\n";
             mainPath = "word/document.xml";
+        }
+        if (saveDraws) {
+            imagesPath = IMAGE_FILE_PATH;
+            if (zip_stat(zip, imagesPath.c_str(), 0, &file_info) == -1)
+                throw runtime_error("Error: Cannot get info about " + imagesPath + " file");
+            char buffer3[file_info.size];
+            if (zip_fread(zip_fopen(zip, imagesPath.c_str(), 0), &buffer3, file_info.size) == -1)
+                throw runtime_error("Error: Cannot read " + imagesPath + " file");
+            if (this->imagesDoc.Parse(buffer3) != tinyxml2::XML_SUCCESS)
+                throw runtime_error("Error: Cannot parse " + imagesPath + " file");
+            parseImageDoc(&imagesDoc);
+            mkdir(PATH_TO_SAVE_IMAGES, 0777);
+            for (const auto&[key, value]: imageRelationship) {
+                if (!value.ends_with(".xml")) {//TODO
+                    if (zip_stat(zip, value.c_str(), ZIP_FL_NODIR, &file_info) == -1)
+                        throw runtime_error("Error: Cannot get info about " + value + " file");
+                    char tmpImageBuffer[file_info.size];
+                    if (zip_fread(zip_fopen(zip, value.c_str(), ZIP_FL_NODIR), &tmpImageBuffer, file_info.size) == -1)
+                        throw runtime_error("Error: Cannot read " + value + " file");
+                    if (!std::ofstream(string(PATH_TO_SAVE_IMAGES) + "/" + value).write(tmpImageBuffer, file_info.size)) {
+                        throw runtime_error("Error writing file" + value);
+                    }
+                }
+            }
+
         }
 
         if (zip_stat(zip, mainPath.c_str(), 0, &file_info) == -1)
@@ -38,8 +66,8 @@ namespace prsr {
             throw runtime_error("Error: Cannot read " + mainPath + " file");
         if (this->mainDoc.Parse(buffer2) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse " + mainPath + " file");
-        this->isInitialized = true;
         zip_close(zip);
+        this->isInitialized = true;
     }
 
     void MainDocParser::checkInit() const {
@@ -82,7 +110,8 @@ namespace prsr {
         sectionParser.parseSection(section);
         ofstream outFile("test_output_file.txt");
         while (mainElement != nullptr) {
-            auto paragraphParser = paragraph::ParagraphParser(sectionParser.getDocWidth());//todo one object for each element, make method to clear fields
+            auto paragraphParser = paragraph::ParagraphParser(
+                    sectionParser.getDocWidth(), saveDraws, imageRelationship);//todo one object for each element, make method to clear fields
             if (!strcmp(mainElement->Value(), "w:p")) {
                 paragraphParser.parseParagraph(mainElement);
             } else if (!strcmp(mainElement->Value(), "w:tbl")) {
@@ -98,11 +127,20 @@ namespace prsr {
     }
 
 
-
     void MainDocParser::parseTable(XMLElement *table) {
 
     }
 
+    void MainDocParser::parseImageDoc(XMLDocument *doc) {
+        auto *mainElement = doc->RootElement()->FirstChildElement();
+        while (mainElement != nullptr) {
+            if (!strcmp(mainElement->Value(), "Relationship")) {
+                string file = mainElement->Attribute("Target");
+                imageRelationship.emplace(mainElement->Attribute("Id"), file.substr(file.find_last_of('/') + 1));
+            }
+            mainElement = mainElement->NextSiblingElement();
+        }
+    }
 
 
 }

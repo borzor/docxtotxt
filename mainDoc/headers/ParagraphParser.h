@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 #include <fstream>
-
+#include "../headers/DrawingParser.h"
 #ifndef DOCXTOTXT_PARAGRAPHBUFFER_H
 #define DOCXTOTXT_PARAGRAPHBUFFER_H
 
@@ -89,9 +89,12 @@ namespace paragraph {
         vector<line> paragraphBuffer;//TODO try wstring
         paragraphJustify justify;
         size_t amountOfCharacters;
+        Drawing::DrawingParser drawingParser;
+        map<string, string> &imageRelationship;
+        bool saveDraws;
 
     public:
-        explicit ParagraphParser(size_t amountOfCharacters);
+        ParagraphParser(size_t amountOfCharacters, bool saveDraws, map<string, string>& imageRelationship);
 
         void parseParagraph(XMLElement *paragraph);
 
@@ -105,7 +108,7 @@ namespace paragraph {
 
         void setIndentation(XMLElement *element);
 
-        void insertImage(size_t &height, size_t &width);
+        void insertImage(size_t &height, size_t &width, const string& imageName="");
 
         void writeResult(ofstream &outfile, bool toFile);
     };

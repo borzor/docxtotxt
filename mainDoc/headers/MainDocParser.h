@@ -5,6 +5,9 @@
 #ifndef DOCXTOTXT_MAINDOCPARSER_H
 #define DOCXTOTXT_MAINDOCPARSER_H
 #define MAIN_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+#define IMAGES_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+#define IMAGE_FILE_PATH "word/_rels/document.xml.rels"
+#define PATH_TO_SAVE_IMAGES "TMP_IMAGES_DIR"
 
 #include "ParagraphParser.h"
 #include "SectionParser.h"
@@ -19,11 +22,16 @@ namespace prsr {
         map<string, int> textProperties;
         map<string, int> paragraphProperties;
         string name;
+
         XMLDocument mainDoc;
+        XMLDocument imagesDoc;
+        map<string, string> imageRelationship;
         bool isInitialized;
         map<string, string> content_types;
         bool toFile;
+        bool saveDraws = true;
     public:
+
         explicit MainDocParser(string name);
 
         void doInit(const string &path);
@@ -35,6 +43,8 @@ namespace prsr {
         void parseMainDoc();
 
         void parseTable(XMLElement *table);
+
+        void parseImageDoc(XMLDocument *doc);
 
     };
 

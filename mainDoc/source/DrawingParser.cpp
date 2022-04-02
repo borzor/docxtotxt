@@ -2,15 +2,15 @@
 // Created by boris on 2/22/22.
 //
 
-#include "DrawingParser.h"
+#include "../headers/DrawingParser.h"
 
 namespace Drawing {
-    DrawingParser::DrawingParser(tinyxml2::XMLElement *drawing) {
-        this->drawing = drawing;
+    DrawingParser::DrawingParser(bool saveDraws) {
+        this->saveDraws = saveDraws;
     }
 
-    void DrawingParser::parseDrawing() {
-        auto current_element = this->drawing->FirstChildElement()->FirstChildElement();
+    void DrawingParser::parseDrawing(tinyxml2::XMLElement *element) {
+        auto current_element = element->FirstChildElement()->FirstChildElement();
 
         while (current_element != nullptr) {
 
@@ -23,6 +23,7 @@ namespace Drawing {
                             if (!strcmp(picElement->Value(), "pic:nvPicPr")) {
                                 //maybe  Specifies non-visual properties of a picture, such as locking properties, name, id and title, and whether the picture is hidden.
                             } else if (!strcmp(picElement->Value(), "pic:blipFill")) {
+                                lastImageId = picElement->FirstChildElement()->Attribute("r:embed");
                                 //TODO pointer to picture
                             } else if (!strcmp(picElement->Value(), "pic:spPr")) {
                                 if (picElement->FirstChildElement("a:xfrm") != nullptr) {
@@ -44,9 +45,13 @@ namespace Drawing {
         }
     }
 
-    void DrawingParser::getDrawingSize(size_t &height, size_t &width) {
+    void DrawingParser::getDrawingSize(size_t &height, size_t &width) const {
         height = this->height;
         width = this->width;
+    }
+
+    string DrawingParser::getDrawingId() const {
+        return this->lastImageId;
     }
 
 

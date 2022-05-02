@@ -111,6 +111,8 @@ namespace paragraph {
         void insertImage(size_t &height, size_t &width, const string& imageName="");
 
         void writeResult(ofstream &outfile, bool toFile);
+
+        void clearFields();
     };
 
 }

@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 #include "../headers/MainDocParser.h"
+#include "../headers/TableParser.h"
 #include <sys/stat.h>
 
 
@@ -51,7 +52,8 @@ namespace prsr {
                     char tmpImageBuffer[file_info.size];
                     if (zip_fread(zip_fopen(zip, value.c_str(), ZIP_FL_NODIR), &tmpImageBuffer, file_info.size) == -1)
                         throw runtime_error("Error: Cannot read " + value + " file");
-                    if (!std::ofstream(string(PATH_TO_SAVE_IMAGES) + "/" + value).write(tmpImageBuffer, file_info.size)) {
+                    if (!std::ofstream(string(PATH_TO_SAVE_IMAGES) + "/" + value).write(tmpImageBuffer,
+                                                                                        file_info.size)) {
                         throw runtime_error("Error writing file" + value);
                     }
                 }
@@ -108,18 +110,19 @@ namespace prsr {
         XMLElement *section = mainDoc.RootElement()->FirstChildElement()->FirstChildElement("w:sectPr");
         auto sectionParser = section::SectionParser();
         sectionParser.parseSection(section);
+        auto paragraphParser = paragraph::ParagraphParser(sectionParser.getDocWidth(), saveDraws, imageRelationship);
+        auto tableParser = table::TableParser();
         ofstream outFile("test_output_file.txt");
         while (mainElement != nullptr) {
-            auto paragraphParser = paragraph::ParagraphParser(
-                    sectionParser.getDocWidth(), saveDraws, imageRelationship);//todo one object for each element, make method to clear fields
             if (!strcmp(mainElement->Value(), "w:p")) {
                 paragraphParser.parseParagraph(mainElement);
             } else if (!strcmp(mainElement->Value(), "w:tbl")) {
-                parseTable(mainElement);
+                tableParser.parseTable(mainElement);
             } else {//TODO think about this
                 //throw runtime_error(string("Unexpected main element: ") + string(mainElement->Value()));
             }
-            paragraphParser.writeResult(outFile, toFile);
+            paragraphParser.writeResult(outFile, toFile);//todo make it more generic, for table+paragraph text
+            paragraphParser.clearFields();
             mainElement = mainElement->NextSiblingElement();
         }
         free(mainElement);

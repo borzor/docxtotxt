@@ -304,4 +304,11 @@ namespace paragraph {
         }
     }
 
+    void ParagraphParser::clearFields() {
+        paragraphBuffer.clear();
+        line a;
+        paragraphBuffer.push_back(a);
+        justify = left;
+    }
+
 }

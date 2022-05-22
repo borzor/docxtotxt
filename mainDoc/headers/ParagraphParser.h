@@ -9,17 +9,22 @@
 #include <vector>
 #include <fstream>
 #include "../headers/DrawingParser.h"
-#ifndef DOCXTOTXT_PARAGRAPHBUFFER_H
-#define DOCXTOTXT_PARAGRAPHBUFFER_H
+
+typedef struct {
+    uint32_t flags;
+    zip_t *input;
+    std::ofstream output;
+    std::string pathToDraws;
+} options_t;
 
 namespace paragraph {
     using namespace std;
     using namespace tinyxml2;
-    struct line{
+    struct line {
         string text;
         size_t length = 0;
     };
-    enum language{
+    enum language {
         enUS,
         ruRU
     };
@@ -81,7 +86,7 @@ namespace paragraph {
                                               {"w:sym",           sym},
                                               {"w:t",             t},
                                               {"w:tab",           tab},};
-    static map<string, int> languages = {{"en-US", enUS} ,
+    static map<string, int> languages = {{"en-US", enUS},
                                          {"ru-RU", ruRU}};
 
     class ParagraphParser {
@@ -91,10 +96,12 @@ namespace paragraph {
         size_t amountOfCharacters;
         Drawing::DrawingParser drawingParser;
         map<string, string> &imageRelationship;
-        bool saveDraws;
+        options_t options;
+
 
     public:
-        ParagraphParser(size_t amountOfCharacters, bool saveDraws, map<string, string>& imageRelationship);
+        ParagraphParser(size_t amountOfCharacters, options_t options,
+                        map<string, string> &imageRelationship);
 
         void parseParagraph(XMLElement *paragraph);
 
@@ -108,13 +115,12 @@ namespace paragraph {
 
         void setIndentation(XMLElement *element);
 
-        void insertImage(size_t &height, size_t &width, const string& imageName="");
+        void insertImage(size_t &height, size_t &width, const string &imageName = "");
 
-        void writeResult(ofstream &outfile, bool toFile);
+        void writeResult();
 
         void clearFields();
     };
 
 }
 
-#endif //DOCXTOTXT_PARAGRAPHBUFFER_H

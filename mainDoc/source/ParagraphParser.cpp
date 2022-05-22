@@ -3,7 +3,6 @@
 //
 #include "../headers/ParagraphParser.h"
 #include "../headers/SectionParser.h"
-#include "../headers/MainDocParser.h"
 #include <iomanip>
 #include <math.h>
 
@@ -154,7 +153,7 @@ namespace paragraph {
                     size_t height, width;
                     drawingParser.parseDrawing(textProperty);
                     drawingParser.getDrawingSize(height, width);
-                    if (saveDraws)
+                    if ((options.flags >> 1) & 1)
                         insertImage(height, width, imageRelationship[drawingParser.getDrawingId()]);
                     else
                         insertImage(height, width);
@@ -194,9 +193,9 @@ namespace paragraph {
     }
 
 
-    void ParagraphParser::writeResult(ofstream &outStream, bool toFile) {
+    void ParagraphParser::writeResult() {
         if (!this->paragraphBuffer.empty()) {
-            if (toFile) {
+            if ((options.flags >> 0) & 1) {
 
             } else {
 
@@ -204,23 +203,23 @@ namespace paragraph {
             switch (this->justify) {//TODO IDK HOW TO GET WIDTH FOR STREAM SO JUSTIFY WILL WORK
                 case left:
                     for (auto &s: paragraphBuffer) {
-                        outStream << s.text << '\n';
+                        options.output << s.text << '\n';
                     }
                     break;
                 case right:
                     for (auto &s: paragraphBuffer) {
-                        outStream << setw(amountOfCharacters + strlen(s.text.c_str()) - s.length) << s.text << '\n';
+                        options.output  << setw(amountOfCharacters + strlen(s.text.c_str()) - s.length) << s.text << '\n';
                     }
                     break;
                 case center:
                     for (auto &s: paragraphBuffer) {
-                        outStream << setw((strlen(s.text.c_str()) + amountOfCharacters / 2 - s.length / 2)) << s.text
+                        options.output  << setw((strlen(s.text.c_str()) + amountOfCharacters / 2 - s.length / 2)) << s.text
                                   << endl;
                     }
                     break;
                 case both:
                     for (auto &s: paragraphBuffer) {
-                        outStream << s.text << '\n';
+                        options.output  << s.text << '\n';
                     }
                     break;
                 case distribute:
@@ -232,11 +231,10 @@ namespace paragraph {
 
     }
 
-    ParagraphParser::ParagraphParser(const size_t amountOfCharacters, bool saveDraws,
+    ParagraphParser::ParagraphParser(const size_t amountOfCharacters, options_t options,
                                      map<string, string> &imageRelationship)
-            : drawingParser(saveDraws), imageRelationship(imageRelationship) {
-        this->amountOfCharacters = amountOfCharacters;
-        this->saveDraws = saveDraws;
+            : drawingParser((options.flags >> 1) & 1), imageRelationship(imageRelationship),
+              options(std::move(options)), amountOfCharacters(amountOfCharacters) {
         line a;
         paragraphBuffer.push_back(a);
         justify = left;//by default
@@ -273,18 +271,18 @@ namespace paragraph {
         width /= 76200;
         auto leftBorder = (this->amountOfCharacters - width) / 2;
         auto center = height / 2 - 1;
-        string path = "Here should be image";
+        string path = "Here should be media file";
         for (int i = 0; i < height; i++) {
             line tmp;
             tmp.text.insert(0, leftBorder, ' ');
             if (i == center + 1) {
-                if (saveDraws) {
-                    string imageInfo = string("Image saved to path: ") + PATH_TO_SAVE_IMAGES + '/' + imageName;
+                if ((options.flags >> 1) & 1) {
+                    string imageInfo = string("Media file saved to path: ") + this->options.pathToDraws + '/' + imageName;
                     if (imageInfo.length() > width) {
                         tmp.text.append(imageInfo);
                     } else {
                         tmp.text.insert(leftBorder, (width - imageInfo.length()) / 2, '#');
-                        tmp.text.append( imageInfo);
+                        tmp.text.append(imageInfo);
                         tmp.text.insert(tmp.text.length(), leftBorder + width - tmp.text.length(), '#');
                     }
                 }
@@ -305,6 +303,7 @@ namespace paragraph {
     }
 
     void ParagraphParser::clearFields() {
+        options.output.flush();
         paragraphBuffer.clear();
         line a;
         paragraphBuffer.push_back(a);

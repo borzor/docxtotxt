@@ -6,19 +6,17 @@
 #include <utility>
 #include "../headers/MainDocParser.h"
 #include "../headers/TableParser.h"
-#include <sys/stat.h>
 
 
 namespace prsr {
 
-    void MainDocParser::doInit(const string &path) {
-        toFile = false;
-        int err;
+    void MainDocParser::doInit() {
         struct zip_stat file_info{};
         zip_stat_init(&file_info);
         XMLDocument content;
         string mainPath, imagesPath;
-        zip_t *zip = zip_open(path.c_str(), 0, &err);
+        int err = 0;
+        zip_t *zip = options.input;
         if (zip == nullptr)
             throw runtime_error("Error: Cannot unzip file, error number: " + to_string(err));
         if (zip_stat(zip, "[Content_Types].xml", 0, &file_info) == -1)
@@ -26,7 +24,7 @@ namespace prsr {
         char buffer[file_info.size];
         if (zip_fread(zip_fopen(zip, "[Content_Types].xml", 0), &buffer, file_info.size) == -1)
             throw runtime_error("Error: Cannot read [Content_Types].xml file");
-        if (content.Parse(buffer) != tinyxml2::XML_SUCCESS)
+        if (content.Parse(buffer, file_info.size) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse [Content_Types].xml file");
         parseContentTypes(&content);
         mainPath = this->content_types.find(MAIN_FILE)->second;
@@ -34,39 +32,37 @@ namespace prsr {
             std::cout << "Setting name of main document to default\n";
             mainPath = "word/document.xml";
         }
-        if (saveDraws) {
+        if ((options.flags >> 1) & 1) {
             imagesPath = IMAGE_FILE_PATH;
             if (zip_stat(zip, imagesPath.c_str(), 0, &file_info) == -1)
                 throw runtime_error("Error: Cannot get info about " + imagesPath + " file");
             char buffer3[file_info.size];
             if (zip_fread(zip_fopen(zip, imagesPath.c_str(), 0), &buffer3, file_info.size) == -1)
                 throw runtime_error("Error: Cannot read " + imagesPath + " file");
-            if (this->imagesDoc.Parse(buffer3) != tinyxml2::XML_SUCCESS)
+            if (this->imagesDoc.Parse(buffer3, file_info.size) != tinyxml2::XML_SUCCESS)
                 throw runtime_error("Error: Cannot parse " + imagesPath + " file");
             parseImageDoc(&imagesDoc);
-            mkdir(PATH_TO_SAVE_IMAGES, 0777);
-            for (const auto&[key, value]: imageRelationship) {
-                if (!value.ends_with(".xml")) {//TODO
+            for (const auto &[key, value]: imageRelationship) {
+                if (value.ends_with(".png") || value.ends_with(".jpg") || value.ends_with(".jpeg") ||
+                    value.ends_with(".gif")) {//TODO
                     if (zip_stat(zip, value.c_str(), ZIP_FL_NODIR, &file_info) == -1)
                         throw runtime_error("Error: Cannot get info about " + value + " file");
                     char tmpImageBuffer[file_info.size];
                     if (zip_fread(zip_fopen(zip, value.c_str(), ZIP_FL_NODIR), &tmpImageBuffer, file_info.size) == -1)
                         throw runtime_error("Error: Cannot read " + value + " file");
-                    if (!std::ofstream(string(PATH_TO_SAVE_IMAGES) + "/" + value).write(tmpImageBuffer,
+                    if (!std::ofstream(string(options.pathToDraws) + "/" + value).write(tmpImageBuffer,
                                                                                         file_info.size)) {
                         throw runtime_error("Error writing file" + value);
                     }
                 }
             }
-
         }
-
         if (zip_stat(zip, mainPath.c_str(), 0, &file_info) == -1)
             throw runtime_error("Error: Cannot get info about " + mainPath + " file");
         char buffer2[file_info.size];
         if (zip_fread(zip_fopen(zip, mainPath.c_str(), 0), &buffer2, file_info.size) == -1)
             throw runtime_error("Error: Cannot read " + mainPath + " file");
-        if (this->mainDoc.Parse(buffer2) != tinyxml2::XML_SUCCESS)
+        if (this->mainDoc.Parse(buffer2, file_info.size) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse " + mainPath + " file");
         zip_close(zip);
         this->isInitialized = true;
@@ -98,10 +94,9 @@ namespace prsr {
         free(current_element);
     }
 
-    MainDocParser::MainDocParser(string name) :
-            name(std::move(name)),
+    MainDocParser::MainDocParser(string name, options_t options) :
+            name(std::move(name)), options(std::move(options)),
             isInitialized(false) {
-
     }
 
     void MainDocParser::parseMainDoc() {
@@ -110,9 +105,10 @@ namespace prsr {
         XMLElement *section = mainDoc.RootElement()->FirstChildElement()->FirstChildElement("w:sectPr");
         auto sectionParser = section::SectionParser();
         sectionParser.parseSection(section);
-        auto paragraphParser = paragraph::ParagraphParser(sectionParser.getDocWidth(), saveDraws, imageRelationship);
+
+        auto paragraphParser = paragraph::ParagraphParser(sectionParser.getDocWidth(), std::move(options),
+                                                          imageRelationship);
         auto tableParser = table::TableParser();
-        ofstream outFile("test_output_file.txt");
         while (mainElement != nullptr) {
             if (!strcmp(mainElement->Value(), "w:p")) {
                 paragraphParser.parseParagraph(mainElement);
@@ -121,12 +117,13 @@ namespace prsr {
             } else {//TODO think about this
                 //throw runtime_error(string("Unexpected main element: ") + string(mainElement->Value()));
             }
-            paragraphParser.writeResult(outFile, toFile);//todo make it more generic, for table+paragraph text
+            options.output << "test";
+            paragraphParser.writeResult();//todo make it more generic, for table+paragraph text
             paragraphParser.clearFields();
             mainElement = mainElement->NextSiblingElement();
         }
         free(mainElement);
-        outFile.close();
+        options.output.close();
     }
 
 

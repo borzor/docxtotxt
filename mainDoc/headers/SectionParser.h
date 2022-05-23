@@ -53,6 +53,8 @@ namespace section {
         void parseSection(XMLElement *section);
 
         size_t getDocWidth();
+
+        size_t getDocHeight();
     };
 }
 

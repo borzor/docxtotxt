@@ -5,7 +5,6 @@
 #ifndef DOCXTOTXT_MAINDOCPARSER_H
 #define DOCXTOTXT_MAINDOCPARSER_H
 #define MAIN_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
-#define IMAGES_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
 #define IMAGE_FILE_PATH "word/_rels/document.xml.rels"
 
 #include "ParagraphParser.h"
@@ -18,11 +17,6 @@ namespace prsr {
 
     class MainDocParser {
     private:
-        int counter = 0;
-        map<string, int> textProperties;
-        map<string, int> paragraphProperties;
-        string name;
-
         XMLDocument mainDoc;
         XMLDocument imagesDoc;
         map<string, string> imageRelationship;
@@ -40,8 +34,6 @@ namespace prsr {
         void parseContentTypes(XMLDocument *xmlDocument);
 
         void parseMainDoc();
-
-        void parseTable(XMLElement *table);
 
         void parseImageDoc(XMLDocument *doc);
 

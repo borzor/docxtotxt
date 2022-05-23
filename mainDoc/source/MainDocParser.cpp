@@ -127,10 +127,6 @@ namespace prsr {
     }
 
 
-    void MainDocParser::parseTable(XMLElement *table) {
-
-    }
-
     void MainDocParser::parseImageDoc(XMLDocument *doc) {
         auto *mainElement = doc->RootElement()->FirstChildElement();
         while (mainElement != nullptr) {

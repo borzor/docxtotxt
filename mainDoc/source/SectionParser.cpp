@@ -48,4 +48,9 @@ namespace section {
     size_t SectionParser::getDocWidth() {
         return this->width / TWIP_TO_CHARACTER;
     }
+
+    size_t SectionParser::getDocHeight() {
+        return this->height / TWIP_TO_CHARACTER;
+    }
+
 }

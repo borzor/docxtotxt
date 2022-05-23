@@ -15,11 +15,9 @@ namespace Drawing {
 
     class DrawingParser {
     private:
-        const XMLElement *drawing{};
         size_t height = 0;
         size_t width = 0;
         string lastImageId;
-        bool saveDraws;
     public:
         explicit DrawingParser(bool saveDraws);
 

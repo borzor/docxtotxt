@@ -94,8 +94,8 @@ namespace prsr {
         free(current_element);
     }
 
-    MainDocParser::MainDocParser(string name, options_t options) :
-            name(std::move(name)), options(std::move(options)),
+    MainDocParser::MainDocParser(options_t options) :
+            options(std::move(options)),
             isInitialized(false) {
     }
 
@@ -119,7 +119,7 @@ namespace prsr {
             }
             options.output << "test";
             paragraphParser.writeResult();//todo make it more generic, for table+paragraph text
-            paragraphParser.clearFields();
+            paragraphParser.flush();
             mainElement = mainElement->NextSiblingElement();
         }
         free(mainElement);

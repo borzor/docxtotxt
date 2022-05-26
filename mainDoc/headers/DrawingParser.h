@@ -19,7 +19,7 @@ namespace Drawing {
         size_t width = 0;
         string lastImageId;
     public:
-        explicit DrawingParser(bool saveDraws);
+        explicit DrawingParser();
 
         void parseDrawing(XMLElement *element);
 

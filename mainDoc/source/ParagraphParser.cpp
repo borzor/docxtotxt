@@ -4,7 +4,7 @@
 #include "../headers/ParagraphParser.h"
 #include "../headers/SectionParser.h"
 #include <iomanip>
-#include <math.h>
+#include <cmath>
 
 
 namespace paragraph {
@@ -87,12 +87,13 @@ namespace paragraph {
                 parseParagraphProperties(property);
             } else if (!strcmp(property->Value(), "w:r")) {
                 parseTextProperties(property);
+            } else if (!strcmp(property->Value(), "w:hyperlink")) {
+                parseHyperlink(property);
             } else {
                 //throw runtime_error(string("Unexpected child element: ") + string(property->Value()));
             }
             property = property->NextSiblingElement();
         }
-
         free(property);
     }
 
@@ -114,8 +115,17 @@ namespace paragraph {
                     break;//Specifies that all lines of the paragraph are to be kept on a single page when possible. It is an empty element
                 case keepNext:
                     break;//Specifies that the paragraph (or at least part of it) should be rendered on the same page as the next paragraph when possible
-                case numPr:
-                    break;//TODO check for numId and ilvl and somehow link paragraphs into enumeration
+                case numPr: {
+                    XMLElement *enumProperty = paragraphProperty->FirstChildElement();
+                    if (!strcmp(enumProperty->Value(), "w:ilvl")) {
+                        if (enumProperty->FirstAttribute() != nullptr) {
+                            size_t indentationSize = enumProperty->FirstAttribute()->IntValue();
+                            paragraphBuffer.back().text.append(string(indentationSize, ' ')).append(" · ");
+                            paragraphBuffer.back().length += indentationSize + 3;
+                        }
+                    }
+                    break;
+                }
                 case outlineLvl:
                     break;//Specifies the outline level associated with the paragraph
                 case pBdr:
@@ -185,7 +195,9 @@ namespace paragraph {
                         addText(" ", language);
                     break;
                 case tab:
-                    break;//TODO tabulation
+                    paragraphBuffer.back().text.append("    ");
+                    paragraphBuffer.back().length += 4;
+                    break;
             }
             textProperty = textProperty->NextSiblingElement();
         }
@@ -208,18 +220,20 @@ namespace paragraph {
                     break;
                 case right:
                     for (auto &s: paragraphBuffer) {
-                        options.output  << setw(amountOfCharacters + strlen(s.text.c_str()) - s.length) << s.text << '\n';
+                        options.output << setw(amountOfCharacters + strlen(s.text.c_str()) - s.length) << s.text
+                                       << '\n';
                     }
                     break;
                 case center:
                     for (auto &s: paragraphBuffer) {
-                        options.output  << setw((strlen(s.text.c_str()) + amountOfCharacters / 2 - s.length / 2)) << s.text
-                                  << endl;
+                        options.output << setw((strlen(s.text.c_str()) + amountOfCharacters / 2 - s.length / 2))
+                                       << s.text
+                                       << endl;
                     }
                     break;
                 case both:
                     for (auto &s: paragraphBuffer) {
-                        options.output  << s.text << '\n';
+                        options.output << s.text << '\n';
                     }
                     break;
                 case distribute:
@@ -233,7 +247,7 @@ namespace paragraph {
 
     ParagraphParser::ParagraphParser(const size_t amountOfCharacters, options_t options,
                                      map<string, string> &imageRelationship)
-            : drawingParser((options.flags >> 1) & 1), imageRelationship(imageRelationship),
+            : drawingParser(), imageRelationship(imageRelationship),
               options(std::move(options)), amountOfCharacters(amountOfCharacters) {
         line a;
         paragraphBuffer.push_back(a);
@@ -241,7 +255,7 @@ namespace paragraph {
     }
 
     void ParagraphParser::setIndentation(XMLElement *element) {
-        if (element->Attribute("w:firstLine") != nullptr) {//TWIP_TO_CHARACTER
+        if (element->Attribute("w:firstLine") != nullptr) {
             auto tmp = atoi(element->Attribute("w:firstLine")) / TWIP_TO_CHARACTER;
             paragraphBuffer.front().text.insert(0, tmp, ' ');
             paragraphBuffer.front().length += tmp;
@@ -277,7 +291,8 @@ namespace paragraph {
             tmp.text.insert(0, leftBorder, ' ');
             if (i == center + 1) {
                 if ((options.flags >> 1) & 1) {
-                    string imageInfo = string("Media file saved to path: ") + this->options.pathToDraws + '/' + imageName;
+                    string imageInfo =
+                            string("Media file saved to path: ") + this->options.pathToDraws + '/' + imageName;
                     if (imageInfo.length() > width) {
                         tmp.text.append(imageInfo);
                     } else {
@@ -302,12 +317,24 @@ namespace paragraph {
         }
     }
 
-    void ParagraphParser::clearFields() {
+    void ParagraphParser::flush() {
         options.output.flush();
         paragraphBuffer.clear();
         line a;
         paragraphBuffer.push_back(a);
         justify = left;
+    }
+
+    void ParagraphParser::parseHyperlink(XMLElement *properties) {//TODO hyperlink implementation
+        XMLElement *property = properties->FirstChildElement();
+        while (property != nullptr) {
+            if (!strcmp(property->Value(), "w:r")) {
+                parseTextProperties(property);
+            }
+            property = property->NextSiblingElement();
+        }
+
+        free(property);
     }
 
 }

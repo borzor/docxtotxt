@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
                 std::cerr << "Invalid parameters" << std::endl;
 
         }
-    prsr::MainDocParser parser("testParser", std::move(options));
+    prsr::MainDocParser parser(std::move(options));
     try {
         parser.doInit();
         parser.parseMainDoc();

@@ -25,7 +25,7 @@ namespace prsr {
         options_t options;
     public:
 
-        explicit MainDocParser(string name, options_t options);
+        explicit MainDocParser(options_t options);
 
         void doInit();
 

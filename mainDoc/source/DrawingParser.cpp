@@ -5,8 +5,7 @@
 #include "../headers/DrawingParser.h"
 
 namespace Drawing {
-    DrawingParser::DrawingParser(bool saveDraws) {
-        this->saveDraws = saveDraws;
+    DrawingParser::DrawingParser() {
     }
 
     void DrawingParser::parseDrawing(tinyxml2::XMLElement *element) {

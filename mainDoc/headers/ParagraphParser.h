@@ -109,6 +109,8 @@ namespace paragraph {
 
         void parseTextProperties(XMLElement *properties);
 
+        void parseHyperlink(XMLElement *properties);
+
         void addText(const string &text, language language);
 
         void setJustify(const string &justify);
@@ -119,7 +121,7 @@ namespace paragraph {
 
         void writeResult();
 
-        void clearFields();
+        void flush();
     };
 
 }

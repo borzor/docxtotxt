@@ -215,25 +215,25 @@ namespace paragraph {
             switch (this->justify) {//TODO IDK HOW TO GET WIDTH FOR STREAM SO JUSTIFY WILL WORK
                 case left:
                     for (auto &s: paragraphBuffer) {
-                        options.output << s.text << '\n';
+                        *options.output << s.text << '\n';
                     }
                     break;
                 case right:
                     for (auto &s: paragraphBuffer) {
-                        options.output << setw(amountOfCharacters + strlen(s.text.c_str()) - s.length) << s.text
+                        *options.output << setw(amountOfCharacters + strlen(s.text.c_str()) - s.length) << s.text
                                        << '\n';
                     }
                     break;
                 case center:
                     for (auto &s: paragraphBuffer) {
-                        options.output << setw((strlen(s.text.c_str()) + amountOfCharacters / 2 - s.length / 2))
+                        *options.output << setw((strlen(s.text.c_str()) + amountOfCharacters / 2 - s.length / 2))
                                        << s.text
                                        << endl;
                     }
                     break;
                 case both:
                     for (auto &s: paragraphBuffer) {
-                        options.output << s.text << '\n';
+                        *options.output << s.text << '\n';
                     }
                     break;
                 case distribute:
@@ -245,10 +245,10 @@ namespace paragraph {
 
     }
 
-    ParagraphParser::ParagraphParser(const size_t amountOfCharacters, options_t options,
+    ParagraphParser::ParagraphParser(const size_t amountOfCharacters, options_t &options,
                                      map<string, string> &imageRelationship)
             : drawingParser(), imageRelationship(imageRelationship),
-              options(std::move(options)), amountOfCharacters(amountOfCharacters) {
+              options(options), amountOfCharacters(amountOfCharacters) {
         line a;
         paragraphBuffer.push_back(a);
         justify = left;//by default
@@ -285,14 +285,13 @@ namespace paragraph {
         width /= 76200;
         auto leftBorder = (this->amountOfCharacters - width) / 2;
         auto center = height / 2 - 1;
-        string path = "Here should be media file";
+        string path = "Media file";
         for (int i = 0; i < height; i++) {
             line tmp;
             tmp.text.insert(0, leftBorder, ' ');
             if (i == center + 1) {
                 if ((options.flags >> 1) & 1) {
-                    string imageInfo =
-                            string("Media file saved to path: ") + this->options.pathToDraws + '/' + imageName;
+                    string imageInfo = string("Saved to path: ") + this->options.pathToDraws + '/' + imageName;
                     if (imageInfo.length() > width) {
                         tmp.text.append(imageInfo);
                     } else {
@@ -300,6 +299,8 @@ namespace paragraph {
                         tmp.text.append(imageInfo);
                         tmp.text.insert(tmp.text.length(), leftBorder + width - tmp.text.length(), '#');
                     }
+                } else{
+                    tmp.text.insert(leftBorder, width, '#');
                 }
             } else if (i != center) {
                 tmp.text.insert(leftBorder, width, '#');
@@ -318,7 +319,7 @@ namespace paragraph {
     }
 
     void ParagraphParser::flush() {
-        options.output.flush();
+        options.output->flush();
         paragraphBuffer.clear();
         line a;
         paragraphBuffer.push_back(a);

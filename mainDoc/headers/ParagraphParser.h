@@ -13,7 +13,7 @@
 typedef struct {
     uint32_t flags;
     zip_t *input;
-    std::ofstream output;
+    std::ostream *output;
     std::string pathToDraws;
 } options_t;
 
@@ -96,11 +96,11 @@ namespace paragraph {
         size_t amountOfCharacters;
         Drawing::DrawingParser drawingParser;
         map<string, string> &imageRelationship;
-        options_t options;
+        options_t &options;
 
 
     public:
-        ParagraphParser(size_t amountOfCharacters, options_t options,
+        ParagraphParser(size_t amountOfCharacters, options_t &options,
                         map<string, string> &imageRelationship);
 
         void parseParagraph(XMLElement *paragraph);

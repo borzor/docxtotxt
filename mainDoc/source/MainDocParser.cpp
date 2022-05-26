@@ -3,7 +3,6 @@
 //
 
 #include <string>
-#include <utility>
 #include "../headers/MainDocParser.h"
 #include "../headers/TableParser.h"
 
@@ -22,8 +21,10 @@ namespace prsr {
         if (zip_stat(zip, "[Content_Types].xml", 0, &file_info) == -1)
             throw runtime_error("Error: Cannot get info about [Content_Types].xml file");
         char buffer[file_info.size];
-        if (zip_fread(zip_fopen(zip, "[Content_Types].xml", 0), &buffer, file_info.size) == -1)
+        auto ContentTypesZip = zip_fopen(zip, "[Content_Types].xml", 0);
+        if (zip_fread(ContentTypesZip, &buffer, file_info.size) == -1)
             throw runtime_error("Error: Cannot read [Content_Types].xml file");
+        zip_fclose(ContentTypesZip);
         if (content.Parse(buffer, file_info.size) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse [Content_Types].xml file");
         parseContentTypes(&content);
@@ -37,8 +38,10 @@ namespace prsr {
             if (zip_stat(zip, imagesPath.c_str(), 0, &file_info) == -1)
                 throw runtime_error("Error: Cannot get info about " + imagesPath + " file");
             char buffer3[file_info.size];
-            if (zip_fread(zip_fopen(zip, imagesPath.c_str(), 0), &buffer3, file_info.size) == -1)
+            auto imagesFile = zip_fopen(zip, imagesPath.c_str(), 0);
+            if (zip_fread(imagesFile, &buffer3, file_info.size) == -1)
                 throw runtime_error("Error: Cannot read " + imagesPath + " file");
+            zip_fclose(imagesFile);
             if (this->imagesDoc.Parse(buffer3, file_info.size) != tinyxml2::XML_SUCCESS)
                 throw runtime_error("Error: Cannot parse " + imagesPath + " file");
             parseImageDoc(&imagesDoc);
@@ -48,8 +51,10 @@ namespace prsr {
                     if (zip_stat(zip, value.c_str(), ZIP_FL_NODIR, &file_info) == -1)
                         throw runtime_error("Error: Cannot get info about " + value + " file");
                     char tmpImageBuffer[file_info.size];
-                    if (zip_fread(zip_fopen(zip, value.c_str(), ZIP_FL_NODIR), &tmpImageBuffer, file_info.size) == -1)
+                    auto currentImage = zip_fopen(zip, value.c_str(), ZIP_FL_NODIR);
+                    if (zip_fread(currentImage, &tmpImageBuffer, file_info.size) == -1)
                         throw runtime_error("Error: Cannot read " + value + " file");
+                    zip_fclose(currentImage);
                     if (!std::ofstream(string(options.pathToDraws) + "/" + value).write(tmpImageBuffer,
                                                                                         file_info.size)) {
                         throw runtime_error("Error writing file" + value);
@@ -60,8 +65,10 @@ namespace prsr {
         if (zip_stat(zip, mainPath.c_str(), 0, &file_info) == -1)
             throw runtime_error("Error: Cannot get info about " + mainPath + " file");
         char buffer2[file_info.size];
-        if (zip_fread(zip_fopen(zip, mainPath.c_str(), 0), &buffer2, file_info.size) == -1)
+        auto zipMainDoc = zip_fopen(zip, mainPath.c_str(), 0);
+        if (zip_fread(zipMainDoc, &buffer2, file_info.size) == -1)
             throw runtime_error("Error: Cannot read " + mainPath + " file");
+        zip_fclose(zipMainDoc);
         if (this->mainDoc.Parse(buffer2, file_info.size) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse " + mainPath + " file");
         zip_close(zip);
@@ -94,8 +101,8 @@ namespace prsr {
         free(current_element);
     }
 
-    MainDocParser::MainDocParser(options_t options) :
-            options(std::move(options)),
+    MainDocParser::MainDocParser(options_t &options) :
+            options(options),
             isInitialized(false) {
     }
 
@@ -106,7 +113,7 @@ namespace prsr {
         auto sectionParser = section::SectionParser();
         sectionParser.parseSection(section);
 
-        auto paragraphParser = paragraph::ParagraphParser(sectionParser.getDocWidth(), std::move(options),
+        auto paragraphParser = paragraph::ParagraphParser(sectionParser.getDocWidth(), options,
                                                           imageRelationship);
         auto tableParser = table::TableParser();
         while (mainElement != nullptr) {
@@ -117,13 +124,11 @@ namespace prsr {
             } else {//TODO think about this
                 //throw runtime_error(string("Unexpected main element: ") + string(mainElement->Value()));
             }
-            options.output << "test";
             paragraphParser.writeResult();//todo make it more generic, for table+paragraph text
             paragraphParser.flush();
             mainElement = mainElement->NextSiblingElement();
         }
         free(mainElement);
-        options.output.close();
     }
 
 

@@ -22,10 +22,10 @@ namespace prsr {
         map<string, string> imageRelationship;
         bool isInitialized;
         map<string, string> content_types;
-        options_t options;
+        options_t &options;
     public:
 
-        explicit MainDocParser(options_t options);
+        explicit MainDocParser(options_t &options);
 
         void doInit();
 

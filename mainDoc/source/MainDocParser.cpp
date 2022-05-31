@@ -8,6 +8,10 @@
 
 
 namespace prsr {
+    inline bool ends_with(std::string const & value, std::string const & ending){
+        if (ending.size() > value.size()) return false;
+        return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+    }
 
     void MainDocParser::doInit() {
         struct zip_stat file_info{};
@@ -45,19 +49,19 @@ namespace prsr {
             if (this->imagesDoc.Parse(buffer3, file_info.size) != tinyxml2::XML_SUCCESS)
                 throw runtime_error("Error: Cannot parse " + imagesPath + " file");
             parseImageDoc(&imagesDoc);
-            for (const auto &[key, value]: imageRelationship) {
-                if (value.ends_with(".png") || value.ends_with(".jpg") || value.ends_with(".jpeg") ||
-                    value.ends_with(".gif")) {//TODO
-                    if (zip_stat(zip, value.c_str(), ZIP_FL_NODIR, &file_info) == -1)
-                        throw runtime_error("Error: Cannot get info about " + value + " file");
+            for (const auto& kv : imageRelationship) {
+                if (ends_with(kv.second, ".png") || ends_with(kv.second, ".jpg") || ends_with(kv.second, ".jpeg") ||
+                        ends_with(kv.second, ".gif")) {//TODO
+                    if (zip_stat(zip, kv.second.c_str(), ZIP_FL_NODIR, &file_info) == -1)
+                        throw runtime_error("Error: Cannot get info about " + kv.second + " file");
                     char tmpImageBuffer[file_info.size];
-                    auto currentImage = zip_fopen(zip, value.c_str(), ZIP_FL_NODIR);
+                    auto currentImage = zip_fopen(zip, kv.second.c_str(), ZIP_FL_NODIR);
                     if (zip_fread(currentImage, &tmpImageBuffer, file_info.size) == -1)
-                        throw runtime_error("Error: Cannot read " + value + " file");
+                        throw runtime_error("Error: Cannot read " + kv.second + " file");
                     zip_fclose(currentImage);
-                    if (!std::ofstream(string(options.pathToDraws) + "/" + value).write(tmpImageBuffer,
+                    if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second).write(tmpImageBuffer,
                                                                                         file_info.size)) {
-                        throw runtime_error("Error writing file" + value);
+                        throw runtime_error("Error writing file" + kv.second);
                     }
                 }
             }
@@ -92,7 +96,7 @@ namespace prsr {
             auto pos3 = tmp.find('\"', pos2 + 1);
             auto pos4 = tmp.find('\"', pos3 + 1);
             tmp2 = tmp.substr(pos1 + 1, pos2 - pos1 - 1);
-            if (tmp2.starts_with('/'))
+            if (tmp2.rfind('/', 0) == 0)
                 tmp2.erase(0, 1);
             this->content_types.emplace(tmp.substr(pos3 + 1, pos4 - pos3 - 1), tmp2);
             printer.ClearBuffer();

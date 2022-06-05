@@ -7,7 +7,6 @@
 #define MAIN_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
 #define IMAGE_FILE_PATH "word/_rels/document.xml.rels"
 
-#include "ParagraphParser.h"
 #include "SectionParser.h"
 
 
@@ -18,14 +17,15 @@ namespace prsr {
     class MainDocParser {
     private:
         XMLDocument mainDoc;
-        XMLDocument imagesDoc;
-        map<string, string> imageRelationship;
+        XMLDocument relationsDoc;
         bool isInitialized;
         map<string, string> content_types;
         options_t &options;
+        docInfo_t &docInfo;
+
     public:
 
-        explicit MainDocParser(options_t &options);
+        explicit MainDocParser(options_t &options, ::docInfo_t &docInfo);
 
         void doInit();
 
@@ -35,7 +35,9 @@ namespace prsr {
 
         void parseMainDoc();
 
-        void parseImageDoc(XMLDocument *doc);
+        void parseRelationships(XMLDocument *doc);
+
+        void insertHyperlinks();
 
     };
 

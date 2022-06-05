@@ -4,14 +4,13 @@
 #include <sys/stat.h>
 #include <chrono>
 
-#define OPTSTR "i:d:o:h"
+#define OPTSTR "i:d:o:h:l"
 
 
 int main(int argc, char *argv[]) {
     auto start = std::chrono::steady_clock::now();
     int opt;
     options_t options = {0x0, nullptr, &std::cout};
-    std::streambuf *buf;
     while ((opt = getopt(argc, argv, OPTSTR)) != EOF)
         switch (opt) {
             case 'i': {//input file
@@ -30,6 +29,10 @@ int main(int argc, char *argv[]) {
                 options.output = new std::ofstream(optarg);
                 break;
             }
+            case 'l': {//external hyperlinks
+                options.flags |= 1 << 2;
+                break;
+            }
             case 'h':
                 //TODO help options...
             default:
@@ -41,7 +44,8 @@ int main(int argc, char *argv[]) {
         if (options.input == nullptr) {
             throw std::invalid_argument("No input file by parameter -i");
         }
-        prsr::MainDocParser parser(options);
+        docInfo_t docInfo = {0, 0};
+        prsr::MainDocParser parser(options, docInfo);
         parser.doInit();
         parser.parseMainDoc();
 

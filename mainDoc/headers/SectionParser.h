@@ -7,6 +7,7 @@
 #include <iostream>
 #include "tinyxml2.h"
 #include "tinyxml.h"
+#include "ParagraphParser.h"
 #include <map>
 
 #define TWIP_TO_CHARACTER 120
@@ -45,11 +46,11 @@ namespace section {
                                                  {"w:vAlign",          vAlign}};
 
     class SectionParser {
-    private://TODO default value
-        size_t height = 16838; // default value, in TWIP's
-        size_t width = 11906;
-
+    private:
+        docInfo_t &docInfo;
     public:
+        explicit SectionParser(::docInfo_t &docInfo);
+
         void parseSection(XMLElement *section);
 
         size_t getDocWidth();

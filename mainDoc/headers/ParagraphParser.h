@@ -1,6 +1,8 @@
     //
 // Created by boris on 2/20/22.
 //
+#ifndef DOCXTOTXT_PARAGRAPHPARSER_H
+#define DOCXTOTXT_PARAGRAPHPARSER_H
 #include "tinyxml2.h"
 #include "tinyxml.h"
 #include <zip.h>
@@ -16,6 +18,15 @@ typedef struct {
     std::ostream *output;
     std::string pathToDraws;
 } options_t;
+
+typedef struct {
+    size_t docWidth;
+    size_t docHeight;
+    std::map<std::string, std::string> imageRelationship;
+    std::map<std::string, std::string> hyperlinkRelationship;
+} docInfo_t;
+
+
 
 namespace paragraph {
     using namespace std;
@@ -93,15 +104,12 @@ namespace paragraph {
     private:
         vector<line> paragraphBuffer;//TODO try wstring
         paragraphJustify justify;
-        size_t amountOfCharacters;
         Drawing::DrawingParser drawingParser;
-        map<string, string> &imageRelationship;
         options_t &options;
-
+        docInfo_t &docInfo;
 
     public:
-        ParagraphParser(size_t amountOfCharacters, options_t &options,
-                        map<string, string> &imageRelationship);
+        ParagraphParser(docInfo_t &docInfo, options_t &options);
 
         void parseParagraph(XMLElement *paragraph);
 
@@ -126,3 +134,4 @@ namespace paragraph {
 
 }
 
+#endif //DOCXTOTXT_PARAGRAPHPARSER_H

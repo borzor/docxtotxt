@@ -28,7 +28,7 @@ namespace paragraph {
                 vector<string> tmp;
                 Tokenize(text, tmp);
                 for (const auto &token: tmp) {
-                    if (paragraphBuffer.back().length + token.length() / 2 < amountOfCharacters) {
+                    if (paragraphBuffer.back().length + token.length() / 2 < docInfo.docWidth) {
                         if (&token != &tmp.back()) {
                             paragraphBuffer.back().text.append(token).append(" ");
                             paragraphBuffer.back().length += ceil((double) token.length() / 2) + 1;
@@ -54,7 +54,7 @@ namespace paragraph {
                 vector<string> tmp;
                 Tokenize(text, tmp);
                 for (const auto &token: tmp) {
-                    if (paragraphBuffer.back().length + token.length() < amountOfCharacters) {
+                    if (paragraphBuffer.back().length + token.length() < docInfo.docWidth) {
                         if (&token != &tmp.back()) {
                             paragraphBuffer.back().text.append(token).append(" ");
                             paragraphBuffer.back().length += token.length() + 1;
@@ -164,7 +164,7 @@ namespace paragraph {
                     drawingParser.parseDrawing(textProperty);
                     drawingParser.getDrawingSize(height, width);
                     if ((options.flags >> 1) & 1)
-                        insertImage(height, width, imageRelationship[drawingParser.getDrawingId()]);
+                        insertImage(height, width, docInfo.imageRelationship[drawingParser.getDrawingId()]);
                     else
                         insertImage(height, width);
                     break;
@@ -207,12 +207,7 @@ namespace paragraph {
 
     void ParagraphParser::writeResult() {
         if (!this->paragraphBuffer.empty()) {
-            if ((options.flags >> 0) & 1) {
-
-            } else {
-
-            }
-            switch (this->justify) {//TODO IDK HOW TO GET WIDTH FOR STREAM SO JUSTIFY WILL WORK
+            switch (this->justify) {
                 case left:
                     for (auto &s: paragraphBuffer) {
                         *options.output << s.text << '\n';
@@ -220,15 +215,15 @@ namespace paragraph {
                     break;
                 case right:
                     for (auto &s: paragraphBuffer) {
-                        *options.output << setw(amountOfCharacters + strlen(s.text.c_str()) - s.length) << s.text
-                                       << '\n';
+                        *options.output << setw(docInfo.docWidth + strlen(s.text.c_str()) - s.length) << s.text
+                                        << '\n';
                     }
                     break;
                 case center:
                     for (auto &s: paragraphBuffer) {
-                        *options.output << setw((strlen(s.text.c_str()) + amountOfCharacters / 2 - s.length / 2))
-                                       << s.text
-                                       << endl;
+                        *options.output << setw((strlen(s.text.c_str()) + docInfo.docWidth / 2 - s.length / 2))
+                                        << s.text
+                                        << endl;
                     }
                     break;
                 case both:
@@ -245,10 +240,8 @@ namespace paragraph {
 
     }
 
-    ParagraphParser::ParagraphParser(const size_t amountOfCharacters, options_t &options,
-                                     map<string, string> &imageRelationship)
-            : drawingParser(), imageRelationship(imageRelationship),
-              options(options), amountOfCharacters(amountOfCharacters) {
+    ParagraphParser::ParagraphParser(docInfo_t &docInfo, options_t &options)
+            : drawingParser(), docInfo(docInfo), options(options) {
         line a;
         paragraphBuffer.push_back(a);
         justify = left;//by default
@@ -283,7 +276,7 @@ namespace paragraph {
     void ParagraphParser::insertImage(size_t &height, size_t &width, const string &imageName) {
         height /= 76200;
         width /= 76200;
-        auto leftBorder = (this->amountOfCharacters - width) / 2;
+        auto leftBorder = (docInfo.docWidth - width) / 2;
         auto center = height / 2 - 1;
         string path = "Media file";
         for (int i = 0; i < height; i++) {
@@ -299,7 +292,7 @@ namespace paragraph {
                         tmp.text.append(imageInfo);
                         tmp.text.insert(tmp.text.length(), leftBorder + width - tmp.text.length(), '#');
                     }
-                } else{
+                } else {
                     tmp.text.insert(leftBorder, width, '#');
                 }
             } else if (i != center) {
@@ -313,7 +306,7 @@ namespace paragraph {
                     tmp.text.insert(tmp.text.length(), leftBorder + width - tmp.text.length(), '#');
                 }
             }
-            tmp.length += amountOfCharacters;
+            tmp.length += docInfo.docWidth;
             paragraphBuffer.push_back(tmp);
         }
     }
@@ -326,7 +319,7 @@ namespace paragraph {
         justify = left;
     }
 
-    void ParagraphParser::parseHyperlink(XMLElement *properties) {//TODO hyperlink implementation
+    void ParagraphParser::parseHyperlink(XMLElement *properties) {
         XMLElement *property = properties->FirstChildElement();
         while (property != nullptr) {
             if (!strcmp(property->Value(), "w:r")) {
@@ -334,7 +327,16 @@ namespace paragraph {
             }
             property = property->NextSiblingElement();
         }
-
+        if ((options.flags >> 2) & 1) {
+            if (properties->Attribute("r:id") != nullptr) {
+                auto id = properties->Attribute("r:id");
+                auto number = distance(docInfo.hyperlinkRelationship.begin(),
+                                       docInfo.hyperlinkRelationship.find(id));//very doubtful
+                auto result = string("{h").append(to_string(number).append("}"));
+                paragraphBuffer.back().text.append(result);
+                paragraphBuffer.back().length += result.size();
+            }
+        }
         free(property);
     }
 

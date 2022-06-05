@@ -8,7 +8,7 @@
 
 
 namespace prsr {
-    inline bool ends_with(std::string const & value, std::string const & ending){
+    inline bool ends_with(std::string const &value, std::string const &ending) {
         if (ending.size() > value.size()) return false;
         return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
     }
@@ -46,12 +46,10 @@ namespace prsr {
             if (zip_fread(imagesFile, &buffer3, file_info.size) == -1)
                 throw runtime_error("Error: Cannot read " + imagesPath + " file");
             zip_fclose(imagesFile);
-            if (this->imagesDoc.Parse(buffer3, file_info.size) != tinyxml2::XML_SUCCESS)
+            if (this->relationsDoc.Parse(buffer3, file_info.size) != tinyxml2::XML_SUCCESS)
                 throw runtime_error("Error: Cannot parse " + imagesPath + " file");
-            parseImageDoc(&imagesDoc);
-            for (const auto& kv : imageRelationship) {
-                if (ends_with(kv.second, ".png") || ends_with(kv.second, ".jpg") || ends_with(kv.second, ".jpeg") ||
-                        ends_with(kv.second, ".gif")) {//TODO
+            parseRelationships(&relationsDoc);
+            for (const auto &kv: docInfo.imageRelationship) {
                     if (zip_stat(zip, kv.second.c_str(), ZIP_FL_NODIR, &file_info) == -1)
                         throw runtime_error("Error: Cannot get info about " + kv.second + " file");
                     char tmpImageBuffer[file_info.size];
@@ -60,10 +58,9 @@ namespace prsr {
                         throw runtime_error("Error: Cannot read " + kv.second + " file");
                     zip_fclose(currentImage);
                     if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second).write(tmpImageBuffer,
-                                                                                        file_info.size)) {
+                                                                                            file_info.size)) {
                         throw runtime_error("Error writing file" + kv.second);
                     }
-                }
             }
         }
         if (zip_stat(zip, mainPath.c_str(), 0, &file_info) == -1)
@@ -105,21 +102,19 @@ namespace prsr {
         free(current_element);
     }
 
-    MainDocParser::MainDocParser(options_t &options) :
+    MainDocParser::MainDocParser(options_t &options, ::docInfo_t &docInfo) :
             options(options),
-            isInitialized(false) {
+            isInitialized(false), docInfo(docInfo) {
     }
 
     void MainDocParser::parseMainDoc() {
         checkInit();
         XMLElement *mainElement = mainDoc.RootElement()->FirstChildElement()->FirstChildElement();
         XMLElement *section = mainDoc.RootElement()->FirstChildElement()->FirstChildElement("w:sectPr");
-        auto sectionParser = section::SectionParser();
+        auto sectionParser = section::SectionParser(docInfo);
         sectionParser.parseSection(section);
-
-        auto paragraphParser = paragraph::ParagraphParser(sectionParser.getDocWidth(), options,
-                                                          imageRelationship);
-        auto tableParser = table::TableParser();
+        auto paragraphParser = paragraph::ParagraphParser(docInfo, options);
+        auto tableParser = table::TableParser(docInfo, options);
         while (mainElement != nullptr) {
             if (!strcmp(mainElement->Value(), "w:p")) {
                 paragraphParser.parseParagraph(mainElement);
@@ -132,18 +127,37 @@ namespace prsr {
             paragraphParser.flush();
             mainElement = mainElement->NextSiblingElement();
         }
+        if ((options.flags >> 2) & 1) {
+            insertHyperlinks();
+        }
         free(mainElement);
     }
 
 
-    void MainDocParser::parseImageDoc(XMLDocument *doc) {
+    void MainDocParser::parseRelationships(XMLDocument *doc) {
         auto *mainElement = doc->RootElement()->FirstChildElement();
         while (mainElement != nullptr) {
             if (!strcmp(mainElement->Value(), "Relationship")) {
-                string file = mainElement->Attribute("Target");
-                imageRelationship.emplace(mainElement->Attribute("Id"), file.substr(file.find_last_of('/') + 1));
+                auto type = mainElement->Attribute("Type");
+                auto id = mainElement->Attribute("Id");
+                string target = mainElement->Attribute("Target");
+
+                if (ends_with(type, "image")) {
+                    docInfo.imageRelationship.emplace(id, target.substr(target.find_last_of('/') + 1));
+                } else if (ends_with(type, "hyperlink")) {
+                    docInfo.hyperlinkRelationship.emplace(id, target);
+                }
             }
             mainElement = mainElement->NextSiblingElement();
+        }
+    }
+
+    void MainDocParser::insertHyperlinks() {
+        for (const auto &kv: docInfo.hyperlinkRelationship) {
+            auto number = distance(docInfo.hyperlinkRelationship.begin(),
+                                   docInfo.hyperlinkRelationship.find(kv.first));//very doubtful
+            auto result = string("{h").append(to_string(number).append("} -  ").append(kv.second));
+            *options.output << result << '\n';
         }
     }
 

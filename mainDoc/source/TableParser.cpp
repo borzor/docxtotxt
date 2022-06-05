@@ -10,26 +10,30 @@ namespace table {
         while (element != nullptr) {
             if (!strcmp(element->Value(), "w:tblPr")) {// table Properties
                 parseTableProperties(element);
-            } else if (!strcmp(element->Value(), "w:tblGrid")) {//TODO table width for each column IN twentieths of a point
-
+            } else if (!strcmp(element->Value(),
+                               "w:tblGrid")) {//TODO table width for each column IN twentieths of a point
+                parseTableGrid(element);
             } else if (!strcmp(element->Value(), "w:tr")) {//table row
                 parseTableRow(element);
             }
             element = element->NextSiblingElement();
         }
     }
+
     void TableParser::parseTableRow(XMLElement *row) {
         XMLElement *rowElement = row->FirstChildElement();
+        auto paragraphParser = paragraph::ParagraphParser(docInfo, options);
         while (rowElement != nullptr) {
             if (!strcmp(rowElement->Value(), "w:trPr")) {// Specifies the row-level properties for the row
                 //TODO the most important attr - trHeight - the height of the row
-            } else if (!strcmp(rowElement->Value(), "w:tblPrEx")) {//Specifies table properties for the row in place of the table properties specified in tblPr.
+            } else if (!strcmp(rowElement->Value(),
+                               "w:tblPrEx")) {//Specifies table properties for the row in place of the table properties specified in tblPr.
                 //can scip, exceptions for table-level properties
             } else if (!strcmp(rowElement->Value(), "w:tc")) {//Specifies a table cell
                 XMLElement *tcElement = rowElement->FirstChildElement();
-                while (tcElement != nullptr){
+                while (tcElement != nullptr) {
                     if (!strcmp(tcElement->Value(), "w:p")) {//
-                        //TODO paragraph parser...
+                        paragraphParser.parseParagraph(tcElement);
                     } else if (!strcmp(tcElement->Value(), "w:tbl")) {//
                         // for the table in table...
                     } else if (!strcmp(tcElement->Value(), "w:tcPr")) {//Specifies a table cell
@@ -42,6 +46,7 @@ namespace table {
         }
 
     }
+
     void TableParser::parseTableProperties(XMLElement *element) {
         XMLElement *tableProperty = element->FirstChildElement();
         while (tableProperty != nullptr) {
@@ -85,7 +90,13 @@ namespace table {
 
     }
 
+    void TableParser::parseTableGrid(XMLElement *grid) {
 
+    }
+
+    TableParser::TableParser(docInfo_t &docInfo,options_t &options) : options(options), docInfo(docInfo) {
+
+    }
 
 
 }

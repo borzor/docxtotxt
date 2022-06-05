@@ -29,9 +29,9 @@ namespace section {
                     break;
                 case pgSz:
                     if(sectionProperty->Attribute("w:w") != nullptr)
-                        this->width = atoi(sectionProperty->Attribute("w:w"));
+                        this->docInfo.docWidth = atoi(sectionProperty->Attribute("w:w"))/ TWIP_TO_CHARACTER;
                     if(sectionProperty->Attribute("w:h") != nullptr)
-                        this->height = atoi(sectionProperty->Attribute("w:h"));
+                        this->docInfo.docHeight = atoi(sectionProperty->Attribute("w:h"))/ TWIP_TO_CHARACTER;
                     break;
                 case titlePg:
                     break;
@@ -46,11 +46,15 @@ namespace section {
     }
 
     size_t SectionParser::getDocWidth() {
-        return this->width / TWIP_TO_CHARACTER;
+        return this->docInfo.docWidth;
     }
 
     size_t SectionParser::getDocHeight() {
-        return this->height / TWIP_TO_CHARACTER;
+        return this->docInfo.docHeight;
+    }
+
+    SectionParser::SectionParser(::docInfo_t &docInfo) : docInfo(docInfo) {
+
     }
 
 }

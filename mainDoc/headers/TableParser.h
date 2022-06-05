@@ -8,6 +8,7 @@
 #include <iostream>
 #include "tinyxml2.h"
 #include "tinyxml.h"
+#include "ParagraphParser.h"
 #include <map>
 
 
@@ -49,14 +50,18 @@ namespace table {
 
     class TableParser {
     private:
-
+        options_t &options;
+        docInfo_t &docInfo;
     public:
+        TableParser(docInfo_t &docInfo, options_t &options);
+
         void parseTable(XMLElement *table);
 
         void parseTableProperties(XMLElement *properties);
 
         void parseTableRow(XMLElement *row);
 
+        void parseTableGrid(XMLElement *grid);
     };
 }
 

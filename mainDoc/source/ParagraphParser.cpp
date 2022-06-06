@@ -146,7 +146,7 @@ namespace paragraph {
         auto before = settings.spacing.before;
         auto after = settings.spacing.after;
         for (int i = 0; i < before; i++) {
-            addLine(docInfo.documentData.resultBuffer);
+            docInfo.documentData.resultBuffer.newLine();
         }
         if (!this->paragraphBuffer.empty()) {
             while (currentSize != 0) {
@@ -161,7 +161,7 @@ namespace paragraph {
                 if (currentSize > availableBufferInLine) { // 167
                     auto indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
                     if (indexLastElement == string::npos) {
-                        addLine(docInfo.documentData.resultBuffer);
+                        docInfo.documentData.resultBuffer.newLine();
                         availableBufferInLine =
                                 docInfo.docWidth - docInfo.documentData.resultBuffer.buffer[docInfo.documentData.resultBuffer.pointer].length();
                         indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
@@ -187,7 +187,7 @@ namespace paragraph {
                     docInfo.documentData.resultBuffer.buffer.back().append(ind, L' ');
                     docInfo.documentData.resultBuffer.buffer.back().append(paragraphBuffer.substr(0, indexLastElement));
                     paragraphBuffer = paragraphBuffer.substr(indexLastElement + 1);
-                    addLine(docInfo.documentData.resultBuffer);
+                    docInfo.documentData.resultBuffer.newLine();
                     isFirstLine = false;
                     currentSize -= indexLastElement;
                 } else {
@@ -216,9 +216,9 @@ namespace paragraph {
             }
         }
         for (int i = 0; i < after; i++) {
-            addLine(docInfo.documentData.resultBuffer);
+            docInfo.documentData.resultBuffer.newLine();
         }
-        addLine(docInfo.documentData.resultBuffer);
+        docInfo.documentData.resultBuffer.newLine();
     }
 
     ParagraphParser::ParagraphParser(docInfo_t &docInfo, options_t &options)

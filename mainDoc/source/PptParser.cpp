@@ -2,7 +2,6 @@
 // Created by borzor on 12/12/22.
 //
 
-#include <algorithm>
 #include "../headers/PptParser.h"
 
 namespace ppt {
@@ -12,29 +11,26 @@ namespace ppt {
 
     void PptParser::parseSlides() {
         prepareSlides();
-        addLine(pptInfo.documentData.resultBuffer);
-        auto counter = 1;
+        pptInfo.documentData.resultBuffer.newLine();
         for (auto &obj: slideInsertData) {
-            addLine(pptInfo.documentData.resultBuffer);
-            pptInfo.documentData.resultBuffer.buffer.back().append(L"Slide info: ");
-            pptInfo.documentData.resultBuffer.buffer.back().append(L"Slide number - ").append(to_wstring(counter++));
             insertSlideMetaData(obj);
-            addLine(pptInfo.documentData.resultBuffer);
+            pptInfo.documentData.resultBuffer.newLine();
             insertSlide(obj.insertObjects);
         }
     }
 
     void PptParser::prepareSlides() {
+        size_t slideNum = 1;
         for (const auto &slide: pptInfo.slides) {
             std::vector<insertObject> slideObjects;
             std::vector<insertImage> insertImages;
             for (const auto &presObj: slide.objects) {
                 if (!presObj.paragraph.empty()) {
                     insertObject obj;
-                    obj.offset = presObj.objectInfo.offsetX;
-                    obj.startLine = presObj.objectInfo.offsetY;
+                    obj.offset = presObj.objectInfo.offsetX / pptInfo.settings.widthCoefficient;
+                    obj.startLine = presObj.objectInfo.offsetY / pptInfo.settings.heightCoefficient;
                     obj.paragraph = presObj.paragraph;
-                    obj.length = presObj.objectInfo.objectSizeX;
+                    obj.length = presObj.objectInfo.objectSizeX/ pptInfo.settings.widthCoefficient;
                     obj.inProgress = false;
                     slideObjects.emplace_back(obj);
                 }
@@ -46,36 +42,52 @@ namespace ppt {
                     lineLength += n;
                 });
                 for (auto &line: table.table) {
-                    insertObject obj;
-                    textBody text;
-                    text.align = l;
-                    obj.length = lineLength;
-                    obj.offset = table.objectInfo.offsetX;
-                    obj.startLine = table.objectInfo.offsetY + counter;
-                    counter++;
-                    for (auto &cell: line) {
-                        for (auto &txt: cell) {
-                            text.text.append(txt.text);
-                            text.text.append(table.gridColSize[0] - txt.text.length(), ' ');
+                    bool repeatLine;
+                    auto tmpLine = line;
+                    do {
+                        insertObject obj;
+                        repeatLine = false;
+                        counter++;
+                        textBody text;
+                        for (auto &cell: tmpLine) {
+                            auto colNum = 0;
+                            for (auto &txt: cell) {
+                                if (txt.text.length() > table.gridColSize[colNum]) {
+                                    text.text.append(txt.text.substr(0, table.gridColSize[colNum] - 1));
+                                    txt.text = txt.text.substr(table.gridColSize[colNum] - 1);
+                                    text.text.append(1, ' ');
+                                    repeatLine = true;
+                                } else {
+                                    text.text.append(txt.text);
+                                    text.text.append(table.gridColSize[colNum] - txt.text.length(), ' ');
+                                    txt.text = L"";
+                                }
+                                colNum++;
+                            }
                         }
-                    }
-                    obj.paragraph.emplace_back(text);
-                    obj.inProgress = false;
-                    slideObjects.emplace_back(obj);
+                        text.align = l;
+                        obj.length = lineLength;
+                        obj.offset = table.objectInfo.offsetX / pptInfo.settings.widthCoefficient;
+                        obj.startLine = table.objectInfo.offsetY  / pptInfo.settings.heightCoefficient +counter;
+                        obj.paragraph.emplace_back(text);
+                        obj.inProgress = false;
+                        slideObjects.emplace_back(obj);
+                    } while (repeatLine);
                 }
             }
             for (const auto &presObj: slide.pictures) {
                 if (!presObj.rId.empty()) {
                     insertImage obj;
-                    obj.offset = presObj.objectInfo.offsetX;
-                    obj.startLine = presObj.objectInfo.offsetY;
-                    obj.length = presObj.objectInfo.objectSizeX;
+                    obj.offset = presObj.objectInfo.offsetX / pptInfo.settings.widthCoefficient;
+                    obj.startLine = presObj.objectInfo.offsetY / pptInfo.settings.heightCoefficient;
+                    obj.length = presObj.objectInfo.objectSizeX/ pptInfo.settings.widthCoefficient;
                     obj.rId = presObj.rId;
                     insertImages.emplace_back(obj);
                 }
             }
             std::sort(slideObjects.begin(), slideObjects.end());
             slideInsertInfo slideData;
+            slideData.slideNum = slideNum++;
             slideData.relations = slide.relations;
             slideData.insertObjects = (slideObjects);
             slideData.insertImages = insertImages;
@@ -88,7 +100,7 @@ namespace ppt {
         pptInfo.documentData.resultBuffer.buffer.back().append(std::wstring(1, L'+').append(slideRange, L'—')).append(1,
                                                                                                                       L'+');
         for (int line = 1; line < PRESENTATION_HEIGHT; line++) {
-            addLine(pptInfo.documentData.resultBuffer);
+            pptInfo.documentData.resultBuffer.newLine();
             size_t currentIndex = 0;
             pptInfo.documentData.resultBuffer.buffer.back().append(std::wstring(1, L'|'));
             for (auto &elem: insertObjects) {
@@ -103,10 +115,10 @@ namespace ppt {
                 pptInfo.documentData.resultBuffer.buffer.back().append(std::wstring(slideRange - currentIndex, L' '));
             pptInfo.documentData.resultBuffer.buffer.back().append(std::wstring(1, L'|'));
         }
-        addLine(pptInfo.documentData.resultBuffer);
+        pptInfo.documentData.resultBuffer.newLine();
         pptInfo.documentData.resultBuffer.buffer.back().append(std::wstring(1, L'+').append(slideRange, L'—')).append(1,
                                                                                                                       L'+');
-        addLine(pptInfo.documentData.resultBuffer);
+        pptInfo.documentData.resultBuffer.newLine();
     }
 
     void PptParser::insertLineBuffer(insertObject &obj, size_t *currentIndex) {
@@ -145,11 +157,11 @@ namespace ppt {
             case ctr: {
                 if (obj.length - textToInsert.length() != 0)
                     pptInfo.documentData.resultBuffer.buffer.back().append(
-                            std::wstring((obj.length - textToInsert.length())/2, L' '));
+                            std::wstring((obj.length - textToInsert.length()) / 2, L' '));
                 pptInfo.documentData.resultBuffer.buffer.back().append(textToInsert);
                 if (obj.length - textToInsert.length() != 0)
                     pptInfo.documentData.resultBuffer.buffer.back().append(
-                            std::wstring((obj.length - textToInsert.length())/2, L' '));
+                            std::wstring((obj.length - textToInsert.length()) / 2, L' '));
                 break;
             }
 
@@ -160,19 +172,22 @@ namespace ppt {
     }
 
     void PptParser::insertSlideMetaData(slideInsertInfo slideInfo) {
+        pptInfo.documentData.resultBuffer.newLine();
+        pptInfo.documentData.resultBuffer.buffer.back().append(L"Slide info: ");
+        pptInfo.documentData.resultBuffer.buffer.back().append(L"Slide number - ").append(to_wstring(slideInfo.slideNum));
         if ((options.flags >> 3) & 1)
             for (const auto &kv: slideInfo.relations.notes) {
                 auto tmpNote = std::find(pptInfo.notes.begin(), pptInfo.notes.end(), kv.second);
                 auto text = tmpNote->text;
-                if (!text.empty()){ 
-                    addLine(pptInfo.documentData.resultBuffer);
+                if (!text.empty()) {
+                    pptInfo.documentData.resultBuffer.newLine();
                     pptInfo.documentData.resultBuffer.buffer.back().append(L"Slide note: ").append(text.front().text);
 
                 }
             }
         for (const auto &kv: slideInfo.relations.imageRelationship) {
             auto tmpImage = std::find(slideInfo.insertImages.begin(), slideInfo.insertImages.end(), kv.first);
-            addLine(pptInfo.documentData.resultBuffer);
+            pptInfo.documentData.resultBuffer.newLine();
             pptInfo.documentData.resultBuffer.buffer.back().append(L"Slide image info: ").append(tmpImage->toString());
             if ((options.flags >> 1) & 1) {
                 string image = ", saved to path: " + options.pathToDraws + '/' + kv.second;

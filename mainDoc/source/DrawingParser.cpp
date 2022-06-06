@@ -49,29 +49,29 @@ namespace Drawing {
         wstring path = L"Media file";
         wstring imageInfo = wstring(L"Saved to path: ") + convertor.from_bytes(this->options.pathToDraws) + L'/' +
                             convertor.from_bytes(imageName);
-        addLine(docInfo.documentData.resultBuffer);
+        docInfo.documentData.resultBuffer.newLine();
         docInfo.documentData.resultBuffer.buffer.back().append(std::wstring((docInfo.docWidth - path.length()) / 2, L' '));//left border
         docInfo.documentData.resultBuffer.buffer.back().append(path);
         if ((options.flags >> 1) & 1) {
-            addLine(docInfo.documentData.resultBuffer);
+            docInfo.documentData.resultBuffer.newLine();
             docInfo.documentData.resultBuffer.buffer.back().append(
                     std::wstring((docInfo.docWidth - imageInfo.length()) / 2, L' '));//left border
             docInfo.documentData.resultBuffer.buffer.back().append(imageInfo);
         }
-        addLine(docInfo.documentData.resultBuffer);
+        docInfo.documentData.resultBuffer.newLine();
         if (width > 3 || height > 3) {
             docInfo.documentData.resultBuffer.buffer.back().append(
                     std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
             for (int i = 1; i < height - 1; i++) {
-                addLine(docInfo.documentData.resultBuffer);
+                docInfo.documentData.resultBuffer.newLine();
                 docInfo.documentData.resultBuffer.buffer.back().append(std::wstring(leftBorder, L' ') + L"|");
                 docInfo.documentData.resultBuffer.buffer.back().append(std::wstring(mediumLine, L' ') + L"|");
             }
-            addLine(docInfo.documentData.resultBuffer);
+            docInfo.documentData.resultBuffer.newLine();
             docInfo.documentData.resultBuffer.buffer.back().append(
                     std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
         }
-        addLine(docInfo.documentData.resultBuffer);
+        docInfo.documentData.resultBuffer.newLine();
     }
 
         void DrawingParser::flush() {

@@ -16,7 +16,7 @@ namespace doc {
         parseSection(section);
         paragraph::ParagraphParser paragraphParser(docInfo, options);
         auto tableParser = table::TableParser(docInfo, options);
-        addLine(docInfo.documentData.resultBuffer);
+        docInfo.documentData.resultBuffer.newLine();
         while (mainElement != nullptr) {
             try {
                 if (!strcmp(mainElement->Value(), "w:p")) {

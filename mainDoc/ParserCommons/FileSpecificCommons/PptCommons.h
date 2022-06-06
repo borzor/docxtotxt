@@ -19,17 +19,12 @@ enum algn {
     r,
     ctr
 };
-typedef struct {
+
+struct textBody {
     algn align;
     std::wstring text;
-} textBody;
+};
 
-typedef struct {
-    size_t offsetX;
-    size_t offsetY;
-    size_t objectSizeX;
-    size_t objectSizeY;
-} objectInfo_t;
 
 typedef struct {
     objectInfo_t objectInfo;
@@ -41,12 +36,6 @@ typedef struct {
     objectInfo_t objectInfo;
     std::vector<textBody> paragraph;
 } presentationText;
-
-typedef struct {
-    objectInfo_t objectInfo;
-    std::string rId;
-    std::string description;
-} presentationPic;
 
 struct insertObject {
     size_t startLine;
@@ -76,11 +65,12 @@ struct insertImage {
     }
 };
 
-typedef struct {
+struct slideInsertInfo {
     std::vector<insertObject> insertObjects;
     std::vector<insertImage> insertImages;
+    size_t slideNum;
     relations_t relations;
-} slideInsertInfo;
+};
 
 struct noteInfo_t {
     std::string noteName;
@@ -94,7 +84,7 @@ struct noteInfo_t {
 typedef struct {
     std::vector<presentationText> objects;
     std::vector<presentationTable> tables;
-    std::vector<presentationPic> pictures;
+    std::vector<picture> pictures;
     relations_t relations;
 } slideInfo;
 

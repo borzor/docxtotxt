@@ -136,7 +136,7 @@ namespace table {
         while (line < table.grid.size()) {
             bool lineDone = true;
             currentColumn = 0;
-            addLine(docInfo.documentData.resultBuffer);
+            docInfo.documentData.resultBuffer.newLine();
             docInfo.documentData.resultBuffer.buffer.back().append(std::wstring(leftBorder, L' ') + L"|");
             while (currentColumn < table.grid[line].size()) {
                 auto charInCell = table.grid[line][currentColumn].width;
@@ -168,12 +168,12 @@ namespace table {
             }
             if (lineDone) {
                 line++;
-                addLine(docInfo.documentData.resultBuffer);
+                docInfo.documentData.resultBuffer.newLine();
                 docInfo.documentData.resultBuffer.buffer.back().append(
                         std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
             }
         }
-        addLine(docInfo.documentData.resultBuffer);
+        docInfo.documentData.resultBuffer.newLine();
     }
 
     void TableParser::flush() {

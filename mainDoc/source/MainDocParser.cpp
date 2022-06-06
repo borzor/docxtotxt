@@ -53,9 +53,14 @@ namespace prsr {
                 if (options.printDocProps) {
                     printMetaInfoData(xlsInfo.documentData.fileMetaData);
                 }
+                options.output->flush();
                 xls::XlsParser xlsParser(xlsInfo, options);
                 xlsParser.parseSheets();
                 printResult(xlsInfo.documentData.resultBuffer);
+                if ((options.flags >> 1) & 1) {
+                    for(auto &draw:xlsInfo.draws)
+                        saveImages(draw.relations.imageRelationship);
+                }
                 break;
             }
         }

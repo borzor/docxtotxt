@@ -6,6 +6,7 @@
 #include "../ParserCommons/FileSpecificCommons/PptCommons.h"
 #include "../ParserCommons/FileSpecificCommons/XlsCommons.h"
 #include "../ParserCommons/FileSpecificCommons/DocCommons.h"
+#include "../ParserCommons/CommonFunctions.h"
 #include <zip.h>
 
 #ifndef DOCXTOTXT_DOCUMENTLOADER_H
@@ -33,6 +34,9 @@ namespace Loader {
 
         void openFileAndParse(const string &fileName, void (DocumentLoader::*f)(XMLDocument *));
 
+        void openFileAndParse(const string &fileName, relations_t &relations,
+                               void (DocumentLoader::*f)(XMLDocument *, relations_t &));
+
         void parsePresentationSettings(XMLDocument *doc);
 
         void parsePresentationSlide(XMLDocument *doc);
@@ -43,11 +47,11 @@ namespace Loader {
 
         void parseSlideTable(XMLElement *element, presentationTable &object);
 
-        void parseSlidePic(XMLElement *element, presentationPic &object);
+        void parseSlidePic(XMLElement *element, picture &object);
 
         std::vector<textBody> extractTextBody(XMLElement *element);
 
-        objectInfo_t extractObjectInfo(XMLElement *element);
+//        static objectInfo_t extractObjectInfo(XMLElement *element);
 
         void parseSharedStrings(XMLDocument *doc);
 
@@ -55,9 +59,9 @@ namespace Loader {
 
         void parseWorkbook(XMLDocument *doc);
 
-        void parseContentTypes(XMLDocument *xmlDocument);
+        void parseDraw(XMLDocument *doc);
 
-        void parseRelationships(XMLDocument *doc);
+        void parseContentTypes(XMLDocument *xmlDocument);
 
         void parseRelationShip(XMLDocument *doc, relations_t &relations);
 

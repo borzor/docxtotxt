@@ -20,17 +20,24 @@ typedef struct {
     std::wstring text;
 } sheetCell;
 
-typedef struct {
+struct sheet {
     std::vector<std::vector<sheetCell>> sheetArray;
     std::vector<columnSettings> col;
     std::wstring sheetName;
     std::wstring state;
-} sheet;
+    std::string docName;
+    relations_t relations;
+
+//    bool operator==(const std::string &str) const {
+//        return (docName == str);
+//    }
+};
 
 typedef struct {
     std::vector<std::wstring> sharedStrings;
-    std::map<std::wstring, sheet> worksheets;
+    std::vector<draw> draws;
+    std::vector<sheet> worksheets;
     documentData_t documentData;
-    relations_t relations; //todo
+//    relations_t relations;
 } xlsInfo_t;
 #endif //DOCXTOTXT_XLSCOMMONS_H

@@ -18,6 +18,7 @@ namespace ppt {
         pptInfo_t &pptInfo;
         std::vector<slideInsertInfo> slideInsertData;
         wstringConvert convertor;
+
         void prepareSlides();
 
         void insertSlide(std::vector<insertObject> insertObjects);

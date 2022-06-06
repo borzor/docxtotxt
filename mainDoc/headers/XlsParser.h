@@ -16,12 +16,18 @@ namespace xls {
         options_t &options;
         xlsInfo_t &xlsInfo;
         wstringConvert convertor;
+
+        static size_t getColumnWidth(const std::vector<columnSettings> &settings, size_t index);
+
+        void insertSlideMetaData(const sheet& sheet);
+
+//       void insertSheetMetaData(slideInsertInfo relations);
+
     public:
         XlsParser(xlsInfo_t &xlsInfo, options_t &options);
 
         void parseSheets();
 
-        static size_t getColumnWidth(const std::vector<columnSettings> &settings, size_t index);
     };
 
 }

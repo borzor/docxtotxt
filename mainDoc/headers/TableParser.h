@@ -52,6 +52,9 @@ namespace table {
     private:
         options_t &options;
         docInfo_t &docInfo;
+        std::vector<std::size_t> tblGrids;
+        std::vector<line> tableData;
+        std::vector<line> resultTable;
     public:
         TableParser(docInfo_t &docInfo, options_t &options);
 
@@ -62,6 +65,10 @@ namespace table {
         void parseTableRow(XMLElement *row);
 
         void parseTableGrid(XMLElement *grid);
+
+        void insertTable();
+
+        void flush();
     };
 }
 

@@ -170,7 +170,7 @@ namespace paragraph {
                     break;
                 }
                 case noBreakHyphen:
-                    break;//idk, maybe skip
+                    break;
                 case rPr://styles of text
                     if (textProperty->FirstChildElement("w:lang") != nullptr)
                         switch (languages[textProperty->FirstChildElement("w:lang")->Value()]) {
@@ -234,10 +234,7 @@ namespace paragraph {
                 case distribute:
                     break;
             }
-
-
         }
-
     }
 
     ParagraphParser::ParagraphParser(docInfo_t &docInfo, options_t &options)
@@ -338,6 +335,10 @@ namespace paragraph {
             }
         }
         free(property);
+    }
+
+    vector<line> ParagraphParser::getResult() {
+        return this->paragraphBuffer;
     }
 
 }

@@ -1,8 +1,9 @@
-    //
+//
 // Created by boris on 2/20/22.
 //
 #ifndef DOCXTOTXT_PARAGRAPHPARSER_H
 #define DOCXTOTXT_PARAGRAPHPARSER_H
+
 #include "tinyxml2.h"
 #include "tinyxml.h"
 #include <zip.h>
@@ -24,17 +25,23 @@ typedef struct {
     size_t docHeight;
     std::map<std::string, std::string> imageRelationship;
     std::map<std::string, std::string> hyperlinkRelationship;
+    struct styles;
 } docInfo_t;
 
-
-
+typedef struct {//TODO pairs styleId/another struct or xml element
+    std::map<std::string, std::string> characterStyles;
+    std::map<std::string, std::string> numberingStyles;
+    std::map<std::string, std::string> paragraphStyles;
+    std::map<std::string, std::string> tableStyles;
+} styles;
+struct line {
+    std::string text;
+    size_t length = 0;
+};
 namespace paragraph {
     using namespace std;
     using namespace tinyxml2;
-    struct line {
-        string text;
-        size_t length = 0;
-    };
+
     enum language {
         enUS,
         ruRU
@@ -128,6 +135,8 @@ namespace paragraph {
         void insertImage(size_t &height, size_t &width, const string &imageName = "");
 
         void writeResult();
+
+        vector<line> getResult();
 
         void flush();
     };

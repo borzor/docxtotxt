@@ -118,13 +118,13 @@ namespace prsr {
         while (mainElement != nullptr) {
             if (!strcmp(mainElement->Value(), "w:p")) {
                 paragraphParser.parseParagraph(mainElement);
+                paragraphParser.writeResult();
+                paragraphParser.flush();
             } else if (!strcmp(mainElement->Value(), "w:tbl")) {
                 tableParser.parseTable(mainElement);
-            } else {//TODO think about this
+            } else {
                 //throw runtime_error(string("Unexpected main element: ") + string(mainElement->Value()));
             }
-            paragraphParser.writeResult();//todo make it more generic, for table+paragraph text
-            paragraphParser.flush();
             mainElement = mainElement->NextSiblingElement();
         }
         if ((options.flags >> 2) & 1) {
@@ -141,7 +141,6 @@ namespace prsr {
                 auto type = mainElement->Attribute("Type");
                 auto id = mainElement->Attribute("Id");
                 string target = mainElement->Attribute("Target");
-
                 if (ends_with(type, "image")) {
                     docInfo.imageRelationship.emplace(id, target.substr(target.find_last_of('/') + 1));
                 } else if (ends_with(type, "hyperlink")) {

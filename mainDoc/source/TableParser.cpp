@@ -3,7 +3,8 @@
 //
 
 #include "../headers/TableParser.h"
-
+#include "../headers/SectionParser.h"
+#include <iomanip>
 namespace table {
     void TableParser::parseTable(XMLElement *table) {
         XMLElement *element = table->FirstChildElement();
@@ -18,6 +19,8 @@ namespace table {
             }
             element = element->NextSiblingElement();
         }
+        insertTable();
+        flush();
     }
 
     void TableParser::parseTableRow(XMLElement *row) {
@@ -34,6 +37,8 @@ namespace table {
                 while (tcElement != nullptr) {
                     if (!strcmp(tcElement->Value(), "w:p")) {//
                         paragraphParser.parseParagraph(tcElement);
+                        tableData.push_back(paragraphParser.getResult().back());
+                        paragraphParser.flush();
                     } else if (!strcmp(tcElement->Value(), "w:tbl")) {//
                         // for the table in table...
                     } else if (!strcmp(tcElement->Value(), "w:tcPr")) {//Specifies a table cell
@@ -44,7 +49,6 @@ namespace table {
             }
             rowElement = rowElement->NextSiblingElement();
         }
-
     }
 
     void TableParser::parseTableProperties(XMLElement *element) {
@@ -90,12 +94,69 @@ namespace table {
 
     }
 
-    void TableParser::parseTableGrid(XMLElement *grid) {
+    void TableParser::parseTableGrid(XMLElement *tblGrid) {
+        XMLElement *gridCol = tblGrid->FirstChildElement();
+        while (gridCol != nullptr) {
+            tblGrids.emplace_back(std::stoi(gridCol->Attribute("w:w")));
+            gridCol = gridCol->NextSiblingElement();
+        }
+        free(gridCol);
+    }
+
+    TableParser::TableParser(docInfo_t &docInfo, options_t &options) : options(options), docInfo(docInfo) {
 
     }
 
-    TableParser::TableParser(docInfo_t &docInfo,options_t &options) : options(options), docInfo(docInfo) {
+    void TableParser::insertTable() {
+        size_t width = 0;
+        for (const auto &item: tblGrids) {
+            width += item;
+        }
+        auto leftBorder = (docInfo.docWidth - (width / TWIP_TO_CHARACTER)) / 2;
+        auto counter = 0;
+        while (counter != tableData.size()) {
+            line tmp;
+            tmp.text.insert(0, leftBorder, ' ');
+            auto currentOffset = leftBorder;
+            for (const auto &item: tblGrids) {
+                auto characterLength = tableData[counter].length;
+                auto data = tableData[counter].text;
+                auto charactersInCell = item / TWIP_TO_CHARACTER;
+                while(characterLength != 0){
+                    if(characterLength > charactersInCell){
+                        tmp.text.append(tableData[counter].text);
+                        tableData[counter].text;
+                        resultTable.push_back(tmp);
+                        tmp.text = "";
+                        tmp.length = 0;
+                        characterLength-=charactersInCell;
+                    } else{
 
+                    }
+                }
+
+                auto offset = charactersInCell - tableData[counter].length;
+                tmp.text.append(offset / 2, ' ');
+                tmp.text.append(tableData[counter].text);
+                tmp.text.append(offset / 2, ' ');
+                currentOffset += item;
+                counter++;
+            }
+            tmp.length += docInfo.docWidth;
+            resultTable.push_back(tmp);
+        }
+        for (auto &s: resultTable) {
+            *options.output << setw((strlen(s.text.c_str()) + docInfo.docWidth / 2 - s.length / 2))
+                            << s.text
+                            << endl;
+        }
+
+    }
+
+    void TableParser::flush() {
+        tblGrids.clear();
+        tableData.clear();
+        resultTable.clear();
     }
 
 

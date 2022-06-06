@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include "tinyxml2.h"
-#include "tinyxml.h"
+#include "../ParserCommons/FileSpecificCommons/DocCommons.h"
 
 namespace Drawing {
     using namespace std;
@@ -18,14 +18,17 @@ namespace Drawing {
         size_t height = 0;
         size_t width = 0;
         string lastImageId;
+        options_t &options;
+        docInfo_t &docInfo;
+        wstringConvert convertor;
     public:
-        explicit DrawingParser();
+        DrawingParser(docInfo_t &docInfo, options_t &options);
 
         void parseDrawing(XMLElement *element);
 
-        void getDrawingSize(size_t &height, size_t &width) const;
+        void insertImage();
 
-        string getDrawingId() const;
+        void flush();
     };
 }
 

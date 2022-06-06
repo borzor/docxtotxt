@@ -4,11 +4,9 @@
 
 #ifndef DOCXTOTXT_MAINDOCPARSER_H
 #define DOCXTOTXT_MAINDOCPARSER_H
-#define MAIN_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
-#define IMAGE_FILE_PATH "word/_rels/document.xml.rels"
 
-#include "SectionParser.h"
 
+#include "../ParserCommons/DocumentCommons.h"
 
 namespace prsr {
     using namespace std;
@@ -16,29 +14,20 @@ namespace prsr {
 
     class MainDocParser {
     private:
-        XMLDocument mainDoc;
-        XMLDocument relationsDoc;
-        bool isInitialized;
-        map<string, string> content_types;
         options_t &options;
-        docInfo_t &docInfo;
-
+        wstringConvert convertor;
     public:
+        explicit MainDocParser(options_t &options);
 
-        explicit MainDocParser(options_t &options, ::docInfo_t &docInfo);
+        void parseFile();
 
-        void doInit();
+        void printResult(buffer &resultBuffer) const;
 
-        void checkInit() const;
+        void insertHyperlinks(std::map<std::string, std::string> hyperlinkRelationship);
 
-        void parseContentTypes(XMLDocument *xmlDocument);
+        void printMetaInfoData(const fileMetaData_t &fileMetaData) const;
 
-        void parseMainDoc();
-
-        void parseRelationships(XMLDocument *doc);
-
-        void insertHyperlinks();
-
+        void saveImages(const std::map<std::string, std::string> &imageRelationship) const;
     };
 
 

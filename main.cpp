@@ -5,24 +5,25 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+
 #define OPTSTR "i:d:o:lmhn"
 
 
 int main(int argc, char *argv[]) {
     auto start = std::chrono::steady_clock::now();
     int opt;
-    options_t options = {&std::wcout};
+    docxtotxt::options_t options = {&std::wcout};
     options.printDocProps = false;
     while ((opt = getopt(argc, argv, OPTSTR)) != EOF)
         switch (opt) {
             case 'i': {//input file
                 auto fileName = std::string(optarg);
-                if (ends_with(fileName, ".docx")) {
-                    options.docType = docx;
-                } else if (ends_with(fileName, ".pptx")) {
-                    options.docType = pptx;
-                } else if (ends_with(fileName, ".xlsx")) {
-                    options.docType = xlsx;
+                if (docxtotxt::ends_with(fileName, ".docx")) {
+                    options.docType = docxtotxt::docx;
+                } else if (docxtotxt::ends_with(fileName, ".pptx")) {
+                    options.docType = docxtotxt::pptx;
+                } else if (docxtotxt::ends_with(fileName, ".xlsx")) {
+                    options.docType = docxtotxt::xlsx;
                 } else {
                     throw std::invalid_argument("No input file by parameter -i");
                 }
@@ -68,7 +69,7 @@ int main(int argc, char *argv[]) {
         if (options.filePath == nullptr) {
             throw std::invalid_argument("No input file by parameter -i");
         }
-        prsr::MainDocParser parser(options);
+        docxtotxt::MainDocParser parser(options);
         parser.parseFile();
         std::cout << "Elapsed(ms)="
                   << std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -77,4 +78,5 @@ int main(int argc, char *argv[]) {
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;
     }
+    return 0;
 }

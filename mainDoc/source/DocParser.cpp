@@ -5,18 +5,19 @@
 #include "../headers/DocParser.h"
 #include "../headers/TableParser.h"
 
-namespace doc {
-    DocParser::DocParser(docInfo_t &docInfo, options_t &options) : docInfo(docInfo), options(options) {
+namespace docxtotxt {
+    DocParser::DocParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer) : docInfo(docInfo),
+                                                                                         Parser(options, writer) {
 
     }
 
-    void DocParser::parseMainFile(XMLDocument *mainFile) {
+    void DocParser::parseFile(XMLDocument *mainFile) {
         auto mainElement = mainFile->RootElement()->FirstChildElement()->FirstChildElement();
         XMLElement *section = mainFile->RootElement()->FirstChildElement()->FirstChildElement("w:sectPr");
         parseSection(section);
-        paragraph::ParagraphParser paragraphParser(docInfo, options);
-        auto tableParser = table::TableParser(docInfo, options);
-        addLine(docInfo.documentData.resultBuffer);
+        ParagraphParser paragraphParser(docInfo, options, writer);
+        auto tableParser = TableParser(docInfo, options);
+        writer.newLine();
         while (mainElement != nullptr) {
             try {
                 if (!strcmp(mainElement->Value(), "w:p")) {
@@ -24,9 +25,9 @@ namespace doc {
                     paragraphParser.writeResult();
                     paragraphParser.flush();
                 } else if (!strcmp(mainElement->Value(), "w:tbl")) {
-                    tableParser.parseTable(mainElement);
-                    tableParser.insertTable();
-                    tableParser.flush();
+//                    tableParser.parseTable(mainElement);
+//                    tableParser.insertTable();
+//                    tableParser.flush();
                 } else if (!strcmp(mainElement->Value(), "w:sdt")) {
                     auto sdtContent = mainElement->FirstChildElement("w:sdtContent");
                     if (sdtContent != nullptr) {

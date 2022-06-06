@@ -2,10 +2,11 @@
 // Created by boris on 2/20/22.
 //
 #include "../headers/ParagraphParser.h"
+#include "../ParserCommons/CommonFunctions.h"
 #include <codecvt>
 #include <cmath>
 
-namespace paragraph {
+namespace docxtotxt {
     void ParagraphParser::parseParagraph(XMLElement *paragraph) {
         auto pPr = paragraph->FirstChildElement("w:pPr");
         if (pPr == nullptr) {
@@ -93,43 +94,56 @@ namespace paragraph {
     void ParagraphParser::parseTextProperties(XMLElement *properties) {
         XMLElement *textProperty = properties->FirstChildElement();
         while (textProperty != nullptr) {
-            switch (textProperties[textProperty->Value()]) {
-                case br:
-                    break;//TODO? Line Break
-                case cr:
-                    break;//TODO Default line break
-                case drawing: {
-                    drawingParser.parseDrawing(textProperty);
-                    drawingParser.insertImage();
-                    drawingParser.flush();
-                    break;
+            if(!strcmp(textProperty->Value(), "w:drawing")){
+                auto current_element = textProperty->FirstChildElement()->FirstChildElement();
+                while (current_element != nullptr) {
+                    if (!strcmp(current_element->Value(), "a:graphic")) {
+                        if (current_element->FirstChildElement("a:graphicData") != nullptr) {
+                            if (current_element->FirstChildElement("a:graphicData")->FirstChildElement("pic:pic") != nullptr) {
+                                auto picElement = current_element->FirstChildElement("a:graphicData")->FirstChildElement(
+                                        "pic:pic");
+                                auto pic = extractPicture(picElement, "pic");
+                                insertImage(pic);
+                            }
+                        }
+                    }
+                    current_element = current_element->NextSiblingElement();
                 }
-                case noBreakHyphen:
-                    break;
-                case rPr:
-                    break;
-                case softHyphen:
-                    break;
-                case sym:
-                    break;
-                case t: {
-                    auto text = textProperty->GetText();
-                    if (text == nullptr)
-                        paragraphBuffer.append(L" ");
-                    else
-                        paragraphBuffer.append(convertor.from_bytes(text));
-                    break;
-                }
-                case tab: {
-                    insertTabulation(settings);
-                    break;
-                }
+            } else if (!strcmp(textProperty->Value(), "w:t")){
+                auto text = textProperty->GetText();
+                if (text == nullptr)
+                    paragraphBuffer.append(L" ");
+                else
+                    paragraphBuffer.append(convertor.from_bytes(text));
+            } else if (!strcmp(textProperty->Value(), "w:tab")){
+                insertTabulation(settings);
             }
             textProperty = textProperty->NextSiblingElement();
         }
         free(textProperty);
     }
 
+    void ParagraphParser::insertImage(picture pic) {//TODO correct for small images
+        auto imageName = docInfo.relations.imageRelationship[pic.rId];
+        auto width = pic.objectInfo.objectSizeX / 76200;
+        auto height = pic.objectInfo.objectSizeY / 76200;
+        auto mediumLine = width - 2;
+        auto leftBorder = (docInfo.docWidth - width) / 2;
+        wstring path = L"Media file";
+        wstring imageInfo = wstring(L"Saved to path: ") + convertor.from_bytes(this->options.pathToDraws) + L'/' +
+                            convertor.from_bytes(imageName);
+        writer.insertData(std::wstring((docInfo.docWidth - path.length()) / 2, L' ').append(path));
+        if ((options.flags >> 1) & 1) {
+            writer.insertData(std::wstring((docInfo.docWidth - imageInfo.length()) / 2, L' ').append(imageInfo));
+        }
+        if (width > 3 || height > 3) {
+            writer.insertData(std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—').append(1, L'+'));
+            for (int i = 1; i < height - 1; i++) {
+                writer.insertData(std::wstring(leftBorder, L' ') + L"|" + std::wstring(mediumLine, L' ') + L"|");
+            }
+            writer.insertData( std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—').append(1, L'+'));
+        }
+    }
 
     void ParagraphParser::writeResult() {
         auto justify = settings.justify;
@@ -146,11 +160,11 @@ namespace paragraph {
         auto before = settings.spacing.before;
         auto after = settings.spacing.after;
         for (int i = 0; i < before; i++) {
-            addLine(docInfo.documentData.resultBuffer);
+            writer.newLine();
         }
         if (!this->paragraphBuffer.empty()) {
             while (currentSize != 0) {
-                auto availableBufferInLine = docInfo.docWidth - docInfo.documentData.resultBuffer.buffer.back().length();
+                auto availableBufferInLine = docInfo.docWidth - writer.getCurrentLength();
                 if (justify == left)
                     if (isFirstLine) {
                         availableBufferInLine = availableBufferInLine - firstLineLeft - right;
@@ -161,9 +175,8 @@ namespace paragraph {
                 if (currentSize > availableBufferInLine) { // 167
                     auto indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
                     if (indexLastElement == string::npos) {
-                        addLine(docInfo.documentData.resultBuffer);
-                        availableBufferInLine =
-                                docInfo.docWidth - docInfo.documentData.resultBuffer.buffer[docInfo.documentData.resultBuffer.pointer].length();
+                        writer.newLine();
+                        availableBufferInLine = docInfo.docWidth - writer.getCurrentLength();
                         indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
                     }
                     switch (justify) {
@@ -184,19 +197,17 @@ namespace paragraph {
                         case distribute:
                             break;
                     }
-                    docInfo.documentData.resultBuffer.buffer.back().append(ind, L' ');
-                    docInfo.documentData.resultBuffer.buffer.back().append(paragraphBuffer.substr(0, indexLastElement));
+                    writer.insertData(std::wstring(ind, L' ').append(paragraphBuffer.substr(0, indexLastElement)));
                     paragraphBuffer = paragraphBuffer.substr(indexLastElement + 1);
-                    addLine(docInfo.documentData.resultBuffer);
                     isFirstLine = false;
                     currentSize -= indexLastElement;
                 } else {
                     switch (justify) {
-                        case ::left: {
+                        case paragraphJustify::left: {
                             ind = isFirstLine ? firstLineLeft : left;
                             break;
                         }
-                        case ::right: {
+                        case paragraphJustify::right: {
                             ind = docInfo.docWidth - currentSize;
                             break;
                         }
@@ -209,20 +220,19 @@ namespace paragraph {
                         case distribute:
                             break;
                     }
-                    docInfo.documentData.resultBuffer.buffer.back().append(ind, L' ');
-                    docInfo.documentData.resultBuffer.buffer.back().append(paragraphBuffer);
+                    writer.insertData(std::wstring(ind, L' ').append(paragraphBuffer), false, false);
                     currentSize = 0;
                 }
             }
         }
         for (int i = 0; i < after; i++) {
-            addLine(docInfo.documentData.resultBuffer);
+            writer.newLine();
         }
-        addLine(docInfo.documentData.resultBuffer);
+        writer.newLine();
     }
 
-    ParagraphParser::ParagraphParser(docInfo_t &docInfo, options_t &options)
-            : drawingParser(docInfo, options), docInfo(docInfo), options(options) {
+    ParagraphParser::ParagraphParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer)
+            : docInfo(docInfo), options(options), writer(writer) {
         settings = docInfo.defaultSettings.paragraph;
     }
 
@@ -351,8 +361,8 @@ namespace paragraph {
             wCharacter = L'-';
         auto currentSize = paragraphBuffer.length();
         auto ind = settings.ind.left;
-        if(ind != 0)
-            currentSize+=ind;
+        if (ind != 0)
+            currentSize += ind;
         if (pos > currentSize)
             paragraphBuffer.append(pos - currentSize, wCharacter);
         settings.tab.pop();

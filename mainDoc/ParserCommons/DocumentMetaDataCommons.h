@@ -9,17 +9,18 @@
 #include <cstdio>
 #include <string>
 
-typedef struct {
-    int slides;
-    int pages;
-    int words;
-    int revision;
-    std::wstring creator;
-    std::wstring lastModifiedBy;
-    std::wstring created;
-    std::wstring modified;
-    std::wstring application;
-} fileMetaData_t;
-
+namespace docxtotxt {
+    typedef struct {
+        int slides;
+        int pages;
+        int words;
+        int revision;
+        std::wstring creator;
+        std::wstring lastModifiedBy;
+        std::wstring created;
+        std::wstring modified;
+        std::wstring application;
+    } fileMetadata_t;
+}
 
 #endif //DOCXTOTXT_DOCUMENTMETADATACOMMONS_H

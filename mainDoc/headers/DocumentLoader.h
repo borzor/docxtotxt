@@ -6,15 +6,19 @@
 #include "../ParserCommons/FileSpecificCommons/PptCommons.h"
 #include "../ParserCommons/FileSpecificCommons/XlsCommons.h"
 #include "../ParserCommons/FileSpecificCommons/DocCommons.h"
+#include "../ParserCommons/CommonFunctions.h"
 #include <zip.h>
 
 #ifndef DOCXTOTXT_DOCUMENTLOADER_H
 #define DOCXTOTXT_DOCUMENTLOADER_H
 
-namespace Loader {
+
+namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
-
+/*!
+	\brief Класс для загрузки и извлечения ключевой информации из файлов
+*/
     class DocumentLoader {
     private:
         options_t &options;
@@ -24,6 +28,7 @@ namespace Loader {
         map<string, string> content_types;
         wstringConvert convertor;
         tinyxml2::XMLDocument mainDoc;
+        BufferWriter &writer;
 
         void loadDocxData();
 
@@ -32,6 +37,9 @@ namespace Loader {
         void loadPptxData();
 
         void openFileAndParse(const string &fileName, void (DocumentLoader::*f)(XMLDocument *));
+
+        void openFileAndParse(const string &fileName, relations_t &relations,
+                              void (DocumentLoader::*f)(XMLDocument *, relations_t &));
 
         void parsePresentationSettings(XMLDocument *doc);
 
@@ -43,11 +51,7 @@ namespace Loader {
 
         void parseSlideTable(XMLElement *element, presentationTable &object);
 
-        void parseSlidePic(XMLElement *element, presentationPic &object);
-
         std::vector<textBody> extractTextBody(XMLElement *element);
-
-        objectInfo_t extractObjectInfo(XMLElement *element);
 
         void parseSharedStrings(XMLDocument *doc);
 
@@ -55,9 +59,9 @@ namespace Loader {
 
         void parseWorkbook(XMLDocument *doc);
 
-        void parseContentTypes(XMLDocument *xmlDocument);
+        void parseDraw(XMLDocument *doc);
 
-        void parseRelationships(XMLDocument *doc);
+        void parseContentTypes(XMLDocument *xmlDocument);
 
         void parseRelationShip(XMLDocument *doc, relations_t &relations);
 
@@ -71,20 +75,20 @@ namespace Loader {
 
         void parseCoreFile(XMLDocument *doc);
 
-        static void parseWordApp(tinyxml2::XMLDocument &doc, fileMetaData_t &data);
+        static void parseWordApp(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
 
-        static void parseWordCore(tinyxml2::XMLDocument &doc, fileMetaData_t &data);
+        static void parseWordCore(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
 
-        static void parsePptApp(tinyxml2::XMLDocument &doc, fileMetaData_t &data);
+        static void parsePptApp(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
 
-        static void parsePptCore(tinyxml2::XMLDocument &doc, fileMetaData_t &data);
+        static void parsePptCore(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
 
-        static void parseXlsxApp(tinyxml2::XMLDocument &doc, fileMetaData_t &data);
+        static void parseXlsxApp(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
 
-        static void parseXlsxCore(tinyxml2::XMLDocument &doc, fileMetaData_t &data);
+        static void parseXlsxCore(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
 
     public:
-        explicit DocumentLoader(options_t &options);
+        explicit DocumentLoader(options_t &options, BufferWriter &writer);
 
         void loadData();
 

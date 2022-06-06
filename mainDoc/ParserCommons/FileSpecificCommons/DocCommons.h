@@ -7,32 +7,31 @@
 #define DOCXTOTXT_DOCCOMMONS_H
 
 #include "../DocumentCommons.h"
+#include "../BufferWriter.h"
 
-typedef struct {//TODO add rest doc styles
-    paragraphSettings paragraph;
-    tableProperties table;
-} defaultDocStyles;
+namespace docxtotxt {
 
-typedef struct {
-    std::map<std::string, paragraphSettings> paragraphStyles;
-    std::map<std::string, tableProperties> tableStyles;
-//    std::map<std::string, std::string> characterStyles;
-//    std::map<std::string, std::string> numberingStyles;
-    defaultDocStyles defaultStyles;
-} stylesRelationship;
+    typedef struct {//TODO add rest doc styles
+        paragraphSettings paragraph;
+        tableProperties table;
+    } defaultDocStyles;
 
-typedef struct {
-    paragraphSettings paragraph;
-    textSettings text;
-} defaultDocSettings;
+    typedef struct {
+        std::map<std::string, paragraphSettings> paragraphStyles;
+        std::map<std::string, tableProperties> tableStyles;
+        defaultDocStyles defaultStyles;
+    } stylesRelationship;
 
-typedef struct {
-    size_t docWidth;
-    size_t docHeight;
-    documentData_t documentData;
-    relations_t relations;
-    stylesRelationship styles;
-    defaultDocSettings defaultSettings;
-} docInfo_t;
+    typedef struct {
+        paragraphSettings paragraph;
+    } defaultDocSettings;
 
+    typedef struct {
+        size_t docWidth;
+        size_t docHeight;
+        relations_t relations;
+        stylesRelationship styles;
+        defaultDocSettings defaultSettings;
+    } docInfo_t;
+}
 #endif //DOCXTOTXT_DOCCOMMONS_H

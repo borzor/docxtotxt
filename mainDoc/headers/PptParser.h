@@ -6,30 +6,34 @@
 #define DOCXTOTXT_PPTPARSER_H
 
 #include "../ParserCommons/FileSpecificCommons/PptCommons.h"
+#include "../ParserCommons/BufferWriter.h"
+#include "Parser.h"
 
-namespace ppt {
+namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
-
-    class PptParser {
+    /*!
+	\brief Реализация парсера, обрабатывающая .pptx формат
+    */
+    class PptParser : public Parser{
 
     private:
-        options_t &options;
+        ///Настройки специфичные для файла .pptx формата
         pptInfo_t &pptInfo;
         std::vector<slideInsertInfo> slideInsertData;
-        wstringConvert convertor;
+
         void prepareSlides();
 
         void insertSlide(std::vector<insertObject> insertObjects);
 
         void insertLineBuffer(insertObject &obj, size_t *currentIndex);
 
-        void insertSlideMetaData(slideInsertInfo relations);
+        void insertSlideMetadata(slideInsertInfo relations);
 
     public:
-        PptParser(pptInfo_t &pptInfo, options_t &options);
+        PptParser(pptInfo_t &pptInfo, options_t &options, BufferWriter &writer);
 
-        void parseSlides();
+        void parseFile() override;
     };
 }
 

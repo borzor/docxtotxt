@@ -6,22 +6,29 @@
 #define DOCXTOTXT_XLSPARSER_H
 
 #include "../ParserCommons/FileSpecificCommons/XlsCommons.h"
+#include "../ParserCommons/BufferWriter.h"
+#include "Parser.h"
 
-namespace xls {
+namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
-
-    class XlsParser {
+    /*!
+	\brief Реализация парсера, обрабатывающая .xlsx формат
+    */
+    class XlsParser : public Parser{
     private:
-        options_t &options;
+        ///Настройки специфичные для файла .pptx формата
         xlsInfo_t &xlsInfo;
-        wstringConvert convertor;
-    public:
-        XlsParser(xlsInfo_t &xlsInfo, options_t &options);
-
-        void parseSheets();
 
         static size_t getColumnWidth(const std::vector<columnSettings> &settings, size_t index);
+
+        void insertSheetMetadata(const sheet &sheet);
+
+    public:
+        XlsParser(xlsInfo_t &xlsInfo, options_t &options, BufferWriter &writer);
+
+        void parseFile() override;
+
     };
 
 }

@@ -11,39 +11,22 @@
 #include "ParagraphParser.h"
 #include <map>
 
-static std::map<std::string, int> tablePropertiesMap =
-        {{"w:jc",                  tblJc},
-         {"w:shd",                 tblJshd},
-         {"w:tblBorders",          tblBorders},
-         {"w:tblCaption",          tblCaption},
-         {"w:tblCellMar",          tblCellMar},
-         {"w:tblCellSpacing",      tblCellSpacing},
-         {"w:tblInd",              tblInd},
-         {"w:tblLayout",           tblLayout},
-         {"w:tblLook",             tblLook},
-         {"w:tblOverlap",          tblOverlap},
-         {"w:tblpPr",              tblpPr},
-         {"w:tblStyle",            tblStyle},
-         {"w:tblStyleColBandSize", tblStyleColBandSize},
-         {"w:tblStyleRowBandSize", tblStyleRowBandSize},
-         {"w:tblW",                tblW}};
-
-typedef struct {
-    size_t width;
-    size_t gridSpan;
-    std::wstring text;
-} cell;
-
-typedef struct {
-    size_t columnAmount;
-    tableProperties settings;
-    std::vector<std::size_t> tblGrids;
-    std::vector<std::vector<cell>> grid;
-} tableSetting;
-
-namespace table {
+namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
+
+    typedef struct {
+        size_t width;
+        size_t gridSpan;
+        std::wstring text;
+    } cell;
+
+    typedef struct {
+        size_t columnAmount;
+        tableProperties settings;
+        std::vector<std::size_t> tblGrids;
+        std::vector<std::vector<cell>> grid;
+    } tableSetting;
 
     class TableParser {
     private:
@@ -67,7 +50,7 @@ namespace table {
 
         void getTableCellProperties(XMLElement *cell);
 
-        void getTableCellParagraph(XMLElement *cell, paragraph::ParagraphParser &paragraphParser);
+        void getTableCellParagraph(XMLElement *cell, ParagraphParser &paragraphParser);
 
         void insertTable();
 
@@ -79,6 +62,6 @@ namespace table {
 
         static void setFloatingSettings(XMLElement *element, floatingSettings &settings);
     };
-}
 
+}
 #endif //DOCXTOTXT_TABLEPARSER_H

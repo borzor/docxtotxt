@@ -4,45 +4,27 @@
 
 #ifndef DOCXTOTXT_TABLECOMMONS_H
 #define DOCXTOTXT_TABLECOMMONS_H
+namespace docxtotxt {
+    enum class tableJustify {
+        start,
+        end,
+        center
+    };
 
-enum tableProperty {
-    tblJc,
-    tblJshd,
-    tblBorders,
-    tblCaption,
-    tblCellMar,
-    tblCellSpacing,
-    tblInd,
-    tblLayout,
-    tblLook,
-    tblOverlap,
-    tblpPr,
-    tblStyle,
-    tblStyleColBandSize,
-    tblStyleRowBandSize,
-    tblW
-};
+    typedef struct {
+        size_t ind;
+    } tableIndent;
 
-enum class tableJustify {
-    start,
-    end,
-    center
-};
+    typedef struct {
 
-typedef struct {
-    size_t ind;
-} tableIndent;
+    } floatingSettings;
 
-typedef struct {
+    typedef struct {
+        tableJustify justify;
+        tableIndent ind;
+        floatingSettings floatTable;
+        //maybe table width
+    } tableProperties;
 
-} floatingSettings;
-
-typedef struct {
-    tableJustify justify;
-    tableIndent ind;
-    floatingSettings floatTable;
-    //maybe table width
-} tableProperties;
-
-
+}
 #endif //DOCXTOTXT_TABLECOMMONS_H

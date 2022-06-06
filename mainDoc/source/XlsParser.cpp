@@ -4,41 +4,34 @@
 
 #include "../headers/XlsParser.h"
 
-namespace xls {
-    XlsParser::XlsParser(xlsInfo_t &xlsInfo, options_t &options) : xlsInfo(xlsInfo), options(options) {
+namespace docxtotxt {
+    XlsParser::XlsParser(xlsInfo_t &xlsInfo, options_t &options, BufferWriter &writer) : xlsInfo(xlsInfo),
+                                                                                         Parser(options, writer) {
 
     }
 
-    void XlsParser::parseSheets() {
+    void XlsParser::parseFile() {
         for (auto &sh: xlsInfo.worksheets) {
-            addLine(xlsInfo.documentData.resultBuffer);
-            auto sheetName = sh.second.sheetName;
-            auto state = sh.second.state;
-            auto array = sh.second.sheetArray;
-            auto col = sh.second.col;
+            insertSheetMetadata(sh);
+            auto array = sh.sheetArray;
+            if (array.empty())
+                continue;
+            auto col = sh.col;
             size_t numberOfColumn = 0;
-            xlsInfo.documentData.resultBuffer.buffer.back().append(L"Sheet info: ");
-            addLine(xlsInfo.documentData.resultBuffer);
-            xlsInfo.documentData.resultBuffer.buffer.back().append(L"SheetName - ").append(sheetName);
-            if(!state.empty())
-                xlsInfo.documentData.resultBuffer.buffer.back().append(L", State - ").append(state);
-            addLine(xlsInfo.documentData.resultBuffer);
             for (auto &i: array)
                 numberOfColumn = std::max(numberOfColumn, i.back().cellNumber + 1);
             std::vector<size_t> columnSize(numberOfColumn, 0);
             size_t tableWidth = numberOfColumn - 1;
             for (int column = 0; column < columnSize.size(); column++) {
                 auto width = getColumnWidth(col, column);
-                if(width < 10)
+                if (width < 10)
                     width = 10;
                 columnSize[column] = width;
                 tableWidth += width;
             }
-            xlsInfo.documentData.resultBuffer.buffer.back().append(
-                    std::wstring(1, L'+').append(tableWidth, L'—')).append(1, L'+');
+            writer.insertData(std::wstring(L"+").append(tableWidth, L'-').append(L"+"), false, false);
             size_t line = 0;
             while (line < array.size()) {
-                addLine(xlsInfo.documentData.resultBuffer);
                 bool lineDone = true;
                 size_t currentIndex = 0;
                 for (int column = 0; column < numberOfColumn; column++) {
@@ -58,7 +51,7 @@ namespace xls {
                     }
                 }
                 currentIndex = 0;
-                xlsInfo.documentData.resultBuffer.buffer.back().append(L"|");
+                writer.insertData(L"|", true, false);
                 while (currentIndex < numberOfColumn) {
                     auto charInCell = columnSize[currentIndex];
                     auto cell = array[line][currentIndex];
@@ -73,41 +66,55 @@ namespace xls {
                             } else {
                                 resultText = text.substr(0, indexLastElement);
                             }
-                            xlsInfo.documentData.resultBuffer.buffer.back().append(resultText);
-                            xlsInfo.documentData.resultBuffer.buffer.back().append(
-                                    indexLastElement == string::npos ? 0 : charInCell - indexLastElement, L' ');
+                            writer.insertData(resultText, false, false);
+                            writer.insertData(
+                                    std::wstring(indexLastElement == string::npos ? 0 : charInCell - indexLastElement,
+                                                 L' '), false, false);
                         } else {
-
                             resultText = text;
-                            xlsInfo.documentData.resultBuffer.buffer.back().append(resultText);
-                            xlsInfo.documentData.resultBuffer.buffer.back().append(charInCell - text.size(), L' ');
+                            writer.insertData(resultText, false, false);
+                            writer.insertData(std::wstring(charInCell - text.size(), L' '), false, false);
                         }
                         array[line][currentIndex].text.erase(0, resultText.size() + 1);
-                        xlsInfo.documentData.resultBuffer.buffer.back().append(1, L'|');
+                        writer.insertData(L"|", false, false);
                     } else {
-                        xlsInfo.documentData.resultBuffer.buffer.back().append(charInCell == 1 ? 0 : charInCell, L' ').append(1,
-                                                                                                                 L'|');
+                        writer.insertData(std::wstring(charInCell == 1 ? 0 : charInCell, L' ') + L"|", false, false);
                     }
                     currentIndex++;
                 }
                 if (lineDone) {
                     line++;
-                    addLine(xlsInfo.documentData.resultBuffer);
-                    xlsInfo.documentData.resultBuffer.buffer.back().append(
-                            std::wstring(1, L'+').append(tableWidth, L'—')).append(1, L'+');;
+                    writer.insertData(std::wstring(L"+").append(tableWidth, L'-').append(L"+"), true, false);
                 }
             }
-            addLine(xlsInfo.documentData.resultBuffer);
+            writer.newLine();
         }
     }
 
-    size_t XlsParser::getColumnWidth(const std::vector<columnSettings>& settings, size_t index) {
+    size_t XlsParser::getColumnWidth(const std::vector<columnSettings> &settings, size_t index) {
         for (auto &setting: settings) {
             if (setting.startInd <= index && setting.endIndInd >= index) {
                 return setting.width;
             }
         }
         return 0;
+    }
+
+    void XlsParser::insertSheetMetadata(const sheet &sheet) {
+        writer.insertData(L"Sheet info: ", true);
+        writer.insertData(
+                L"SheetName - " + sheet.sheetName + (sheet.state.empty() ? L"" : L" , State - " + sheet.state));
+        for (const auto &kv: sheet.relations.drawing) {
+            auto draw = std::find(xlsInfo.draws.begin(), xlsInfo.draws.end(), kv.second);
+            writer.insertData(L"Sheet image info: ", false, false);
+            for (const auto &qw: draw->relations.imageRelationship) {
+                writer.insertData(writer.convertString(qw.second), false, false);
+                if ((options.flags >> 1) & 1) {
+                    string image = ", saved to path: " + options.pathToDraws + '/' + qw.second;
+                    writer.insertData(writer.convertString(image));
+                }
+            }
+        }
     }
 
 }

@@ -6,22 +6,27 @@
 #define DOCXTOTXT_DOCPARSER_H
 
 #include "ParagraphParser.h"
+#include "Parser.h"
 
-namespace doc {
+namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
-
-    class DocParser {
+    /*!
+	\brief Реализация парсера, обрабатывающая .docx формат
+    */
+    class DocParser : public Parser {
     private:
-        options_t &options;
+        ///Настройки специфичные для файла .docx формата
         docInfo_t &docInfo;
 
         void parseSection(XMLElement *section);
 
     public:
-        DocParser(docInfo_t &docInfo, options_t &options);
+        DocParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer);
 
-        void parseMainFile(XMLDocument *mainFile);
+        void parseFile() override{};
+
+        void parseFile(XMLDocument *mainFile);
     };
 
 }

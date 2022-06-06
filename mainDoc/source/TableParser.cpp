@@ -5,7 +5,7 @@
 #include "../headers/TableParser.h"
 #include <iomanip>
 
-namespace table {
+namespace docxtotxt {
     void TableParser::parseTable(XMLElement *table) {
         XMLElement *element = table->FirstChildElement();
         while (element != nullptr) {
@@ -23,32 +23,32 @@ namespace table {
     }
 
     void TableParser::parseTableRow(XMLElement *row) {
-        XMLElement *rowElement = row->FirstChildElement();
-        paragraph::ParagraphParser paragraphParser(docInfo, options);
-        table.grid.emplace_back();
-        while (rowElement != nullptr) {
-            if (!strcmp(rowElement->Value(), "w:trPr")) {
-                parseTableRowProperties(rowElement);
-            } else if (!strcmp(rowElement->Value(), "w:tblPrEx")) {
-                //Specifies table properties for the row in place of the table properties specified in tblPr.
-                //can scip, exceptions for table-level properties
-            } else if (!strcmp(rowElement->Value(), "w:tc")) {//Specifies a table cell
-                XMLElement *tcElement = rowElement->FirstChildElement();
-                while (tcElement != nullptr) {
-                    if (!strcmp(tcElement->Value(), "w:p")) {//
-                        getTableCellParagraph(tcElement, paragraphParser);
-                    } else if (!strcmp(tcElement->Value(), "w:tbl")) {//
-                        // for the table in table...
-                    } else if (!strcmp(tcElement->Value(), "w:tcPr")) {//Specifies a table cell
-                        getTableCellProperties(tcElement);
-                    }
-                    tcElement = tcElement->NextSiblingElement();
-                }
-                currentColumn += table.grid[line].back().gridSpan;
-
-            }
-            rowElement = rowElement->NextSiblingElement();
-        }
+//        XMLElement *rowElement = row->FirstChildElement();
+//        ParagraphParser paragraphParser(docInfo, options);
+//        table.grid.emplace_back();
+//        while (rowElement != nullptr) {
+//            if (!strcmp(rowElement->Value(), "w:trPr")) {
+//                parseTableRowProperties(rowElement);
+//            } else if (!strcmp(rowElement->Value(), "w:tblPrEx")) {
+//                //Specifies table properties for the row in place of the table properties specified in tblPr.
+//                //can scip, exceptions for table-level properties
+//            } else if (!strcmp(rowElement->Value(), "w:tc")) {//Specifies a table cell
+//                XMLElement *tcElement = rowElement->FirstChildElement();
+//                while (tcElement != nullptr) {
+//                    if (!strcmp(tcElement->Value(), "w:p")) {//
+//                        getTableCellParagraph(tcElement, paragraphParser);
+//                    } else if (!strcmp(tcElement->Value(), "w:tbl")) {//
+//                        // for the table in table...
+//                    } else if (!strcmp(tcElement->Value(), "w:tcPr")) {//Specifies a table cell
+//                        getTableCellProperties(tcElement);
+//                    }
+//                    tcElement = tcElement->NextSiblingElement();
+//                }
+//                currentColumn += table.grid[line].back().gridSpan;
+//
+//            }
+//            rowElement = rowElement->NextSiblingElement();
+//        }
     }
 
     void TableParser::parseTableProperties(XMLElement *properties) {
@@ -60,43 +60,12 @@ namespace table {
         }
         XMLElement *tableProperty = properties->FirstChildElement();
         while (tableProperty != nullptr) {
-            switch (tablePropertiesMap[tableProperty->Value()]) {
-                case tblJc:
-                    if (tableProperty->FirstAttribute() != nullptr)
-                        //setJustify(tableProperty, table.settings.justify);
-                        break;
-                case tblJshd:
-                    break;
-                case tblBorders:
-                    break;
-                case tblCaption:
-                    break;
-                case tblCellMar:
-                    break;
-                case tblCellSpacing:
-                    break;
-                case tblInd:
-                    if (tableProperty->FirstAttribute() != nullptr)
-                        setIndentation(tableProperty, table.settings.ind);
-                    break;
-                case tblLayout:
-                    break;
-                case tblLook:
-                    break;
-                case tblOverlap://TODO check visibility
-                    break;
-                case tblpPr:
-                    if (tableProperty->FirstAttribute() != nullptr)
-                        setFloatingSettings(tableProperty, table.settings.floatTable);
-                    break;
-                case tblStyleColBandSize:
-                    break;
-                case tblStyleRowBandSize:
-                    break;
-                case tblW:
-                    //TODO table WIDTH
-                    break;
-
+            if (!strcmp(tableProperty->Value(), "w:tblInd")) {
+                if (tableProperty->FirstAttribute() != nullptr)
+                    setIndentation(tableProperty, table.settings.ind);
+            } else if (!strcmp(tableProperty->Value(), "w:tblpPr")) {
+                if (tableProperty->FirstAttribute() != nullptr)
+                    setFloatingSettings(tableProperty, table.settings.floatTable);
             }
             tableProperty = tableProperty->NextSiblingElement();
         }
@@ -117,63 +86,64 @@ namespace table {
     }
 
     void TableParser::insertTable() {
-        this->currentColumn = 0;
-        this->line = 0;
-        size_t tableWidth = 0;
-        for (auto &cell: table.grid[line]) {
-            tableWidth += cell.width;
-        }
-        size_t minColumn = table.columnAmount;
-        for (auto & i : table.grid) {
-            minColumn = min(minColumn, i.size());
-        }
-        auto tableSize = tableWidth;
-        tableSize += (minColumn + 1); //column size + amount of columns
-        auto mediumLine = tableSize - 2;
-        auto leftBorder = (docInfo.docWidth - tableSize) / 2;
-        docInfo.documentData.resultBuffer.buffer.back().append(
-                std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
-        while (line < table.grid.size()) {
-            bool lineDone = true;
-            currentColumn = 0;
-            addLine(docInfo.documentData.resultBuffer);
-            docInfo.documentData.resultBuffer.buffer.back().append(std::wstring(leftBorder, L' ') + L"|");
-            while (currentColumn < table.grid[line].size()) {
-                auto charInCell = table.grid[line][currentColumn].width;
-                if (!table.grid[line][currentColumn].text.empty()) {
-                    auto text = table.grid[line][currentColumn].text;
-                    std::wstring resultText;
-                    auto indexLastElement = text.find_last_of(L' ', charInCell);
-                    if (charInCell < text.size()) {
-                        lineDone = false;
-                        if (indexLastElement == string::npos) {
-                            resultText = text.substr(0, charInCell);
-                        } else {
-                            resultText = text.substr(0, indexLastElement);
-                        }
-                        docInfo.documentData.resultBuffer.buffer.back().append(resultText);
-                        docInfo.documentData.resultBuffer.buffer.back().append(
-                                indexLastElement == string::npos ? 0 : charInCell - indexLastElement, L' ');
-                    } else {
-                        resultText = text;
-                        docInfo.documentData.resultBuffer.buffer.back().append(resultText);
-                        docInfo.documentData.resultBuffer.buffer.back().append(charInCell - text.size(), L' ');
-                    }
-                    table.grid[line][currentColumn].text.erase(0, resultText.size() + 1);
-                    docInfo.documentData.resultBuffer.buffer.back().append(1, L'|');
-                } else {
-                    docInfo.documentData.resultBuffer.buffer.back().append(charInCell == 1 ? 0 : charInCell, L' ').append(1, L'|');
-                }
-                currentColumn++;
-            }
-            if (lineDone) {
-                line++;
-                addLine(docInfo.documentData.resultBuffer);
-                docInfo.documentData.resultBuffer.buffer.back().append(
-                        std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
-            }
-        }
-        addLine(docInfo.documentData.resultBuffer);
+//        this->currentColumn = 0;
+//        this->line = 0;
+//        size_t tableWidth = 0;
+//        for (auto &cell: table.grid[line]) {
+//            tableWidth += cell.width;
+//        }
+//        size_t minColumn = table.columnAmount;
+//        for (auto &i: table.grid) {
+//            minColumn = min(minColumn, i.size());
+//        }
+//        auto tableSize = tableWidth;
+//        tableSize += (minColumn + 1); //column size + amount of columns
+//        auto mediumLine = tableSize - 2;
+//        auto leftBorder = (docInfo.docWidth - tableSize) / 2;
+//        docInfo.documentData.resultBuffer.buffer.back().append(
+//                std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
+//        while (line < table.grid.size()) {
+//            bool lineDone = true;
+//            currentColumn = 0;
+//            docInfo.documentData.resultBuffer.newLine();
+//            docInfo.documentData.resultBuffer.buffer.back().append(std::wstring(leftBorder, L' ') + L"|");
+//            while (currentColumn < table.grid[line].size()) {
+//                auto charInCell = table.grid[line][currentColumn].width;
+//                if (!table.grid[line][currentColumn].text.empty()) {
+//                    auto text = table.grid[line][currentColumn].text;
+//                    std::wstring resultText;
+//                    auto indexLastElement = text.find_last_of(L' ', charInCell);
+//                    if (charInCell < text.size()) {
+//                        lineDone = false;
+//                        if (indexLastElement == string::npos) {
+//                            resultText = text.substr(0, charInCell);
+//                        } else {
+//                            resultText = text.substr(0, indexLastElement);
+//                        }
+//                        docInfo.documentData.resultBuffer.buffer.back().append(resultText);
+//                        docInfo.documentData.resultBuffer.buffer.back().append(
+//                                indexLastElement == string::npos ? 0 : charInCell - indexLastElement, L' ');
+//                    } else {
+//                        resultText = text;
+//                        docInfo.documentData.resultBuffer.buffer.back().append(resultText);
+//                        docInfo.documentData.resultBuffer.buffer.back().append(charInCell - text.size(), L' ');
+//                    }
+//                    table.grid[line][currentColumn].text.erase(0, resultText.size() + 1);
+//                    docInfo.documentData.resultBuffer.buffer.back().append(1, L'|');
+//                } else {
+//                    docInfo.documentData.resultBuffer.buffer.back().append(charInCell == 1 ? 0 : charInCell,
+//                                                                           L' ').append(1, L'|');
+//                }
+//                currentColumn++;
+//            }
+//            if (lineDone) {
+//                line++;
+//                docInfo.documentData.resultBuffer.newLine();
+//                docInfo.documentData.resultBuffer.buffer.back().append(
+//                        std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
+//            }
+//        }
+//        docInfo.documentData.resultBuffer.newLine();
     }
 
     void TableParser::flush() {
@@ -233,7 +203,7 @@ namespace table {
         free(gridCol);
     }
 
-    void TableParser::getTableCellParagraph(XMLElement *tcElement, paragraph::ParagraphParser &paragraphParser) {
+    void TableParser::getTableCellParagraph(XMLElement *tcElement, ParagraphParser &paragraphParser) {
         paragraphParser.parseParagraph(tcElement);
         auto text = paragraphParser.getResult();
         table.grid[line].back().text += text;

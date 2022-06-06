@@ -12,10 +12,10 @@
 #include <fstream>
 #include <locale>
 #include <codecvt>
-#include "../headers/DrawingParser.h"
 #include "../ParserCommons/DocumentCommons.h"
+#include "../ParserCommons/FileSpecificCommons/DocCommons.h"
 
-namespace paragraph {
+namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
 
@@ -23,12 +23,12 @@ namespace paragraph {
     private:
         options_t &options;
         docInfo_t &docInfo;
+        BufferWriter &writer;
         wstring paragraphBuffer;
         paragraphSettings settings;
-        Drawing::DrawingParser drawingParser;
         wstringConvert convertor;
     public:
-        ParagraphParser(docInfo_t &docInfo, options_t &options);
+        ParagraphParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer);
 
         void parseParagraph(XMLElement *paragraph);
 
@@ -39,6 +39,8 @@ namespace paragraph {
         void parseHyperlink(XMLElement *properties);
 
         void insertTabulation(paragraphSettings tab);
+
+        void insertImage(picture pic);
 
         static void setJustify(XMLElement *element, paragraphJustify &settings);
 

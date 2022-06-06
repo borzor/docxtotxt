@@ -13,33 +13,29 @@
 #include "../headers/PptParser.h"
 #include "../headers/DocParser.h"
 
-namespace prsr {
+namespace docxtotxt {
     void MainDocParser::parseFile() {
-        Loader::DocumentLoader documentLoader(options);
+        docxtotxt::BufferWriter writer(options);
+        DocumentLoader documentLoader(options, writer);
         documentLoader.loadData();
+        if (options.printDocProps) {
+            writer.insertMetadata();
+        }
         switch (options.docType) {
             case pptx: {
                 auto pptInfo = documentLoader.getPptxData();
-                if (options.printDocProps) {
-                    printMetaInfoData(pptInfo.documentData.fileMetaData);
-                }
-                ppt::PptParser pptParser(pptInfo, options);
-                pptParser.parseSlides();
-                printResult(pptInfo.documentData.resultBuffer);
+                PptParser pptParser(pptInfo, options,writer);
+                pptParser.parseFile();
                 if ((options.flags >> 1) & 1) {
-                    for(auto &slide:pptInfo.slides)
+                    for (auto &slide: pptInfo.slides)
                         saveImages(slide.relations.imageRelationship);
                 }
                 break;
             }
             case docx: {
                 auto docInfo = documentLoader.getDocxData();
-                if (options.printDocProps) {
-                    printMetaInfoData(docInfo.documentData.fileMetaData);
-                }
-                doc::DocParser docParser(docInfo, options);
-                docParser.parseMainFile(documentLoader.getMainDocument());
-                printResult(docInfo.documentData.resultBuffer);
+                DocParser docParser(docInfo, options, writer);
+                docParser.parseFile(documentLoader.getMainDocument());
                 if ((options.flags >> 1) & 1) {
                     saveImages(docInfo.relations.imageRelationship);
                 }
@@ -50,17 +46,19 @@ namespace prsr {
             }
             case xlsx: {
                 auto xlsInfo = documentLoader.getXlsxData();
-                if (options.printDocProps) {
-                    printMetaInfoData(xlsInfo.documentData.fileMetaData);
+                options.output->flush();
+                XlsParser xlsParser(xlsInfo, options, writer);
+                xlsParser.parseFile();
+                if ((options.flags >> 1) & 1) {
+                    for (auto &draw: xlsInfo.draws)
+                        saveImages(draw.relations.imageRelationship);
                 }
-                xls::XlsParser xlsParser(xlsInfo, options);
-                xlsParser.parseSheets();
-                printResult(xlsInfo.documentData.resultBuffer);
                 break;
             }
         }
+        writer.writeResult();
         zip_close(options.input);
-        delete(options.output);
+        delete (options.output);
     }
 
     MainDocParser::MainDocParser(options_t &options) :
@@ -71,7 +69,7 @@ namespace prsr {
     void MainDocParser::insertHyperlinks(std::map<std::string, std::string> hyperlinkRelationship) {
         for (const auto &kv: hyperlinkRelationship) {
             auto number = distance(hyperlinkRelationship.begin(),
-                                   hyperlinkRelationship.find(kv.first));//very doubtful
+                                   hyperlinkRelationship.find(kv.first));
             auto result = wstring(L"{h").append(
                     to_wstring(number).append(L"} -  ").append(convertor.from_bytes(kv.second)));
             *options.output << result << '\n';
@@ -103,40 +101,7 @@ namespace prsr {
         }
     }
 
-    void MainDocParser::printMetaInfoData(const fileMetaData_t &data) const {
-        switch (options.docType) {
-            case pptx: {
-                *options.output << L"Document data:" << std::endl;
-                *options.output << L"Revision №" << std::to_wstring(data.revision) << L", contains "
-                                << std::to_wstring(data.slides)
-                                << " slides and " << std::to_wstring(data.words) << L" words" << std::endl;
-                *options.output << L"Created in " << data.created << L" by " << data.creator << std::endl;
-                *options.output << L"Last modified in " << data.modified << L" by " << data.lastModifiedBy << std::endl;
-                *options.output << L"Application: " << data.application << std::endl << std::endl;
-                options.output->flush();
-                break;
-            }
-            case docx: {
-                *options.output << L"Document data:" << std::endl;
-                *options.output << L"Revision №" << std::to_wstring(data.revision) << L", contains "
-                                << std::to_wstring(data.pages)
-                                << " pages and " << std::to_wstring(data.words) << L" words" << std::endl;
-                *options.output << L"Created in " << data.created << L" by " << data.creator << std::endl;
-                *options.output << L"Last modified in " << data.modified << L" by " << data.lastModifiedBy << std::endl;
-                *options.output << L"Application: " << data.application << std::endl << std::endl;
-                options.output->flush();
-                break;
-            }
-            case xlsx: {
-                *options.output << L"Document data:" << std::endl;
-                *options.output << L"Created in " << data.created << L" by " << data.creator << std::endl;
-                *options.output << L"Last modified in " << data.modified << L" by " << data.lastModifiedBy << std::endl;
-                *options.output << L"Application: " << data.application << std::endl << std::endl;
-                options.output->flush();
-                break;
-            }
-        }
-    }
+
 
 
 }

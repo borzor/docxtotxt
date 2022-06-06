@@ -8,7 +8,7 @@
 
 #include "../ParserCommons/DocumentCommons.h"
 
-namespace prsr {
+namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
 
@@ -24,8 +24,6 @@ namespace prsr {
         void printResult(buffer &resultBuffer) const;
 
         void insertHyperlinks(std::map<std::string, std::string> hyperlinkRelationship);
-
-        void printMetaInfoData(const fileMetaData_t &fileMetaData) const;
 
         void saveImages(const std::map<std::string, std::string> &imageRelationship) const;
     };

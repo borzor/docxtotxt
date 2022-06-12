@@ -16,6 +16,8 @@ namespace table {
                 parseTableGrid(element);
             } else if (!strcmp(element->Value(), "w:tr")) {//table row
                 parseTableRow(element);
+                currentColumn = 0;
+                line += 1;
             }
             element = element->NextSiblingElement();
         }
@@ -46,10 +48,6 @@ namespace table {
                     tcElement = tcElement->NextSiblingElement();
                 }
                 currentColumn += table.grid[line].back().gridSpan;
-                if (currentColumn == table.columnAmount) {
-                    currentColumn = 0;
-                    line += 1;
-                }
 
             }
             rowElement = rowElement->NextSiblingElement();
@@ -69,7 +67,7 @@ namespace table {
                 case tblJc:
                     if (tableProperty->FirstAttribute() != nullptr)
                         //setJustify(tableProperty, table.settings.justify);
-                    break;
+                        break;
                 case tblJshd:
                     break;
                 case tblBorders:
@@ -128,33 +126,40 @@ namespace table {
         for (auto &cell: table.grid[line]) {
             tableWidth += cell.width;
         }
-        auto tableSize = tableWidth / TWIP_TO_CHARACTER;
-        tableSize += table.columnAmount + 2;
+        size_t minColumn = table.columnAmount;
+        for (int i = 0; i < table.columnAmount; i++) {
+            minColumn = min(minColumn, table.grid[i].size());
+        }
+        auto tableSize = tableWidth;
+        tableSize += (minColumn + 1); //column size + amount of columns
+        auto mediumLine = tableSize - 2;
         auto leftBorder = (docInfo.docWidth - tableSize) / 2;
-        docInfo.docBuffer.emplace_back();
-        docInfo.pointer++;
         docInfo.docBuffer.back().second = -1;
-        std::wstring topTableLine = std::wstring(leftBorder, L' ').append(tableSize, L'-');
-        docInfo.docBuffer.back().first.append(topTableLine);
-        while (line < table.grid.size()){
+        docInfo.docBuffer.back().first.append(
+                std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
+        while (line < table.grid.size()) {
             bool lineDone = true;
+            currentColumn = 0;
             docInfo.docBuffer.emplace_back();
             docInfo.pointer++;
             docInfo.docBuffer.back().second = -1;
             docInfo.docBuffer.back().first.append(std::wstring(leftBorder, L' ') + L"|");
-            for (currentColumn = 0;
-                 currentColumn < table.columnAmount; currentColumn += table.grid[line][currentColumn].gridSpan) {
-                auto charInCell = table.grid[line][currentColumn].width / TWIP_TO_CHARACTER;
+            while (currentColumn < table.grid[line].size()) {
+                auto charInCell = table.grid[line][currentColumn].width;
                 if (!table.grid[line][currentColumn].text.empty()) {
                     auto text = table.grid[line][currentColumn].text;
                     std::wstring resultText;
-                    auto textSize = text.size();
                     auto indexLastElement = text.find_last_of(L' ', charInCell);
                     if (charInCell < text.size()) {
                         lineDone = false;
-                        resultText = text.substr(0, indexLastElement);
+                        if (indexLastElement == string::npos) {
+                            resultText = text.substr(0, charInCell);
+                        } else {
+                            resultText = text.substr(0, indexLastElement);
+                        }
                         docInfo.docBuffer.back().first.append(resultText);
-                        docInfo.docBuffer.back().first.append(charInCell - indexLastElement, L' ');
+                        docInfo.docBuffer.back().first.append(
+                                indexLastElement == string::npos ? 0 : charInCell - indexLastElement, L' ');
                     } else {
                         resultText = text;
                         docInfo.docBuffer.back().first.append(resultText);
@@ -163,12 +168,20 @@ namespace table {
                     table.grid[line][currentColumn].text.erase(0, resultText.size() + 1);
                     docInfo.docBuffer.back().first.append(1, L'|');
                 } else {
-                    docInfo.docBuffer.back().first.append(charInCell, L' ').append(1, L'|');
+                    docInfo.docBuffer.back().first.append(charInCell == 1 ? 0 : charInCell, L' ').append(1, L'|');
                 }
-            } if(lineDone){
+                currentColumn++;
+            }
+            if (lineDone) {
                 line++;
+                docInfo.docBuffer.emplace_back();
+                docInfo.pointer++;
+                docInfo.docBuffer.back().second = -1;
+                docInfo.docBuffer.back().first.append(
+                        std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
             }
         }
+
     }
 
     void TableParser::flush() {
@@ -216,7 +229,7 @@ namespace table {
             if (!strcmp(gridCol->Value(), "w:tcW")) {
                 auto size = gridCol->Attribute("w:w");
                 if (size != nullptr) {
-                    tmpCell.width = atoi(size);
+                    tmpCell.width = atoi(size) / TWIP_TO_CHARACTER;
                 }
             } else if (!strcmp(gridCol->Value(), "w:gridSpan")) {
                 gridSpan = atoi(gridCol->Attribute("w:val"));

@@ -306,7 +306,7 @@ namespace paragraph {
         }
     }
 
-    void ParagraphParser::flush() {
+    void ParagraphParser::flush() {//TODO check correct flush
         options.output->flush();
         paragraphBuffer.clear();
         settings = docInfo.defaultSettings.paragraph;

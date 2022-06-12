@@ -10,7 +10,6 @@
 #include "ParagraphParser.h"
 #include <map>
 
-#define TWIP_TO_CHARACTER 120
 
 namespace section {
     using namespace std;
@@ -52,10 +51,6 @@ namespace section {
         explicit SectionParser(::docInfo_t &docInfo);
 
         void parseSection(XMLElement *section);
-
-        size_t getDocWidth();
-
-        size_t getDocHeight();
     };
 }
 

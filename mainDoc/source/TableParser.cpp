@@ -25,7 +25,7 @@ namespace table {
 
     void TableParser::parseTableRow(XMLElement *row) {
         XMLElement *rowElement = row->FirstChildElement();
-        auto paragraphParser = paragraph::ParagraphParser(docInfo, options);
+        paragraph::ParagraphParser paragraphParser(docInfo, options);
         while (rowElement != nullptr) {
             if (!strcmp(rowElement->Value(), "w:trPr")) {// Specifies the row-level properties for the row
                 //TODO the most important attr - trHeight - the height of the row
@@ -108,48 +108,47 @@ namespace table {
     }
 
     void TableParser::insertTable() {
-        size_t width = 0;
-        for (const auto &item: tblGrids) {
-            width += item;
-        }
-        auto leftBorder = (docInfo.docWidth - (width / TWIP_TO_CHARACTER)) / 2;
-        auto counter = 0;
-        while (counter != tableData.size()) {
-            line tmp;
-            tmp.text.insert(0, leftBorder, ' ');
-            auto currentOffset = leftBorder;
-            for (const auto &item: tblGrids) {
-                auto characterLength = tableData[counter].length;
-                auto data = tableData[counter].text;
-                auto charactersInCell = item / TWIP_TO_CHARACTER;
-                while(characterLength != 0){
-                    if(characterLength > charactersInCell){
-                        tmp.text.append(tableData[counter].text);
-                        tableData[counter].text;
-                        resultTable.push_back(tmp);
-                        tmp.text = "";
-                        tmp.length = 0;
-                        characterLength-=charactersInCell;
-                    } else{
-
-                    }
-                }
-
-                auto offset = charactersInCell - tableData[counter].length;
-                tmp.text.append(offset / 2, ' ');
-                tmp.text.append(tableData[counter].text);
-                tmp.text.append(offset / 2, ' ');
-                currentOffset += item;
-                counter++;
-            }
-            tmp.length += docInfo.docWidth;
-            resultTable.push_back(tmp);
-        }
-        for (auto &s: resultTable) {
-            *options.output << setw((strlen(s.text.c_str()) + docInfo.docWidth / 2 - s.length / 2))
-                            << s.text
-                            << endl;
-        }
+//        size_t width = 0;
+//        for (const auto &item: tblGrids) {
+//            width += item;
+//        }
+//        auto leftBorder = (docInfo.docWidth - (width / TWIP_TO_CHARACTER)) / 2;
+//        auto counter = 0;
+//        while (counter != tableData.size()) {
+//            tmp.text.insert(0, leftBorder, ' ');
+//            auto currentOffset = leftBorder;
+//            for (const auto &item: tblGrids) {
+//                auto characterLength = tableData[counter].length;
+//                auto data = tableData[counter].text;
+//                auto charactersInCell = item / TWIP_TO_CHARACTER;
+//                while(characterLength != 0){
+//                    if(characterLength > charactersInCell){
+//                        tmp.text.append(tableData[counter].text);
+//                        tableData[counter].text;
+//                        resultTable.push_back(tmp);
+//                        tmp.text = "";
+//                        tmp.length = 0;
+//                        characterLength-=charactersInCell;
+//                    } else{
+//
+//                    }
+//                }
+//
+//                auto offset = charactersInCell - tableData[counter].length;
+//                tmp.text.append(offset / 2, ' ');
+//                tmp.text.append(tableData[counter].text);
+//                tmp.text.append(offset / 2, ' ');
+//                currentOffset += item;
+//                counter++;
+//            }
+//            tmp.length += docInfo.docWidth;
+//            resultTable.push_back(tmp);
+//        }
+//        for (auto &s: resultTable) {
+//            *options.output << setw((strlen(s.text.c_str()) + docInfo.docWidth / 2 - s.length / 2))
+//                            << s.text
+//                            << endl;
+//        }
 
     }
 

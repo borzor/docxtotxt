@@ -4,8 +4,6 @@
 
 #ifndef DOCXTOTXT_MAINDOCPARSER_H
 #define DOCXTOTXT_MAINDOCPARSER_H
-#define MAIN_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
-#define IMAGE_FILE_PATH "word/_rels/document.xml.rels"
 
 #include "SectionParser.h"
 
@@ -17,11 +15,11 @@ namespace prsr {
     class MainDocParser {
     private:
         XMLDocument mainDoc;
-        XMLDocument relationsDoc;
         bool isInitialized;
         map<string, string> content_types;
         options_t &options;
         docInfo_t &docInfo;
+        wstringConvert convertor;
 
     public:
 
@@ -37,7 +35,15 @@ namespace prsr {
 
         void parseRelationships(XMLDocument *doc);
 
+        void parseStyles(XMLDocument *doc);
+
+        void addStyle(XMLElement *element);
+
+        void setDefaultSettings(XMLElement *element);
+
         void insertHyperlinks();
+
+        void saveImages();
 
     };
 

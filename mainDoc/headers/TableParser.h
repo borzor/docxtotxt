@@ -53,8 +53,8 @@ namespace table {
         options_t &options;
         docInfo_t &docInfo;
         std::vector<std::size_t> tblGrids;
-        std::vector<line> tableData;
-        std::vector<line> resultTable;
+        wstring tableData;
+        wstring resultTable;
     public:
         TableParser(docInfo_t &docInfo, options_t &options);
 

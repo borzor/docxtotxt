@@ -45,14 +45,6 @@ namespace section {
         free(sectionProperty);
     }
 
-    size_t SectionParser::getDocWidth() {
-        return this->docInfo.docWidth;
-    }
-
-    size_t SectionParser::getDocHeight() {
-        return this->docInfo.docHeight;
-    }
-
     SectionParser::SectionParser(::docInfo_t &docInfo) : docInfo(docInfo) {
 
     }

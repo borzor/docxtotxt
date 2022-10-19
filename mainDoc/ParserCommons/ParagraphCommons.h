@@ -4,6 +4,8 @@
 #ifndef DOCXTOTXT_PARAGRAPHCOMMONS_H
 #define DOCXTOTXT_PARAGRAPHCOMMONS_H
 
+#include <queue>
+
 enum paragraphProperty {
     framePr,
     ind,
@@ -38,7 +40,16 @@ enum paragraphJustify {
     both,
     distribute
 };
-typedef struct{
+
+enum tabCharacter {
+    dot,
+    heavy,
+    hyphen,
+    middleDot,
+    none,
+    underscore
+};
+typedef struct {
     size_t left;
     size_t right;
     size_t hanging;
@@ -46,8 +57,20 @@ typedef struct{
 } indentation;
 
 typedef struct {
+    size_t before;
+    size_t after;
+} lineSpacing;
+
+typedef struct { //val needed?
+    size_t pos;
+    tabCharacter character;
+} tabulation;
+
+typedef struct {
     paragraphJustify justify;
     indentation ind;
+    lineSpacing spacing;
+    std::queue<tabulation> tab;
 } paragraphSettings;
 
 typedef struct {

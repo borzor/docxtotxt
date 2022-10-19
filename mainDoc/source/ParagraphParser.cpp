@@ -72,6 +72,8 @@ namespace paragraph {
                 case shd:
                     break;
                 case spacing:
+                    if (paragraphProperty->FirstAttribute() != nullptr)
+                        setSpacing(paragraphProperty, settings.spacing);
                     break;
                 case tabs:
                     break;//TODO another tabulation
@@ -138,32 +140,37 @@ namespace paragraph {
             firstLineLeft = left == 0 ? 0 : left - settings.ind.hanging / TWIP_TO_CHARACTER;
         }
         bool isFirstLine = true;
+        auto before = settings.spacing.before / TWIP_TO_CHARACTER_HEIGHT;
+        auto after = settings.spacing.after / TWIP_TO_CHARACTER_HEIGHT;
+        for (int i = 0; i < before; i++) {
+            docInfo.docBuffer.emplace_back();
+            docInfo.pointer++;
+        }
         if (!this->paragraphBuffer.empty()) {
-            switch (settings.justify) {
-                case paragraphJustify::left:
-                    while (currentSize != 0) {
-                        auto currentLine = docInfo.pointer;
-                        if (docInfo.docBuffer[currentLine].second == -1)
-                            docInfo.docBuffer.emplace_back();
-                        auto availableBufferInLine = docInfo.docWidth - docInfo.docBuffer[currentLine].second;
+            while (currentSize != 0) {
+                auto currentLine = docInfo.pointer;
+                if (docInfo.docBuffer[currentLine].second == -1)
+                    docInfo.docBuffer.emplace_back();
+                auto availableBufferInLine = docInfo.docWidth - docInfo.docBuffer[currentLine].second;
+                if (isFirstLine) {
+                    availableBufferInLine = availableBufferInLine - firstLineLeft - right;
+                } else {
+                    availableBufferInLine = availableBufferInLine - left - right;
+                }
+                if (currentSize > availableBufferInLine) {
+                    auto indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
+                    if (indexLastElement == string::npos) {
                         if (isFirstLine) {
-                            availableBufferInLine = availableBufferInLine - firstLineLeft - right;
+                            availableBufferInLine = docInfo.docWidth - firstLineLeft - right;
                         } else {
-                            availableBufferInLine = availableBufferInLine - left - right;
+                            availableBufferInLine = docInfo.docWidth - left - right;
                         }
-                        if (currentSize > availableBufferInLine) {
-                            auto indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
-                            if (indexLastElement == string::npos) {
-                                if (isFirstLine) {
-                                    availableBufferInLine = docInfo.docWidth - firstLineLeft -
-                                                            right;
-                                } else {
-                                    availableBufferInLine = docInfo.docWidth - left - right;
-                                }
-                                indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
-                                docInfo.docBuffer.emplace_back();
-                                docInfo.pointer++;
-                            }
+                        indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
+                        docInfo.docBuffer.emplace_back();
+                        docInfo.pointer++;
+                    }
+                    switch (settings.justify) {
+                        case paragraphJustify::left: {
                             docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
                             docInfo.docBuffer.back().first.append(paragraphBuffer.substr(0, indexLastElement));
                             docInfo.docBuffer.back().first.append(right, L' ');
@@ -173,41 +180,9 @@ namespace paragraph {
                             docInfo.docBuffer.emplace_back();
                             docInfo.pointer++;
                             isFirstLine = false;
-                        } else {
-                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
-                            docInfo.docBuffer.back().first.append(paragraphBuffer);
-                            docInfo.docBuffer.back().first.append(right, L' ');
-                            docInfo.docBuffer.back().second +=
-                                    paragraphBuffer.length() + (isFirstLine ? firstLineLeft + right : left + right);
-                            currentSize = 0;
+                            break;
                         }
-                    }
-                    break;
-                case paragraphJustify::right:
-                    while (currentSize != 0) {
-                        auto currentLine = docInfo.pointer;
-                        if (docInfo.docBuffer[currentLine].second == -1)
-                            docInfo.docBuffer.emplace_back();
-                        auto availableBufferInLine = docInfo.docWidth - docInfo.docBuffer[currentLine].second;
-                        if (isFirstLine) {
-                            availableBufferInLine = availableBufferInLine - firstLineLeft -
-                                                    right;
-                        } else {
-                            availableBufferInLine = availableBufferInLine - left - right;
-                        }
-                        if (currentSize > availableBufferInLine) {
-                            auto indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
-                            if (indexLastElement == string::npos) {
-                                if (isFirstLine) {
-                                    availableBufferInLine = docInfo.docWidth - firstLineLeft -
-                                                            right;
-                                } else {
-                                    availableBufferInLine = docInfo.docWidth - left - right;
-                                }
-                                indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
-                                docInfo.docBuffer.emplace_back();
-                                docInfo.pointer++;
-                            }
+                        case paragraphJustify::right: {
                             docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
                             docInfo.docBuffer.back().first.append(docInfo.docWidth - indexLastElement, L' ');
                             docInfo.docBuffer.back().first.append(paragraphBuffer.substr(0, indexLastElement));
@@ -218,43 +193,9 @@ namespace paragraph {
                             docInfo.docBuffer.emplace_back();
                             docInfo.pointer++;
                             isFirstLine = false;
-                        } else {
-                            auto insertingSize = paragraphBuffer.length() +
-                                                 (isFirstLine ? firstLineLeft + right : left + right);
-                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
-                            docInfo.docBuffer.back().first.append(docInfo.docWidth - insertingSize, L' ');
-                            docInfo.docBuffer.back().first.append(paragraphBuffer);
-                            docInfo.docBuffer.back().first.append(right, L' ');
-                            docInfo.docBuffer.back().second += insertingSize;
-                            currentSize = 0;
+                            break;
                         }
-                    }
-                    break;
-                case center:
-                    while (currentSize != 0) {
-                        auto currentLine = docInfo.pointer;
-                        if (docInfo.docBuffer[currentLine].second == -1)
-                            docInfo.docBuffer.emplace_back();
-                        auto availableBufferInLine = docInfo.docWidth - docInfo.docBuffer[currentLine].second;
-                        if (isFirstLine) {
-                            availableBufferInLine = availableBufferInLine - firstLineLeft -
-                                                    right;
-                        } else {
-                            availableBufferInLine = availableBufferInLine - left - right;
-                        }
-                        if (currentSize > availableBufferInLine) {
-                            auto indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
-                            if (indexLastElement == string::npos) {
-                                if (isFirstLine) {
-                                    availableBufferInLine = docInfo.docWidth - firstLineLeft -
-                                                            right;
-                                } else {
-                                    availableBufferInLine = docInfo.docWidth - left - right;
-                                }
-                                indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
-                                docInfo.docBuffer.emplace_back();
-                                docInfo.pointer++;
-                            }
+                        case paragraphJustify::center: {
                             docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
                             docInfo.docBuffer.back().first.append((docInfo.docWidth - indexLastElement) / 2, L' ');
                             docInfo.docBuffer.back().first.append(paragraphBuffer.substr(0, indexLastElement));
@@ -265,23 +206,57 @@ namespace paragraph {
                             docInfo.docBuffer.emplace_back();
                             docInfo.pointer++;
                             isFirstLine = false;
-                        } else {
-                            auto insertingSize = paragraphBuffer.length() +
-                                                 (isFirstLine ? firstLineLeft + right : left + right);
+                            break;
+                        }
+                        case both:
+                            break;
+                        case distribute:
+                            break;
+                    }
+                } else {
+                    switch (settings.justify) {
+                        case paragraphJustify::left: {
+                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
+                            docInfo.docBuffer.back().first.append(paragraphBuffer);
+                            docInfo.docBuffer.back().first.append(right, L' ');
+                            docInfo.docBuffer.back().second +=
+                                    paragraphBuffer.length() + (isFirstLine ? firstLineLeft + right : left + right);
+                            currentSize = 0;
+                            break;
+                        }
+                        case paragraphJustify::right: {
+                            auto insertingSize =
+                                    paragraphBuffer.length() + (isFirstLine ? firstLineLeft + right : left + right);
+                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
+                            docInfo.docBuffer.back().first.append(docInfo.docWidth - insertingSize, L' ');
+                            docInfo.docBuffer.back().first.append(paragraphBuffer);
+                            docInfo.docBuffer.back().first.append(right, L' ');
+                            docInfo.docBuffer.back().second += insertingSize;
+                            currentSize = 0;
+                            break;
+                        }
+                        case paragraphJustify::center: {
+                            auto insertingSize =
+                                    paragraphBuffer.length() + (isFirstLine ? firstLineLeft + right : left + right);
                             docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
                             docInfo.docBuffer.back().first.append((docInfo.docWidth - insertingSize) / 2, L' ');
                             docInfo.docBuffer.back().first.append(paragraphBuffer);
                             docInfo.docBuffer.back().first.append(right, L' ');
                             docInfo.docBuffer.back().second += insertingSize;
                             currentSize = 0;
+                            break;
                         }
+                        case both:
+                            break;
+                        case distribute:
+                            break;
                     }
-                    break;
-//                case both:
-//                    break;
-//                case distribute:
-//                    break;
+                }
             }
+        }
+        for (int i = 0; i < after; i++) {
+            docInfo.docBuffer.emplace_back();
+            docInfo.pointer++;
         }
         docInfo.docBuffer.emplace_back();
         docInfo.pointer++;
@@ -394,6 +369,51 @@ namespace paragraph {
             auto firstLine = ind->Attribute("w:firstLine");
             if (firstLine != nullptr) {
                 settings.firstLine = atoi(firstLine);
+            }
+        }
+    }
+
+    void ParagraphParser::setSpacing(XMLElement *spacing, lineSpacing &settings) {
+        if (spacing != nullptr) {
+            auto before = spacing->Attribute("w:before");
+            if (before != nullptr) {
+                settings.before = atoi(before);
+            }
+            auto after = spacing->Attribute("w:after");
+            if (after != nullptr) {
+                settings.after = atoi(after);
+            }
+        }
+    }
+
+    void ParagraphParser::setTabulation(XMLElement *tabs, queue<tabulation> &settings) {
+        if (tabs != nullptr) {
+            auto *tab = tabs->FirstChildElement();
+            while (tab != nullptr) {
+                tabulation tmpTab;
+                tmpTab.character = none;
+                auto leader = tab->Attribute("w:leader");
+                if (leader != nullptr) {
+                    if (!strcmp(leader, "dot")) {
+                        tmpTab.character = dot;
+                    } else if (!strcmp(leader, "heavy")) {
+                        tmpTab.character = heavy;
+                    } else if (!strcmp(leader, "hyphen")) {
+                        tmpTab.character = hyphen;
+                    } else if (!strcmp(leader, "middleDot")) {
+                        tmpTab.character = middleDot;
+                    } else if (!strcmp(leader, "none")) {
+                        tmpTab.character = none;
+                    } else if (!strcmp(leader, "underScore")) {
+                        tmpTab.character = underscore;
+                    }
+                }
+                auto pos = tab->Attribute("w:pos");
+                if(pos != nullptr){
+                    tmpTab.pos = atoi(pos);
+                }
+                settings.emplace(tmpTab);
+                tab = tab->NextSiblingElement();
             }
         }
     }

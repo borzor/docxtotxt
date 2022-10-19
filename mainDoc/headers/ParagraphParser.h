@@ -5,7 +5,6 @@
 #define DOCXTOTXT_PARAGRAPHPARSER_H
 
 #include "tinyxml2.h"
-#include "tinyxml.h"
 #include <zip.h>
 #include "iostream"
 #include <map>
@@ -22,11 +21,11 @@ namespace paragraph {
 
     class ParagraphParser {
     private:
+        options_t &options;
+        docInfo_t &docInfo;
         wstring paragraphBuffer;
         paragraphSettings settings;
         Drawing::DrawingParser drawingParser;
-        options_t &options;
-        docInfo_t &docInfo;
         wstringConvert convertor;
     public:
         ParagraphParser(docInfo_t &docInfo, options_t &options);
@@ -50,6 +49,11 @@ namespace paragraph {
         static void setJustify(XMLElement *element, paragraphJustify &settings);
 
         static void setIndentation(XMLElement *element, indentation &settings);
+
+        static void setSpacing(XMLElement *element, lineSpacing &settings);
+
+        static void setTabulation(XMLElement *element, std::queue<tabulation> &settings);
+
     };
 
 }

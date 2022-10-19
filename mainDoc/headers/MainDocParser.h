@@ -19,13 +19,18 @@ namespace prsr {
         map<string, string> content_types;
         options_t &options;
         docInfo_t &docInfo;
+        pptInfo_t &pptInfo;
         wstringConvert convertor;
 
     public:
 
-        explicit MainDocParser(options_t &options, ::docInfo_t &docInfo);
+        explicit MainDocParser(options_t &options, docInfo_t &docInfo, pptInfo_t &pptInfo);
 
         void doInit();
+
+        void parseDocSpecificData(XMLDocument *xmlDocument);
+
+        void parsePresentationSpecificData();
 
         void checkInit() const;
 

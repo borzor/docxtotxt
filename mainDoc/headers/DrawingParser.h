@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include "tinyxml2.h"
-#include "tinyxml.h"
 
 namespace Drawing {
     using namespace std;

@@ -6,7 +6,6 @@
 #define DOCXTOTXT_SECTIONPARSER_H
 #include <iostream>
 #include "tinyxml2.h"
-#include "tinyxml.h"
 #include "ParagraphParser.h"
 #include <map>
 

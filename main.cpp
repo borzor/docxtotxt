@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <chrono>
 #include <locale>
+#include <iomanip>
 
 #define OPTSTR "i:d:o:lmh"
 
@@ -50,26 +51,27 @@ int main(int argc, char *argv[]) {
                 options.printDocProps = true;
                 break;
             }
-            case 'h':
-                //TODO help options...
+            case 'h': {
+                std::string usage = "usage: docxtotxt ";
+                std::cout << usage << "[-lm]  [-d image_dir] [-h help] [-i input_file]" << std::endl
+                          << std::string(usage.length(), ' ') << "[-o output_file]" << std::endl;
+                return 0;
+            }
             default:
                 std::cerr << "Invalid parameters" << std::endl;
 
         }
-
     try {
         if (options.filePath == nullptr) {
             throw std::invalid_argument("No input file by parameter -i");
         }
         prsr::MainDocParser parser(options);
         parser.parseFile();
-
+        std::cout << "Elapsed(ms)="
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(
+                          std::chrono::steady_clock::now() - start).count()
+                  << std::endl;
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;
     }
-    std::cout << "Elapsed(ms)="
-              << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count()
-              << std::endl;
-
-
 }

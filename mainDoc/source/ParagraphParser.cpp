@@ -61,7 +61,10 @@ namespace paragraph {
                     }
                     break;
                 }
-                case outlineLvl:
+                case outlineLvl:{
+                    if (paragraphProperty->FirstAttribute() != nullptr)
+                        settings.outline = true;
+                }
                     break;
                 case pBdr:
                     break;
@@ -94,13 +97,9 @@ namespace paragraph {
                 case cr:
                     break;//TODO Default line break
                 case drawing: {
-                    size_t height, width;
                     drawingParser.parseDrawing(textProperty);
-                    drawingParser.getDrawingSize(height, width);
-                    if ((options.flags >> 1) & 1)
-                        insertImage(height, width, docInfo.imageRelationship[drawingParser.getDrawingId()]);
-                    else
-                        insertImage(height, width);
+                    drawingParser.insertImage();
+                    drawingParser.flush();
                     break;
                 }
                 case noBreakHyphen:
@@ -130,82 +129,53 @@ namespace paragraph {
 
 
     void ParagraphParser::writeResult() {
+        auto justify = settings.justify;
         auto currentSize = paragraphBuffer.size();
-        size_t left = settings.ind.left / TWIP_TO_CHARACTER;
-        size_t right = settings.ind.right / TWIP_TO_CHARACTER;
-        size_t firstLineLeft;
+        int left = settings.ind.left;
+        int right = settings.ind.right;
+        int firstLineLeft;
         if (settings.ind.hanging == 0) {
-            firstLineLeft = left + settings.ind.firstLine / TWIP_TO_CHARACTER;
+            firstLineLeft = left + settings.ind.firstLine;
         } else {
-            firstLineLeft = left == 0 ? 0 : left - settings.ind.hanging / TWIP_TO_CHARACTER;
+            firstLineLeft = left == 0 ? 0 : left - settings.ind.hanging;
         }
         bool isFirstLine = true;
-        auto before = settings.spacing.before / TWIP_TO_CHARACTER_HEIGHT;
-        auto after = settings.spacing.after / TWIP_TO_CHARACTER_HEIGHT;
+        auto before = settings.spacing.before;
+        auto after = settings.spacing.after;
         for (int i = 0; i < before; i++) {
-            docInfo.docBuffer.emplace_back();
-            docInfo.pointer++;
+            addLine(docInfo.resultBuffer);
+        }
+        if(settings.outline){
+            addLine(docInfo.resultBuffer);
         }
         if (!this->paragraphBuffer.empty()) {
             while (currentSize != 0) {
-                auto currentLine = docInfo.pointer;
-                if (docInfo.docBuffer[currentLine].second == -1)
-                    docInfo.docBuffer.emplace_back();
-                auto availableBufferInLine = docInfo.docWidth - docInfo.docBuffer[currentLine].second;
-                if (isFirstLine) {
-                    availableBufferInLine = availableBufferInLine - firstLineLeft - right;
-                } else {
-                    availableBufferInLine = availableBufferInLine - left - right;
-                }
-                if (currentSize > availableBufferInLine) {
+                auto availableBufferInLine = docInfo.docWidth - docInfo.resultBuffer.buffer.back().length();
+                if (justify == left)
+                    if (isFirstLine) {
+                        availableBufferInLine = availableBufferInLine - firstLineLeft - right;
+                    } else {
+                        availableBufferInLine = availableBufferInLine - left - right;
+                    }
+                size_t ind = 0;
+                if (currentSize > availableBufferInLine) { // 167
                     auto indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
                     if (indexLastElement == string::npos) {
-                        if (isFirstLine) {
-                            availableBufferInLine = docInfo.docWidth - firstLineLeft - right;
-                        } else {
-                            availableBufferInLine = docInfo.docWidth - left - right;
-                        }
+                        addLine(docInfo.resultBuffer);
+                        availableBufferInLine = docInfo.docWidth - docInfo.resultBuffer.buffer[docInfo.resultBuffer.pointer].length();
                         indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
-                        docInfo.docBuffer.emplace_back();
-                        docInfo.pointer++;
                     }
-                    switch (settings.justify) {
+                    switch (justify) {
                         case paragraphJustify::left: {
-                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
-                            docInfo.docBuffer.back().first.append(paragraphBuffer.substr(0, indexLastElement));
-                            docInfo.docBuffer.back().first.append(right, L' ');
-                            docInfo.docBuffer.back().second += indexLastElement;
-                            currentSize -= indexLastElement;
-                            paragraphBuffer = paragraphBuffer.substr(indexLastElement);
-                            docInfo.docBuffer.emplace_back();
-                            docInfo.pointer++;
-                            isFirstLine = false;
+                            ind = isFirstLine ? firstLineLeft : left;
                             break;
                         }
                         case paragraphJustify::right: {
-                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
-                            docInfo.docBuffer.back().first.append(docInfo.docWidth - indexLastElement, L' ');
-                            docInfo.docBuffer.back().first.append(paragraphBuffer.substr(0, indexLastElement));
-                            docInfo.docBuffer.back().first.append(right, L' ');
-                            docInfo.docBuffer.back().second += indexLastElement;
-                            currentSize -= indexLastElement;
-                            paragraphBuffer = paragraphBuffer.substr(indexLastElement);
-                            docInfo.docBuffer.emplace_back();
-                            docInfo.pointer++;
-                            isFirstLine = false;
+                            ind = docInfo.docWidth - indexLastElement;
                             break;
                         }
                         case paragraphJustify::center: {
-                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
-                            docInfo.docBuffer.back().first.append((docInfo.docWidth - indexLastElement) / 2, L' ');
-                            docInfo.docBuffer.back().first.append(paragraphBuffer.substr(0, indexLastElement));
-                            docInfo.docBuffer.back().first.append(right, L' ');
-                            docInfo.docBuffer.back().second += indexLastElement;
-                            currentSize -= indexLastElement;
-                            paragraphBuffer = paragraphBuffer.substr(indexLastElement);
-                            docInfo.docBuffer.emplace_back();
-                            docInfo.pointer++;
-                            isFirstLine = false;
+                            ind = (docInfo.docWidth - indexLastElement) / 2;
                             break;
                         }
                         case both:
@@ -213,37 +183,24 @@ namespace paragraph {
                         case distribute:
                             break;
                     }
+                    docInfo.resultBuffer.buffer.back().append(ind, L' ');
+                    docInfo.resultBuffer.buffer.back().append(paragraphBuffer.substr(0, indexLastElement));
+                    paragraphBuffer = paragraphBuffer.substr(indexLastElement + 1);
+                    addLine(docInfo.resultBuffer);
+                    isFirstLine = false;
+                    currentSize -= indexLastElement;
                 } else {
-                    switch (settings.justify) {
-                        case paragraphJustify::left: {
-                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
-                            docInfo.docBuffer.back().first.append(paragraphBuffer);
-                            docInfo.docBuffer.back().first.append(right, L' ');
-                            docInfo.docBuffer.back().second +=
-                                    paragraphBuffer.length() + (isFirstLine ? firstLineLeft + right : left + right);
-                            currentSize = 0;
+                    switch (justify) {
+                        case ::left: {
+                            ind = isFirstLine ? firstLineLeft : left;
                             break;
                         }
-                        case paragraphJustify::right: {
-                            auto insertingSize =
-                                    paragraphBuffer.length() + (isFirstLine ? firstLineLeft + right : left + right);
-                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
-                            docInfo.docBuffer.back().first.append(docInfo.docWidth - insertingSize, L' ');
-                            docInfo.docBuffer.back().first.append(paragraphBuffer);
-                            docInfo.docBuffer.back().first.append(right, L' ');
-                            docInfo.docBuffer.back().second += insertingSize;
-                            currentSize = 0;
+                        case ::right:{
+                            ind = docInfo.docWidth - currentSize;
                             break;
                         }
-                        case paragraphJustify::center: {
-                            auto insertingSize =
-                                    paragraphBuffer.length() + (isFirstLine ? firstLineLeft + right : left + right);
-                            docInfo.docBuffer.back().first.append(isFirstLine ? firstLineLeft : left, L' ');
-                            docInfo.docBuffer.back().first.append((docInfo.docWidth - insertingSize) / 2, L' ');
-                            docInfo.docBuffer.back().first.append(paragraphBuffer);
-                            docInfo.docBuffer.back().first.append(right, L' ');
-                            docInfo.docBuffer.back().second += insertingSize;
-                            currentSize = 0;
+                        case center:{
+                            ind = (docInfo.docWidth - currentSize) / 2 ;
                             break;
                         }
                         case both:
@@ -251,62 +208,25 @@ namespace paragraph {
                         case distribute:
                             break;
                     }
+                    docInfo.resultBuffer.buffer.back().append(ind, L' ');
+                    docInfo.resultBuffer.buffer.back().append(paragraphBuffer);
+                    currentSize = 0;
                 }
             }
         }
         for (int i = 0; i < after; i++) {
-            docInfo.docBuffer.emplace_back();
-            docInfo.pointer++;
+            addLine(docInfo.resultBuffer);
         }
-        docInfo.docBuffer.emplace_back();
-        docInfo.pointer++;
+        addLine(docInfo.resultBuffer);
     }
 
     ParagraphParser::ParagraphParser(docInfo_t &docInfo, options_t &options)
-            : drawingParser(), docInfo(docInfo), options(options) {
+            : drawingParser(docInfo, options), docInfo(docInfo), options(options) {
         settings = docInfo.defaultSettings.paragraph;
     }
 
-    void ParagraphParser::insertImage(size_t &height, size_t &width, const string &imageName) {
-        height /= 76200;
-        width /= 76200;
-        auto leftBorder = (docInfo.docWidth - width) / 2;
-        auto center = height / 2 - 1;
-        wstring path = L"Media file";
-        for (int i = 0; i < height; i++) {
-            wstring tmp;
-            tmp.insert(0, leftBorder, ' ');
-            if (i == center + 1) {
-                if ((options.flags >> 1) & 1) {
-                    wstring imageInfo =
-                            wstring(L"Saved to path: ") + convertor.from_bytes(this->options.pathToDraws) + L'/' +
-                            convertor.from_bytes(imageName);
-                    if (imageInfo.length() > width) {
-                        tmp.append(imageInfo);
-                    } else {
-                        tmp.insert(leftBorder, (width - imageInfo.length()) / 2, '#');
-                        tmp.append(imageInfo);
-                        tmp.insert(tmp.length(), leftBorder + width - tmp.length(), '#');
-                    }
-                } else {
-                    tmp.insert(leftBorder, width, '#');
-                }
-            } else if (i != center) {
-                tmp.insert(leftBorder, width, '#');
-            } else {
-                if (path.length() > width) {
-                    tmp.append(path);
-                } else {
-                    tmp.insert(leftBorder, (width - path.length()) / 2, '#');
-                    tmp.append(path);
-                    tmp.insert(tmp.length(), leftBorder + width - tmp.length(), '#');
-                }
-            }
-            paragraphBuffer.append(tmp);
-        }
-    }
 
-    void ParagraphParser::flush() {//TODO check correct flush
+    void ParagraphParser::flush() {
         options.output->flush();
         paragraphBuffer.clear();
         settings = docInfo.defaultSettings.paragraph;
@@ -346,9 +266,9 @@ namespace paragraph {
             else if (!strcmp(justify.c_str(), "center"))
                 settings = paragraphJustify::center;
             else if (!strcmp(justify.c_str(), "both"))
-                settings = paragraphJustify::both;
+                settings = paragraphJustify::left;
             else if (!strcmp(justify.c_str(), "distribute"))
-                settings = paragraphJustify::distribute;
+                settings = paragraphJustify::left;
         }
     }
 
@@ -356,19 +276,19 @@ namespace paragraph {
         if (ind != nullptr) {
             auto left = ind->Attribute("w:left");
             if (left != nullptr) {
-                settings.left = atoi(left);
+                settings.left = atoi(left) / TWIP_TO_CHARACTER;
             }
             auto right = ind->Attribute("w:right");
             if (right != nullptr) {
-                settings.right = atoi(right);
+                settings.right = atoi(right) / TWIP_TO_CHARACTER;
             }
             auto hanging = ind->Attribute("w:hanging");
             if (hanging != nullptr) {
-                settings.hanging = atoi(hanging);
+                settings.hanging = atoi(hanging) / TWIP_TO_CHARACTER;
             }
             auto firstLine = ind->Attribute("w:firstLine");
             if (firstLine != nullptr) {
-                settings.firstLine = atoi(firstLine);
+                settings.firstLine = atoi(firstLine) / TWIP_TO_CHARACTER;
             }
         }
     }
@@ -377,11 +297,11 @@ namespace paragraph {
         if (spacing != nullptr) {
             auto before = spacing->Attribute("w:before");
             if (before != nullptr) {
-                settings.before = atoi(before);
+                settings.before = atoi(before) / TWIP_TO_CHARACTER;
             }
             auto after = spacing->Attribute("w:after");
             if (after != nullptr) {
-                settings.after = atoi(after);
+                settings.after = atoi(after) / TWIP_TO_CHARACTER;
             }
         }
     }
@@ -409,7 +329,7 @@ namespace paragraph {
                     }
                 }
                 auto pos = tab->Attribute("w:pos");
-                if(pos != nullptr){
+                if (pos != nullptr) {
                     tmpTab.pos = atoi(pos);
                 }
                 settings.emplace(tmpTab);

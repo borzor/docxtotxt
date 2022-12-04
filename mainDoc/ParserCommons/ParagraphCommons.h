@@ -50,10 +50,10 @@ enum tabCharacter {
     underscore
 };
 typedef struct {
-    size_t left;
-    size_t right;
-    size_t hanging;
-    size_t firstLine;
+    int left;
+    int right;
+    int hanging;
+    int firstLine;
 } indentation;
 
 typedef struct {
@@ -67,6 +67,7 @@ typedef struct { //val needed?
 } tabulation;
 
 typedef struct {
+    bool outline;
     paragraphJustify justify;
     indentation ind;
     lineSpacing spacing;

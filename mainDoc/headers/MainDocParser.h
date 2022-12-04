@@ -14,42 +14,20 @@ namespace prsr {
 
     class MainDocParser {
     private:
-        XMLDocument mainDoc;
-        bool isInitialized;
-        map<string, string> content_types;
         options_t &options;
-        docInfo_t &docInfo;
-        pptInfo_t &pptInfo;
         wstringConvert convertor;
-
     public:
+        explicit MainDocParser(options_t &options);
 
-        explicit MainDocParser(options_t &options, docInfo_t &docInfo, pptInfo_t &pptInfo);
+        void parseFile();
 
-        void doInit();
+        void printResult(buffer &resultBuffer) const;
 
-        void parseDocSpecificData(XMLDocument *xmlDocument);
+        void insertHyperlinks(std::map<std::string, std::string> hyperlinkRelationship);
 
-        void parsePresentationSpecificData();
+        void printMetaInfoData(const fileMetaData_t& fileMetaData) const;
 
-        void checkInit() const;
-
-        void parseContentTypes(XMLDocument *xmlDocument);
-
-        void parseMainDoc();
-
-        void parseRelationships(XMLDocument *doc);
-
-        void parseStyles(XMLDocument *doc);
-
-        void addStyle(XMLElement *element);
-
-        void setDefaultSettings(XMLElement *element);
-
-        void insertHyperlinks();
-
-        void saveImages();
-
+        void saveImages(const std::map<std::string, std::string> &imageRelationship) const;
     };
 
 

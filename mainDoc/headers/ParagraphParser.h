@@ -38,14 +38,6 @@ namespace paragraph {
 
         void parseHyperlink(XMLElement *properties);
 
-        void insertImage(size_t &height, size_t &width, const string &imageName = "");
-
-        void writeResult();
-
-        wstring getResult();
-
-        void flush();
-
         static void setJustify(XMLElement *element, paragraphJustify &settings);
 
         static void setIndentation(XMLElement *element, indentation &settings);
@@ -54,6 +46,11 @@ namespace paragraph {
 
         static void setTabulation(XMLElement *element, std::queue<tabulation> &settings);
 
+        void writeResult();
+
+        wstring getResult();
+
+        void flush();
     };
 
 }

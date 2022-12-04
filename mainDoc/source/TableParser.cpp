@@ -21,8 +21,6 @@ namespace table {
             }
             element = element->NextSiblingElement();
         }
-        insertTable();
-        flush();
     }
 
     void TableParser::parseTableRow(XMLElement *row) {
@@ -127,23 +125,20 @@ namespace table {
             tableWidth += cell.width;
         }
         size_t minColumn = table.columnAmount;
-        for (int i = 0; i < table.columnAmount; i++) {
-            minColumn = min(minColumn, table.grid[i].size());
+        for (auto & i : table.grid) {
+            minColumn = min(minColumn, i.size());
         }
         auto tableSize = tableWidth;
         tableSize += (minColumn + 1); //column size + amount of columns
         auto mediumLine = tableSize - 2;
         auto leftBorder = (docInfo.docWidth - tableSize) / 2;
-        docInfo.docBuffer.back().second = -1;
-        docInfo.docBuffer.back().first.append(
+        docInfo.resultBuffer.buffer.back().append(
                 std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
         while (line < table.grid.size()) {
             bool lineDone = true;
             currentColumn = 0;
-            docInfo.docBuffer.emplace_back();
-            docInfo.pointer++;
-            docInfo.docBuffer.back().second = -1;
-            docInfo.docBuffer.back().first.append(std::wstring(leftBorder, L' ') + L"|");
+            addLine(docInfo.resultBuffer);
+            docInfo.resultBuffer.buffer.back().append(std::wstring(leftBorder, L' ') + L"|");
             while (currentColumn < table.grid[line].size()) {
                 auto charInCell = table.grid[line][currentColumn].width;
                 if (!table.grid[line][currentColumn].text.empty()) {
@@ -157,31 +152,29 @@ namespace table {
                         } else {
                             resultText = text.substr(0, indexLastElement);
                         }
-                        docInfo.docBuffer.back().first.append(resultText);
-                        docInfo.docBuffer.back().first.append(
+                        docInfo.resultBuffer.buffer.back().append(resultText);
+                        docInfo.resultBuffer.buffer.back().append(
                                 indexLastElement == string::npos ? 0 : charInCell - indexLastElement, L' ');
                     } else {
                         resultText = text;
-                        docInfo.docBuffer.back().first.append(resultText);
-                        docInfo.docBuffer.back().first.append(charInCell - text.size(), L' ');
+                        docInfo.resultBuffer.buffer.back().append(resultText);
+                        docInfo.resultBuffer.buffer.back().append(charInCell - text.size(), L' ');
                     }
                     table.grid[line][currentColumn].text.erase(0, resultText.size() + 1);
-                    docInfo.docBuffer.back().first.append(1, L'|');
+                    docInfo.resultBuffer.buffer.back().append(1, L'|');
                 } else {
-                    docInfo.docBuffer.back().first.append(charInCell == 1 ? 0 : charInCell, L' ').append(1, L'|');
+                    docInfo.resultBuffer.buffer.back().append(charInCell == 1 ? 0 : charInCell, L' ').append(1, L'|');
                 }
                 currentColumn++;
             }
             if (lineDone) {
                 line++;
-                docInfo.docBuffer.emplace_back();
-                docInfo.pointer++;
-                docInfo.docBuffer.back().second = -1;
-                docInfo.docBuffer.back().first.append(
+                addLine(docInfo.resultBuffer);
+                docInfo.resultBuffer.buffer.back().append(
                         std::wstring(leftBorder, L' ').append(1, L'+').append(mediumLine, L'—')).append(1, L'+');
             }
         }
-
+        addLine(docInfo.resultBuffer);
     }
 
     void TableParser::flush() {

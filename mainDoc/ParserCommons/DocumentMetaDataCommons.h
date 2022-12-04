@@ -10,6 +10,7 @@
 #include <string>
 
 typedef struct {
+    int slides;
     int pages;
     int words;
     int revision;
@@ -18,25 +19,7 @@ typedef struct {
     std::wstring created;
     std::wstring modified;
     std::wstring application;
-} wordMetaData;
+} fileMetaData_t;
 
-typedef struct {
-    int words;
-    int slides;
-    int revision;
-    std::wstring creator;
-    std::wstring lastModifiedBy;
-    std::wstring created;
-    std::wstring modified;
-    std::wstring application;
-} pptMetaData;
-
-typedef struct {
-    std::wstring creator;
-    std::wstring lastModifiedBy;
-    std::wstring created;
-    std::wstring modified;
-    std::wstring application;
-} xlsxMetaData;
 
 #endif //DOCXTOTXT_DOCUMENTMETADATACOMMONS_H

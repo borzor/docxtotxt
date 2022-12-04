@@ -38,6 +38,8 @@ namespace paragraph {
 
         void parseHyperlink(XMLElement *properties);
 
+        void insertTabulation(paragraphSettings tab);
+
         static void setJustify(XMLElement *element, paragraphJustify &settings);
 
         static void setIndentation(XMLElement *element, indentation &settings);

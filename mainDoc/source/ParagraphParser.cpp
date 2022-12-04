@@ -4,6 +4,7 @@
 #include "../headers/ParagraphParser.h"
 #include "../headers/SectionParser.h"
 #include <codecvt>
+#include <cmath>
 
 namespace paragraph {
     void ParagraphParser::parseParagraph(XMLElement *paragraph) {
@@ -61,7 +62,7 @@ namespace paragraph {
                     }
                     break;
                 }
-                case outlineLvl:{
+                case outlineLvl: {
                     if (paragraphProperty->FirstAttribute() != nullptr)
                         settings.outline = true;
                 }
@@ -79,7 +80,9 @@ namespace paragraph {
                         setSpacing(paragraphProperty, settings.spacing);
                     break;
                 case tabs:
-                    break;//TODO another tabulation
+                    if (paragraphProperty->FirstChildElement() != nullptr)
+                        setTabulation(paragraphProperty, settings.tab);
+                    break;
                 case textAlignment:
                     break;
             }
@@ -118,9 +121,10 @@ namespace paragraph {
                         paragraphBuffer.append(convertor.from_bytes(text));
                     break;
                 }
-                case tab:
-                    paragraphBuffer.append(L"    ");
+                case tab: {
+                    insertTabulation(settings);
                     break;
+                }
             }
             textProperty = textProperty->NextSiblingElement();
         }
@@ -145,9 +149,6 @@ namespace paragraph {
         for (int i = 0; i < before; i++) {
             addLine(docInfo.resultBuffer);
         }
-        if(settings.outline){
-            addLine(docInfo.resultBuffer);
-        }
         if (!this->paragraphBuffer.empty()) {
             while (currentSize != 0) {
                 auto availableBufferInLine = docInfo.docWidth - docInfo.resultBuffer.buffer.back().length();
@@ -162,7 +163,8 @@ namespace paragraph {
                     auto indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
                     if (indexLastElement == string::npos) {
                         addLine(docInfo.resultBuffer);
-                        availableBufferInLine = docInfo.docWidth - docInfo.resultBuffer.buffer[docInfo.resultBuffer.pointer].length();
+                        availableBufferInLine =
+                                docInfo.docWidth - docInfo.resultBuffer.buffer[docInfo.resultBuffer.pointer].length();
                         indexLastElement = paragraphBuffer.find_last_of(L' ', availableBufferInLine);
                     }
                     switch (justify) {
@@ -195,12 +197,12 @@ namespace paragraph {
                             ind = isFirstLine ? firstLineLeft : left;
                             break;
                         }
-                        case ::right:{
+                        case ::right: {
                             ind = docInfo.docWidth - currentSize;
                             break;
                         }
-                        case center:{
-                            ind = (docInfo.docWidth - currentSize) / 2 ;
+                        case center: {
+                            ind = (docInfo.docWidth - currentSize) / 2;
                             break;
                         }
                         case both:
@@ -297,11 +299,11 @@ namespace paragraph {
         if (spacing != nullptr) {
             auto before = spacing->Attribute("w:before");
             if (before != nullptr) {
-                settings.before = atoi(before) / TWIP_TO_CHARACTER;
+                settings.before = std::lround(atof(before) / TWIP_TO_CHARACTER);
             }
             auto after = spacing->Attribute("w:after");
             if (after != nullptr) {
-                settings.after = atoi(after) / TWIP_TO_CHARACTER;
+                settings.after = std::lround(atof(after) / TWIP_TO_CHARACTER);
             }
         }
     }
@@ -330,12 +332,31 @@ namespace paragraph {
                 }
                 auto pos = tab->Attribute("w:pos");
                 if (pos != nullptr) {
-                    tmpTab.pos = atoi(pos);
+                    tmpTab.pos = atoi(pos) / TWIP_TO_CHARACTER;
                 }
                 settings.emplace(tmpTab);
                 tab = tab->NextSiblingElement();
             }
         }
+    }
+
+    void ParagraphParser::insertTabulation(paragraphSettings settings) {
+        auto tab = settings.tab.front();
+        auto pos = tab.pos;
+        wchar_t wCharacter = L' ';
+        if (tab.character == dot)
+            wCharacter = L'.';
+        else if (tab.character == heavy)
+            wCharacter = L'_';
+        else if (tab.character == hyphen)
+            wCharacter = L'-';
+        auto currentSize = paragraphBuffer.length();
+        auto ind = settings.ind.left;
+        if(ind != 0)
+            currentSize+=ind;
+        if (pos > currentSize)
+            paragraphBuffer.append(pos - currentSize, wCharacter);
+        settings.tab.pop();
     }
 
 

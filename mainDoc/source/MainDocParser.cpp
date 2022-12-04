@@ -46,6 +46,17 @@ namespace prsr {
                             tableParser.parseTable(mainElement);
                             tableParser.insertTable();
                             tableParser.flush();
+                        } else if (!strcmp(mainElement->Value(), "w:sdt")){
+                            auto sdtContent = mainElement->FirstChildElement("w:sdtContent");
+                            if(sdtContent != nullptr){
+                                auto paragraphElement = sdtContent->FirstChildElement("w:p");
+                                while (paragraphElement != nullptr){
+                                    paragraphParser.parseParagraph(paragraphElement);
+                                    paragraphParser.writeResult();
+                                    paragraphParser.flush();
+                                    paragraphElement = paragraphElement->NextSiblingElement();
+                                }
+                            }
                         } else {
                             //throw runtime_error(string("Unexpected main element: ") + string(mainElement->Value()));
                         }

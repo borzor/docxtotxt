@@ -49,6 +49,7 @@ enum tabCharacter {
     none,
     underscore
 };
+
 typedef struct {
     int left;
     int right;

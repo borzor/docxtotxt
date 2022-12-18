@@ -12,20 +12,26 @@ namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
 
+    /*!
+	\brief Класс для вызова загрузчка и обработки сторонних файлов
+    */
     class MainDocParser {
     private:
         options_t &options;
         wstringConvert convertor;
-    public:
-        explicit MainDocParser(options_t &options);
-
-        void parseFile();
-
-        void printResult(buffer &resultBuffer) const;
 
         void insertHyperlinks(std::map<std::string, std::string> hyperlinkRelationship);
 
         void saveImages(const std::map<std::string, std::string> &imageRelationship) const;
+
+    public:
+        explicit MainDocParser(options_t &options);
+
+        /*!
+         *Вызывает загрузчик обрабатывающий входные файлы и выводящий результат в поток вывода
+         */
+        void parseFile();
+
     };
 
 

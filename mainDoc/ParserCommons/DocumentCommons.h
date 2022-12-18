@@ -34,7 +34,7 @@ namespace docxtotxt {
 
 #define TWIP_TO_CHARACTER 120
 
-#define PRESENTATION_WIDTH 220
+#define PRESENTATION_WIDTH 150
 #define PRESENTATION_HEIGHT 40
 
     using wstringConvert = std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>;

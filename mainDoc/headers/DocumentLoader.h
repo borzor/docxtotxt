@@ -16,9 +16,10 @@
 namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
-/*!
+
+    /*!
 	\brief Класс для загрузки и извлечения ключевой информации из файлов
-*/
+    */
     class DocumentLoader {
     private:
         options_t &options;
@@ -90,14 +91,31 @@ namespace docxtotxt {
     public:
         explicit DocumentLoader(options_t &options, BufferWriter &writer);
 
+        /*!
+         * Разархивирует входные данные и извлекает ключевую информацию на основе предоставленных параметров
+         */
         void loadData();
 
+        /*!
+         *
+         * @return
+         */
         XMLDocument *getMainDocument();
 
+        /*!
+         * Возвращает структуру .docx документа
+         * @return Структура .docx документа
+         */
         docInfo_t getDocxData() const;
-
+        /*!
+         * Возвращает структуру .xlsx документа
+         * @return Структура .xlsx документа
+         */
         xlsInfo_t getXlsxData() const;
-
+        /*!
+         * Возвращает структуру .pptx документа
+         * @return Структура .pptx документа
+         */
         pptInfo_t getPptxData() const;
     };
 

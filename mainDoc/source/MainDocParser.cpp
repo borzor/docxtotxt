@@ -95,11 +95,7 @@ namespace docxtotxt {
     }
 
 
-    void MainDocParser::printResult(buffer &resultBuffer) const {
-        for (const auto &kv: resultBuffer.buffer) {
-            *options.output << kv << std::endl;
-        }
-    }
+
 
 
 

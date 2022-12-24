@@ -4,10 +4,8 @@
 
 #include <string>
 #include <locale>
-#include <regex>
-
+#include <fstream>
 #include "../headers/MainDocParser.h"
-#include "../headers/TableParser.h"
 #include "../headers/XlsParser.h"
 #include "../headers/DocumentLoader.h"
 #include "../headers/PptParser.h"
@@ -18,7 +16,7 @@ namespace docxtotxt {
         docxtotxt::BufferWriter writer(options);
         DocumentLoader documentLoader(options, writer);
         documentLoader.loadData();
-        if (options.printDocProps) {
+        if ((options.flags >> 4) & 1) {
             writer.insertMetadata();
         }
         switch (options.docType) {
@@ -30,15 +28,17 @@ namespace docxtotxt {
                     for (auto &slide: pptInfo.slides)
                         saveImages(slide.relations.imageRelationship);
                 }
+                writer.writeResult();
                 break;
             }
             case docx: {
                 auto docInfo = documentLoader.getDocxData();
                 DocParser docParser(docInfo, options, writer);
-                docParser.parseFile(documentLoader.getMainDocument());
+                docParser.parseFile();
                 if ((options.flags >> 1) & 1) {
                     saveImages(docInfo.relations.imageRelationship);
                 }
+                writer.writeResult();
                 if ((options.flags >> 2) & 1) {
                     insertHyperlinks(docInfo.relations.hyperlinkRelationship);
                 }
@@ -53,10 +53,10 @@ namespace docxtotxt {
                     for (auto &draw: xlsInfo.draws)
                         saveImages(draw.relations.imageRelationship);
                 }
+                writer.writeResult();
                 break;
             }
         }
-        writer.writeResult();
         zip_close(options.input);
         delete (options.output);
     }
@@ -81,15 +81,12 @@ namespace docxtotxt {
         struct zip_stat file_info{};
         zip_stat_init(&file_info);
         for (const auto &kv: imageRelationship) {
-            if (zip_stat(options.input, kv.second.c_str(), ZIP_FL_NODIR, &file_info) == -1)
-                throw runtime_error("Error: Cannot get info about " + kv.second + " file");
+            if (zip_stat(options.input, kv.second.c_str(), ZIP_FL_NODIR, &file_info) == -1)throw runtime_error("Error: Cannot get info about " + kv.second + " file");
             char tmpImageBuffer[file_info.size];
             auto currentImage = zip_fopen(options.input, kv.second.c_str(), ZIP_FL_NODIR);
-            if (zip_fread(currentImage, &tmpImageBuffer, file_info.size) == -1)
-                throw runtime_error("Error: Cannot read " + kv.second + " file");
+            if (zip_fread(currentImage, &tmpImageBuffer, file_info.size) == -1)throw runtime_error("Error: Cannot read " + kv.second + " file");
             zip_fclose(currentImage);
-            if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second).write(tmpImageBuffer, file_info.size)) {
-                throw runtime_error("Error writing file" + kv.second);
+            if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second).write(tmpImageBuffer, file_info.size)) {throw runtime_error("Error writing file" + kv.second);
             }
         }
     }

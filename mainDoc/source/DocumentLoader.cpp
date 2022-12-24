@@ -3,15 +3,13 @@
 //
 
 #include "../headers/DocumentLoader.h"
-#include "../headers/ParagraphParser.h"
-#include "../headers/TableParser.h"
+#include "../ParserCommons/CommonFunctions.h"
 
 namespace docxtotxt {
     DocumentLoader::DocumentLoader(options_t &options, BufferWriter &writer) : options(options), writer(writer) {
         int err;
         options.input = zip_open(options.filePath, 0, &err);
-        if (options.input == nullptr)
-            throw runtime_error("Error: Cannot unzip file, error number: " + to_string(err));
+        if (options.input == nullptr)throw runtime_error("Error: Cannot unzip file, error number: " + to_string(err));
     }
 
     void DocumentLoader::loadData() {
@@ -31,7 +29,7 @@ namespace docxtotxt {
                 break;
             }
         }
-        if (options.printDocProps) {
+        if (((options.flags >> 4) & 1)) {
             openFileAndParse("docProps/app.xml", &DocumentLoader::parseAppFile);
             openFileAndParse("docProps/core.xml", &DocumentLoader::parseCoreFile);
         }
@@ -40,68 +38,106 @@ namespace docxtotxt {
     void DocumentLoader::openFileAndParse(const string &fileName, void (DocumentLoader::*f)(XMLDocument *)) {
         struct zip_stat file_info{};
         XMLDocument document;
-        if (zip_stat(options.input, fileName.c_str(), 0, &file_info) == -1)
-            throw runtime_error("Error: Cannot get info about " + fileName + " file");
+        if (zip_stat(options.input, fileName.c_str(), 0, &file_info) == -1)throw runtime_error("Error: Cannot get info about " + fileName + " file");
         char buffer[file_info.size];
         auto zip_file = zip_fopen(options.input, fileName.c_str(), 0);
-        if (zip_fread(zip_file, &buffer, file_info.size) == -1)
-            throw runtime_error("Error: Cannot read " + fileName + " file");
+        if (zip_fread(zip_file, &buffer, file_info.size) == -1)throw runtime_error("Error: Cannot read " + fileName + " file");
         zip_fclose(zip_file);
-        if (document.Parse(buffer, file_info.size) != tinyxml2::XML_SUCCESS)
-            throw runtime_error("Error: Cannot parse " + fileName + " file");
+        if (document.Parse(buffer, file_info.size) != tinyxml2::XML_SUCCESS)throw runtime_error("Error: Cannot parse " + fileName + " file");
         (this->*f)(&document);
-        //zip_fclose(zip_file);
     }
 
     void DocumentLoader::openFileAndParse(const string &fileName, relations_t &relations,
-                                          void (DocumentLoader::*f)(XMLDocument *, relations_t &)
-    ) {
+                                          void (DocumentLoader::*f)(XMLDocument *, relations_t &)) {
         struct zip_stat file_info{};
         XMLDocument document;
-        if (zip_stat(options.input, fileName.c_str(), 0, &file_info) == -1)
-            return; //its normal situation then no relations file
+        if (zip_stat(options.input, fileName.c_str(), 0, &file_info) == -1)return; //its normal situation then no relations file
         char buffer4[file_info.size];
         auto zip_file = zip_fopen(options.input, fileName.c_str(), 0);
-        if (zip_fread(zip_file, &buffer4, file_info.size) == -1)
-            throw runtime_error("Error: Cannot read " + fileName + " file");
+        if (zip_fread(zip_file, &buffer4, file_info.size) == -1)throw runtime_error("Error: Cannot read " + fileName + " file");
         zip_fclose(zip_file);
-        if (document.Parse(buffer4, file_info.size) != tinyxml2::XML_SUCCESS)
-            throw runtime_error("Error: Cannot parse " + fileName + " file");
+        if (document.Parse(buffer4, file_info.size) != tinyxml2::XML_SUCCESS)throw runtime_error("Error: Cannot parse " + fileName + " file");
         (this->*f)(&document, relations);
-        //zip_fclose(zip_file);
     }
 
     void DocumentLoader::parseAppFile(XMLDocument *doc) {
+        auto *current_element = doc->RootElement()->FirstChildElement();
+        writer.getMetadata()->application = L" ";
         switch (options.docType) {
             case pptx: {
-                parsePptApp(*doc, *writer.getMetadata());
+                while (current_element != nullptr) {
+                    if (!strcmp(current_element->Value(), "slides")) {
+//                        writer.getMetadata()->slides = atoi(current_element->GetText());
+                    } else if (!strcmp(current_element->Value(), "Words")) {
+                        writer.getMetadata()->words = atoi(current_element->GetText());
+                    } else if (!strcmp(current_element->Value(), "Application")) {
+                        auto text = current_element->GetText();
+                        if (text == nullptr){
+                            //                            writer.getMetadata()->application = L" ";
+                        }else
+                            writer.getMetadata()->application = writer.convertString(text);
+                    }
+                    current_element = current_element->NextSiblingElement();
+                }
                 break;
             }
             case docx: {
-                parseWordApp(*doc, *writer.getMetadata());
+                while (current_element != nullptr) {
+                    if (!strcmp(current_element->Value(), "Pages")) {
+                        writer.getMetadata()->pages = atoi(current_element->GetText());
+                    } else if (!strcmp(current_element->Value(), "Words")) {
+                        writer.getMetadata()->words = atoi(current_element->GetText());
+                    } else if (!strcmp(current_element->Value(), "Application")) {
+                        auto text = current_element->GetText();
+                        if (text != nullptr)
+                            writer.getMetadata()->application = writer.convertString(text);
+                    }
+                    current_element = current_element->NextSiblingElement();
+                }
                 break;
             }
             case xlsx: {
-                parseXlsxApp(*doc, *writer.getMetadata());
+                while (current_element != nullptr) {
+                    if (!strcmp(current_element->Value(), "Application")) {
+                        auto text = current_element->GetText();
+                        if (text != nullptr)
+                            writer.getMetadata()->application = writer.convertString(text);
+                    }
+                    current_element = current_element->NextSiblingElement();
+                }
                 break;
             }
         }
     }
 
     void DocumentLoader::parseCoreFile(XMLDocument *doc) {
-        switch (options.docType) {
-            case pptx: {
-                parsePptCore(*doc, *writer.getMetadata());
-                break;
+        wstringConvert convert;
+        writer.getMetadata()->creator = L" ";
+        writer.getMetadata()->lastModifiedBy = L" ";
+        writer.getMetadata()->created = L" ";
+        writer.getMetadata()->modified = L" ";
+        auto *current_element = doc->RootElement()->FirstChildElement();
+        while (current_element != nullptr) {
+            if (!strcmp(current_element->Value(), "dc:creator")) {
+                auto text = current_element->GetText();
+                if (text != nullptr)
+                    writer.getMetadata()->creator = convert.from_bytes(text);
+            } else if (!strcmp(current_element->Value(), "cp:lastModifiedBy")) {
+                auto text = current_element->GetText();
+                if (text != nullptr)
+                    writer.getMetadata()->lastModifiedBy = convert.from_bytes(text);
+            } else if (!strcmp(current_element->Value(), "cp:revision")) {
+                writer.getMetadata()->revision = atoi(current_element->GetText());
+            } else if (!strcmp(current_element->Value(), "dcterms:created")) {
+                auto text = current_element->GetText();
+                if (text != nullptr)
+                    writer.getMetadata()->created = convert.from_bytes(text);
+            } else if (!strcmp(current_element->Value(), "dcterms:modified")) {
+                auto text = current_element->GetText();
+                if (text != nullptr)
+                    writer.getMetadata()->modified = convert.from_bytes(text);
             }
-            case docx: {
-                parseWordCore(*doc, *writer.getMetadata());
-                break;
-            }
-            case xlsx: {
-                parseXlsxCore(*doc, *writer.getMetadata());
-                break;
-            }
+            current_element = current_element->NextSiblingElement();
         }
     }
 
@@ -253,21 +289,6 @@ namespace docxtotxt {
         }
     }
 
-//    void DocumentLoader::parseSlidePic(XMLElement *element, picture &object) {
-//        auto spPr = element->FirstChildElement("p:spPr");
-//        auto blipFill = element->FirstChildElement("p:blipFill");
-//        if (blipFill != nullptr) {
-//            auto blip = blipFill->FirstChildElement("a:blip");
-//            if (blip != nullptr) {
-//                object.rId = blip->Attribute("r:embed");
-//            }
-//        }
-//        if (spPr != nullptr) {
-//            auto xfrm = spPr->FirstChildElement("a:xfrm");
-//            object.objectInfo = extractObjectInfo(xfrm);
-//        }
-//    }
-
     void DocumentLoader::parseSlideText(XMLElement *element, presentationText &object) {
         auto spPr = element->FirstChildElement("p:spPr");
         auto txBody = element->FirstChildElement("p:txBody");
@@ -306,10 +327,10 @@ namespace docxtotxt {
                 auto lvl = ppr->Attribute("lvl");
                 auto buChar = ppr->FirstChildElement("a:buChar");
                 if (buChar != nullptr) {
-                    auto char_ = buChar->Attribute("char");
-                    if (char_ != nullptr && !body.text.empty()) {
-                        body.text = std::wstring(1, ' ').append(L"•").append(body.text);
-                    }
+//                    auto char_ = buChar->Attribute("char");
+//                    if (char_ != nullptr && !body.text.empty()) {
+//                        body.text = std::wstring(1, ' ').append(L"•").append(body.text);
+//                    }
                 } else if (lvl != nullptr) {
                     auto sizeLvl = std::atoi(lvl);
                     if (!body.text.empty())
@@ -454,8 +475,6 @@ namespace docxtotxt {
     void DocumentLoader::parseStyles(XMLDocument *doc) {
         auto *mainElement = doc->RootElement()->FirstChildElement();
         switch (options.docType) {
-            case pptx:
-                break;
             case docx: {
                 while (mainElement != nullptr) {
                     if (!strcmp(mainElement->Value(), "w:style")) {
@@ -469,8 +488,6 @@ namespace docxtotxt {
                 }
                 break;
             }
-            case xlsx:
-                break;
         }
     }
 
@@ -485,10 +502,10 @@ namespace docxtotxt {
             paragraphSettings styleSettings = {};
             auto pPr = element->FirstChildElement("w:pPr");
             if (pPr != nullptr) {
-                docxtotxt::ParagraphParser::setIndentation(pPr->FirstChildElement("w:ind"), styleSettings.ind);
-                docxtotxt::ParagraphParser::setJustify(pPr->FirstChildElement("w:jc"), styleSettings.justify);
-                docxtotxt::ParagraphParser::setSpacing(pPr->FirstChildElement("w:spacing"), styleSettings.spacing);
-                docxtotxt::ParagraphParser::setTabulation(pPr->FirstChildElement("w:tabs"), styleSettings.tab);
+                setIndentation(pPr->FirstChildElement("w:ind"), styleSettings.ind);
+                setJustify(pPr->FirstChildElement("w:jc"), styleSettings.justify);
+                setSpacing(pPr->FirstChildElement("w:spacing"), styleSettings.spacing);
+                setTabulation(pPr->FirstChildElement("w:tabs"), styleSettings.tab);
             }
             if (def) {
                 docInfo.styles.defaultStyles.paragraph = styleSettings;
@@ -498,12 +515,12 @@ namespace docxtotxt {
         } else if (!strcmp(type.c_str(), "table")) {
             tableProperties styleSettings = {};
             auto tblPr = element->FirstChildElement("w:tblPr");
-            if (tblPr != nullptr) {
-                docxtotxt::TableParser::setJustify(tblPr->FirstChildElement("w:tblInd"), styleSettings.justify);
-                docxtotxt::TableParser::setIndentation(tblPr->FirstChildElement("w:jc"), styleSettings.ind);
-                docxtotxt::TableParser::setFloatingSettings(tblPr->FirstChildElement("w:tblpPr"),
-                                                            styleSettings.floatTable);
-            }
+//            if (tblPr != nullptr) {
+//                setJustify(tblPr->FirstChildElement("w:tblInd"), styleSettings.justify);
+//                docxtotxt::TableParser::setIndentation(tblPr->FirstChildElement("w:jc"), styleSettings.ind);
+//                docxtotxt::TableParser::setFloatingSettings(tblPr->FirstChildElement("w:tblpPr"),
+//                                                            styleSettings.floatTable);
+//            }
             if (def) {
                 docInfo.styles.defaultStyles.table = styleSettings;
             } else {
@@ -518,200 +535,37 @@ namespace docxtotxt {
 
     void DocumentLoader::setDefaultSettings(XMLElement *element) {
         auto *docDefault = element->FirstChildElement();
-        docInfo.defaultSettings.paragraph.justify = paragraphJustify::left;
+        docInfo.defaultSettings.paragraph.justify = justify_t::left;
         while (docDefault != nullptr) {
             if (!strcmp(docDefault->Value(), "w:rPrDefault")) {//default text properties
 
             } else if (!strcmp(docDefault->Value(), "w:pPrDefault")) {//default paragraph properties
                 auto pPr = docDefault->FirstChildElement("w:pPr");
                 if (pPr != nullptr) {
-                    docxtotxt::ParagraphParser::setIndentation(pPr->FirstChildElement("w:ind"),
-                                                               docInfo.defaultSettings.paragraph.ind);
-                    docxtotxt::ParagraphParser::setJustify(pPr->FirstChildElement("w:jc"),
-                                                           docInfo.defaultSettings.paragraph.justify);
+                    setIndentation(pPr->FirstChildElement("w:ind"),
+                                   docInfo.defaultSettings.paragraph.ind);
+                    setJustify(pPr->FirstChildElement("w:jc"),
+                               docInfo.defaultSettings.paragraph.justify);
                 }
             }
             docDefault = docDefault->NextSiblingElement();
         }
     }
 
-    void DocumentLoader::parseWordApp(tinyxml2::XMLDocument &appXML, fileMetadata_t &data) {
-        auto *current_element = appXML.RootElement()->FirstChildElement();
-        wstringConvert convert;
-        while (current_element != nullptr) {
-            if (!strcmp(current_element->Value(), "Pages")) {
-                data.pages = atoi(current_element->GetText());
-            } else if (!strcmp(current_element->Value(), "Words")) {
-                data.words = atoi(current_element->GetText());
-            } else if (!strcmp(current_element->Value(), "Application")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.application = L" ";
-                else
-                    data.application = convert.from_bytes(text);
-            }
-            current_element = current_element->NextSiblingElement();
-        }
-    }
-
-    void DocumentLoader::parseWordCore(tinyxml2::XMLDocument &coreXML, fileMetadata_t &data) {
-        wstringConvert convert;
-        auto *current_element = coreXML.RootElement()->FirstChildElement();
-        while (current_element != nullptr) {
-            if (!strcmp(current_element->Value(), "dc:creator")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.creator = L" ";
-                else
-                    data.creator = convert.from_bytes(text);
-            } else if (!strcmp(current_element->Value(), "cp:lastModifiedBy")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.lastModifiedBy = L" ";
-                else
-                    data.lastModifiedBy = convert.from_bytes(text);
-            } else if (!strcmp(current_element->Value(), "cp:revision")) {
-                data.revision = atoi(current_element->GetText());
-            } else if (!strcmp(current_element->Value(), "dcterms:created")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.created = L" ";
-                else
-                    data.created = convert.from_bytes(text);
-            } else if (!strcmp(current_element->Value(), "dcterms:modified")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.modified = L" ";
-                else
-                    data.modified = convert.from_bytes(text);
-            }
-            current_element = current_element->NextSiblingElement();
-        }
-    }
-
-    void DocumentLoader::parsePptApp(tinyxml2::XMLDocument &doc, fileMetadata_t &data) {
-        auto *current_element = doc.RootElement()->FirstChildElement();
-        wstringConvert convert;
-        while (current_element != nullptr) {
-            if (!strcmp(current_element->Value(), "slides")) {
-                data.slides = atoi(current_element->GetText());
-            } else if (!strcmp(current_element->Value(), "Words")) {
-                data.words = atoi(current_element->GetText());
-            } else if (!strcmp(current_element->Value(), "Application")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.application = L" ";
-                else
-                    data.application = convert.from_bytes(text);
-            }
-            current_element = current_element->NextSiblingElement();
-        }
-    }
-
-    void DocumentLoader::parsePptCore(tinyxml2::XMLDocument &doc, fileMetadata_t &data) {
-        wstringConvert convert;
-        auto *current_element = doc.RootElement()->FirstChildElement();
-        while (current_element != nullptr) {
-            if (!strcmp(current_element->Value(), "dc:creator")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.creator = L" ";
-                else
-                    data.creator = convert.from_bytes(text);
-            } else if (!strcmp(current_element->Value(), "cp:lastModifiedBy")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.lastModifiedBy = L" ";
-                else
-                    data.lastModifiedBy = convert.from_bytes(text);
-            } else if (!strcmp(current_element->Value(), "cp:revision")) {
-                data.revision = atoi(current_element->GetText());
-            } else if (!strcmp(current_element->Value(), "dcterms:created")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.created = L" ";
-                else
-                    data.created = convert.from_bytes(text);
-            } else if (!strcmp(current_element->Value(), "dcterms:modified")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.modified = L" ";
-                else
-                    data.modified = convert.from_bytes(text);
-            }
-            current_element = current_element->NextSiblingElement();
-        }
-    }
-
-    void DocumentLoader::parseXlsxApp(tinyxml2::XMLDocument &doc, fileMetadata_t &data) {
-        auto *current_element = doc.RootElement()->FirstChildElement();
-        wstringConvert convert;
-        while (current_element != nullptr) {
-            if (!strcmp(current_element->Value(), "Application")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.application = L" ";
-                else
-                    data.application = convert.from_bytes(text);
-            }
-            current_element = current_element->NextSiblingElement();
-        }
-    }
-
-    void DocumentLoader::parseXlsxCore(tinyxml2::XMLDocument &doc, fileMetadata_t &data) {
-        wstringConvert convert;
-        auto *current_element = doc.RootElement()->FirstChildElement();
-        while (current_element != nullptr) {
-            if (!strcmp(current_element->Value(), "dc:creator")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.creator = L" ";
-                else
-                    data.creator = convert.from_bytes(text);
-            } else if (!strcmp(current_element->Value(), "cp:lastModifiedBy")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.lastModifiedBy = L" ";
-                else
-                    data.lastModifiedBy = convert.from_bytes(text);
-            } else if (!strcmp(current_element->Value(), "dcterms:created")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.created = L" ";
-                else
-                    data.created = convert.from_bytes(text);
-            } else if (!strcmp(current_element->Value(), "dcterms:modified")) {
-                auto text = current_element->GetText();
-                if (text == nullptr)
-                    data.modified = L" ";
-                else
-                    data.modified = convert.from_bytes(text);
-            }
-            current_element = current_element->NextSiblingElement();
-        }
-    }
-
     void DocumentLoader::loadDocxData() {
         string docStyles = DOC_STYLES_FILE;
         string mainFileNameProperty = DOC_MAIN_FILE;
+        openFileAndParse(DOC_IMAGE_FILE_PATH, docInfo.relations, &DocumentLoader::parseRelationShip);
         for (const auto &kv: this->content_types) {
             if (starts_with(kv.second, docStyles)) {
                 openFileAndParse(kv.first, &DocumentLoader::parseStyles);
-            } else if (starts_with(kv.second, mainFileNameProperty)) {
-                string fileName = kv.first;
-                struct zip_stat file_info{};
-                if (zip_stat(options.input, fileName.c_str(), 0, &file_info) == -1)
-                    throw runtime_error("Error: Cannot get info about " + fileName + " file");
-                char buffer4[file_info.size];
-                auto zip_file = zip_fopen(options.input, fileName.c_str(), 0);
-                if (zip_fread(zip_file, &buffer4, file_info.size) == -1)
-                    throw runtime_error("Error: Cannot read " + fileName + " file");
-                zip_fclose(zip_file);
-                if (mainDoc.Parse(buffer4, file_info.size) != tinyxml2::XML_SUCCESS)
-                    throw runtime_error("Error: Cannot parse " + fileName + " file");
             }
         }
-        openFileAndParse(DOC_IMAGE_FILE_PATH, docInfo.relations, &DocumentLoader::parseRelationShip);
+        for (const auto &kv: this->content_types) {
+            if (starts_with(kv.second, mainFileNameProperty)) {
+                openFileAndParse(kv.first, &DocumentLoader::parseDocFile);
+            }
+        }
     }
 
     void DocumentLoader::loadXlsxData() {
@@ -719,7 +573,6 @@ namespace docxtotxt {
         string worksheet = XLS_WORKSHEET;
         string workbook = XLS_WORKBOOK;
         string drawing = XLS_SLIDE_NOTE;
-//        xlsInfo.sharedStrings.emplace_back(L"firstEmptyElement");
         auto worksheetNum = 0;
         for (const auto &kv: this->content_types) {
             if (starts_with(kv.second, sharedStrings)) {
@@ -770,10 +623,6 @@ namespace docxtotxt {
         return docInfo;
     }
 
-    XMLDocument *DocumentLoader::getMainDocument() {
-        return &mainDoc;
-    }
-
     xlsInfo_t DocumentLoader::getXlsxData() const {
         return this->xlsInfo;
     }
@@ -782,5 +631,347 @@ namespace docxtotxt {
         return pptInfo;
     }
 
+    void DocumentLoader::parseSection(XMLElement *section) {
+        XMLElement *sectionProperty = section->FirstChildElement("w:pgSz");
+        if (sectionProperty != nullptr) {
+            if (sectionProperty->Attribute("w:w") != nullptr)
+                this->docInfo.docWidth = atoi(sectionProperty->Attribute("w:w")) / TWIP_TO_CHARACTER;
+            if (sectionProperty->Attribute("w:h") != nullptr)
+                this->docInfo.docHeight = atoi(sectionProperty->Attribute("w:h")) / TWIP_TO_CHARACTER;
+        }
+    }
+
+    void DocumentLoader::parseDocFile(XMLDocument *doc) {
+        XMLElement *section = doc->RootElement()->FirstChildElement()->FirstChildElement("w:sectPr");
+        parseSection(section);
+        auto mainElement = doc->RootElement()->FirstChildElement()->FirstChildElement();
+        while (mainElement != nullptr) {
+            paragraph par;
+            par.type = paragraphType::par;
+            if (!strcmp(mainElement->Value(), "w:p")) {
+                parseParagraph(mainElement, par);
+            } else if (!strcmp(mainElement->Value(), "w:tbl")) {
+                par.type = paragraphType::table;
+                parseTable(mainElement, par);
+//                    tableParser.parseTable(mainElement);
+//                    tableParser.insertTable();
+//                    tableParser.flush();
+            } else if (!strcmp(mainElement->Value(), "w:sdt")) {
+                auto sdtContent = mainElement->FirstChildElement("w:sdtContent");
+                if (sdtContent != nullptr) {
+                    auto paragraphElement = sdtContent->FirstChildElement("w:p");
+                    while (paragraphElement != nullptr) {
+                        paragraph par;
+                        par.type = paragraphType::par;
+                        parseParagraph(paragraphElement, par);
+                        docInfo.body.emplace_back(par);
+                        paragraphElement = paragraphElement->NextSiblingElement();
+                    }
+                }
+            }
+            docInfo.body.emplace_back(par);
+            mainElement = mainElement->NextSiblingElement();
+        }
+    }
+
+    void DocumentLoader::parseParagraph(XMLElement *element, paragraph &par) {
+        par.body.emplace_back();
+        auto pPr = element->FirstChildElement("w:pPr");
+        if (pPr == nullptr) {
+            par.settings = docInfo.styles.defaultStyles.paragraph;
+        } else {
+            auto pStyle = pPr->FirstChildElement("w:pStyle");
+            if (pStyle == nullptr) {
+                par.settings = docInfo.styles.defaultStyles.paragraph;
+            } else {
+                par.settings = docInfo.styles.paragraphStyles[pStyle->Attribute("w:val")];
+            }
+            XMLElement *paragraphProperty = pPr->FirstChildElement();
+            if (paragraphProperty->FirstAttribute())
+                while (paragraphProperty != nullptr) {
+                    if (!strcmp(paragraphProperty->Value(), "w:ind") &&
+                        paragraphProperty->FirstAttribute() != nullptr) {
+                        setIndentation(paragraphProperty, par.settings.ind);
+                    } else if (!strcmp(paragraphProperty->Value(), "w:jc") &&
+                               paragraphProperty->FirstAttribute() != nullptr) {
+                        setJustify(paragraphProperty, par.settings.justify);
+                    } else if (!strcmp(paragraphProperty->Value(), "w:numPr")) {
+                        XMLElement *enumProperty = paragraphProperty->FirstChildElement();
+                        if (!strcmp(enumProperty->Value(), "w:ilvl")) {
+                            if (enumProperty->FirstAttribute() != nullptr) {
+                                size_t indentationSize = enumProperty->FirstAttribute()->IntValue();
+                                par.body.back().append(
+                                        writer.convertString(std::string(indentationSize, ' ') + (" · ")));
+                            }
+                        }
+                        setJustify(enumProperty, par.settings.justify);
+                    } else if (!strcmp(paragraphProperty->Value(), "w:outlineLvl") &&
+                               paragraphProperty->FirstAttribute() != nullptr) {
+                        par.settings.outline = true;
+                    } else if (!strcmp(paragraphProperty->Value(), "w:spacing") &&
+                               paragraphProperty->FirstAttribute() != nullptr) {
+                        setSpacing(paragraphProperty, par.settings.spacing);
+                    } else if (!strcmp(paragraphProperty->Value(), "w:tabs") &&
+                               paragraphProperty->FirstChildElement() != nullptr) {
+                        setTabulation(paragraphProperty, par.settings.tab);
+                    }
+                    paragraphProperty = paragraphProperty->NextSiblingElement();
+                }
+        }
+        XMLElement *property = element->FirstChildElement();
+        while (property != nullptr) {
+            if (!strcmp(property->Value(), "w:r")) {
+                parseTextProperties(property, par);
+            } else if (!strcmp(property->Value(), "w:hyperlink")) {
+                XMLElement *linkProp = property->FirstChildElement();
+                while (linkProp != nullptr) {
+                    if (!strcmp(linkProp->Value(), "w:r")) {
+                        parseTextProperties(linkProp, par);
+                    }
+                    linkProp = linkProp->NextSiblingElement();
+                }
+                if ((options.flags >> 2) & 1) {
+                    if (property->Attribute("r:id") != nullptr) {
+                        auto id = property->Attribute("r:id");
+                        auto number = distance(docInfo.relations.hyperlinkRelationship.begin(),
+                                               docInfo.relations.hyperlinkRelationship.find(id));//very doubtful
+                        auto result = string("{h").append(to_string(number).append("}"));
+                        par.body.back().append(writer.convertString(result));
+                    }
+                }
+            } else {
+                //throw runtime_error(string("Unexpected child element: ") + string(property->Value()));
+            }
+            property = property->NextSiblingElement();
+        }
+        free(property);
+    }
+
+    void DocumentLoader::parseTextProperties(XMLElement *properties, paragraph &par) {
+        XMLElement *textProperty = properties->FirstChildElement();
+        while (textProperty != nullptr) {
+            if (!strcmp(textProperty->Value(), "w:drawing")) {
+                auto current_element = textProperty->FirstChildElement()->FirstChildElement();
+                while (current_element != nullptr) {
+                    if (!strcmp(current_element->Value(), "a:graphic")) {
+                        if (current_element->FirstChildElement("a:graphicData") != nullptr) {
+                            if (current_element->FirstChildElement("a:graphicData")->FirstChildElement(
+                                    "pic:pic") != nullptr) {
+                                auto picElement = current_element->FirstChildElement(
+                                        "a:graphicData")->FirstChildElement(
+                                        "pic:pic");
+                                auto pic = extractPicture(picElement, "pic");
+                                par.type = paragraphType::image;
+                                auto imageName = docInfo.relations.imageRelationship[pic.rId];
+                                auto width = pic.objectInfo.objectSizeX / 76200;
+                                auto height = pic.objectInfo.objectSizeY / 76200;
+                                auto mediumLine = width - 2;
+                                auto leftBorder = (docInfo.docWidth - width) / 2;
+                                wstring path = L"Media file.";
+                                par.body.emplace_back(path);
+                                if ((width < 3 || height < 3)) {
+                                    wstring imageInfo = wstring(L" Image is too small to display");
+                                    par.body.back().append(imageInfo);
+                                }
+                                if ((options.flags >> 1) & 1) {
+                                    wstring imageInfo = wstring(L"Saved to path: ") +
+                                                        writer.convertString(this->options.pathToDraws) +
+                                                        convertor.from_bytes(imageName);
+                                    par.body.emplace_back(imageInfo);
+                                }
+                                if (width > 3 || height > 3) {
+                                    par.body.emplace_back(
+                                            std::wstring(1, L'+').append(mediumLine, L'—').append(1, L'+'));
+                                    for (int i = 1; i < height - 1; i++) {
+                                        par.body.emplace_back(L"|" + std::wstring(mediumLine, L' ') + L"|");
+                                    }
+                                    par.body.emplace_back(
+                                            std::wstring(1, L'+').append(mediumLine, L'—').append(1, L'+'));
+
+                                }
+                                par.body.emplace_back();
+                            }
+                        }
+
+                    }
+                    current_element = current_element->NextSiblingElement();
+                }
+            } else if (!strcmp(textProperty->Value(), "w:t")) {
+                auto text = textProperty->GetText();
+                if (text == nullptr)
+                    par.body.back().append(L" ");
+                else
+                    par.body.back().append(writer.convertString(text));
+            } else if (!strcmp(textProperty->Value(), "w:tab")) {
+                if (par.settings.tab.empty()) {
+                    par.body.back().append(L"   ");
+                } else {
+                    auto tab = par.settings.tab.front();
+                    auto pos = tab.pos;
+                    char symbol = ' ';
+                    if (tab.character == dot)
+                        symbol = '.';
+//                    else if (tab.character == heavy)
+//                        symbol = '_';
+//                    else if (tab.character == hyphen)
+//                        symbol = '-';
+                    auto currentSize = par.body.back().length();
+                    auto ind = par.settings.ind.left;
+                    if (ind != 0)
+                        currentSize += ind;
+                    if (pos > currentSize)
+                        par.body.back().append(pos - currentSize, symbol);
+                    par.settings.tab.erase(par.settings.tab.begin());
+                }
+            }
+            textProperty = textProperty->NextSiblingElement();
+        }
+    }
+
+    void DocumentLoader::parseTable(XMLElement *tableElem, ::docxtotxt::paragraph &par) {
+        XMLElement *element = tableElem->FirstChildElement();
+        tableSetting settings;
+        size_t line = 0;
+        size_t currentColumn = 0;
+        while (element != nullptr) {
+            if (!strcmp(element->Value(), "w:tblPr")) {// table Properties
+                auto tblStyle = element->FirstChildElement("w:tblStyle");
+                if (tblStyle == nullptr) {
+//                    settings.settings = docInfo.styles.defaultStyles.table;
+                } else {
+                    settings.settings = docInfo.styles.tableStyles[tblStyle->Attribute("w:val")];
+                }
+                XMLElement *tableProperty = element->FirstChildElement();
+                while (tableProperty != nullptr) {
+                    if (!strcmp(tableProperty->Value(), "w:tblInd")) {
+//                        if (tableProperty->FirstAttribute() != nullptr) {
+//                            auto tblInd = tableProperty->Attribute("w:w");
+//                            settings.settings.ind = atoi(tblInd);
+//                        }
+                    } else if (!strcmp(tableProperty->Value(), "w:tblpPr")) {
+
+                    }
+                    tableProperty = tableProperty->NextSiblingElement();
+                }
+            } else if (!strcmp(element->Value(), "w:tblGrid")) {
+                XMLElement *gridCol = element->FirstChildElement();
+                while (gridCol != nullptr) {
+                    settings.tblGrids.emplace_back(std::stoi(gridCol->Attribute("w:w")));
+                    gridCol = gridCol->NextSiblingElement();
+                }
+                settings.columnAmount = settings.tblGrids.size();
+            } else if (!strcmp(element->Value(), "w:tr")) {//table row
+                XMLElement *rowElement = element->FirstChildElement();
+                settings.grid.emplace_back();
+                while (rowElement != nullptr) {
+                    if (!strcmp(rowElement->Value(), "w:trPr")) {
+                        //parseTableRowProperties(rowElement);
+                    } else if (!strcmp(rowElement->Value(), "w:tblPrEx")) {
+                        //Specifies table properties for the row in place of the table properties specified in tblPr.
+                        //can scip, exceptions for table-level properties
+                    } else if (!strcmp(rowElement->Value(), "w:tc")) {//Specifies a table cell
+                        XMLElement *tcElement = rowElement->FirstChildElement();
+                        while (tcElement != nullptr) {
+                            if (!strcmp(tcElement->Value(), "w:p")) {//
+                                paragraph tmpPar;
+                                parseParagraph(tcElement, tmpPar);
+                                settings.grid[line].back().text += tmpPar.body.back();
+                                //getTableCellParagraph(tcElement, paragraphParser); //TODO
+                            } else if (!strcmp(tcElement->Value(), "w:tbl")) {//
+                                // for the table in table...
+                            } else if (!strcmp(tcElement->Value(), "w:tcPr")) {//Specifies a table cell
+                                XMLElement *gridCol = tcElement->FirstChildElement();
+                                size_t gridSpan = 1;
+                                cell tmpCell;
+                                while (gridCol != nullptr) {
+                                    if (!strcmp(gridCol->Value(), "w:tcW")) {
+                                        auto size = gridCol->Attribute("w:w");
+                                        if (size != nullptr) {
+                                            tmpCell.width = atoi(size) / TWIP_TO_CHARACTER;
+                                        }
+                                    } else if (!strcmp(gridCol->Value(), "w:gridSpan")) {
+                                        gridSpan = atoi(gridCol->Attribute("w:val"));
+                                    }
+                                    gridCol = gridCol->NextSiblingElement();
+                                }
+                                tmpCell.gridSpan = gridSpan;
+                                settings.grid[line].push_back(tmpCell);
+                                free(gridCol);
+                            }
+                            tcElement = tcElement->NextSiblingElement();
+                        }
+                        currentColumn += settings.grid[line].back().gridSpan;
+                    }
+                    rowElement = rowElement->NextSiblingElement();
+                }
+                currentColumn = 0;
+                line += 1;
+            }
+            element = element->NextSiblingElement();
+        }
+
+        currentColumn = 0;
+        line = 0;
+        size_t tableWidth = 0;
+        for (auto &cell: settings.grid[line]) {
+            tableWidth += cell.width;
+        }
+        size_t minColumn = settings.columnAmount;
+        for (auto &i: settings.grid) {
+            minColumn = min(minColumn, i.size());
+        }
+        auto tableSize = tableWidth;
+        tableSize += (minColumn + 1); //column size + amount of columns
+        auto mediumLine = tableSize - 2;
+
+        par.body.emplace_back(std::wstring(1, L'+').append(mediumLine, L'—').append(1, L'+'));
+        while (line < settings.grid.size()) {
+            bool lineDone = true;
+            currentColumn = 0;
+            par.body.emplace_back(L"|");
+            while (currentColumn < settings.grid[line].size()) {
+                auto charInCell = settings.grid[line][currentColumn].width;
+                if (!settings.grid[line][currentColumn].text.empty()) {
+                    auto text = settings.grid[line][currentColumn].text;
+                    std::wstring resultText;
+                    auto indexLastElement = text.find_last_of(L' ', charInCell);
+                    if (charInCell < text.size()) {
+                        lineDone = false;
+                        if (indexLastElement == string::npos) {
+                            resultText = text.substr(0, charInCell);
+                        } else {
+                            resultText = text.substr(0, indexLastElement);
+                        }
+                        par.body.back().append(resultText);
+                        par.body.back().append(indexLastElement == string::npos ? 0 : charInCell - indexLastElement,
+                                               L' ');
+                    } else {
+                        resultText = text;
+                        par.body.back().append(resultText);
+                        par.body.back().append(charInCell - text.size(), L' ');
+                    }
+                    settings.grid[line][currentColumn].text.erase(0, resultText.size() + 1);
+                    par.body.back().append(1, L'|');
+                } else {
+                    par.body.back().append(charInCell == 1 ? 0 : charInCell, L' ').append(1, L'|');
+                }
+                currentColumn++;
+            }
+            if (lineDone) {
+                line++;
+                par.body.emplace_back(std::wstring(1, L'+').append(mediumLine, L'—').append(1, L'+'));
+            }
+        }
+//        par.body.emplace_back();
+    }
+
 
 }
+
+
+
+
+
+
+
+

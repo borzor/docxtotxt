@@ -11,7 +11,48 @@
 
 namespace docxtotxt {
 
-    typedef struct {//TODO add rest doc styles
+    typedef struct {
+        bool outline;
+        justify_t justify;
+        indentation ind;
+        lineSpacing spacing;
+        std::vector<tabulation> tab;
+    } paragraphSettings;
+    enum class tableJustify {
+        start,
+        end,
+        center
+    };
+    typedef struct {
+        tableJustify justify;
+        size_t ind;
+    } tableProperties;
+
+    typedef struct {
+        size_t width;
+        size_t gridSpan;
+        std::wstring text;
+    } cell;
+
+    typedef struct {
+        size_t columnAmount;
+        tableProperties settings;
+        std::vector<std::size_t> tblGrids;
+        std::vector<std::vector<cell>> grid;
+    } tableSetting;
+
+    enum paragraphType {
+        par,
+        table,
+        image
+    };
+    typedef struct {
+        paragraphSettings settings;
+        std::vector<std::wstring> body;
+        paragraphType type;
+    } paragraph;
+
+    typedef struct {
         paragraphSettings paragraph;
         tableProperties table;
     } defaultDocStyles;
@@ -32,6 +73,9 @@ namespace docxtotxt {
         relations_t relations;
         stylesRelationship styles;
         defaultDocSettings defaultSettings;
+        std::vector<paragraph> body;
     } docInfo_t;
+
+
 }
 #endif //DOCXTOTXT_DOCCOMMONS_H

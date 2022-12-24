@@ -3,6 +3,7 @@
 //
 
 #include "../headers/PptParser.h"
+#include "algorithm"
 
 namespace docxtotxt {
     PptParser::PptParser(pptInfo_t &pptInfo, options_t &options, BufferWriter &writer) : pptInfo(pptInfo),
@@ -52,10 +53,10 @@ namespace docxtotxt {
                             auto colNum = 0;
                             for (auto &txt: cell) {
                                 if (txt.text.length() > table.gridColSize[colNum]) {
-                                    text.text.append(txt.text.substr(0, table.gridColSize[colNum] - 1));
-                                    txt.text = txt.text.substr(table.gridColSize[colNum] - 1);
-                                    text.text.append(1, ' ');
-                                    repeatLine = true;
+//                                    text.text.append(txt.text.substr(0, table.gridColSize[colNum] - 1));
+//                                    txt.text = txt.text.substr(table.gridColSize[colNum] - 1);
+//                                    text.text.append(1, ' ');
+//                                    repeatLine = true;
                                 } else {
                                     text.text.append(txt.text);
                                     text.text.append(table.gridColSize[colNum] - txt.text.length(), ' ');
@@ -123,7 +124,7 @@ namespace docxtotxt {
         if (textSize > obj.length) {
             auto indexLastElement = obj.paragraph.front().text.find_last_of(L' ', obj.length);
             if (indexLastElement == string::npos) {
-                textToInsert = obj.paragraph.front().text.substr(0, obj.length);
+//                textToInsert = obj.paragraph.front().text.substr(0, obj.length);
             } else {
                 textToInsert = obj.paragraph.front().text.substr(0, indexLastElement);
             }
@@ -170,6 +171,7 @@ namespace docxtotxt {
                 auto text = tmpNote->text;
                 if (!text.empty()) {
                     writer.insertData(L"Slide note: " + text.front().text);
+
                 }
             }
         for (const auto &kv: slideInfo.relations.imageRelationship) {

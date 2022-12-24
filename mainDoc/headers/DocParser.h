@@ -5,7 +5,7 @@
 #ifndef DOCXTOTXT_DOCPARSER_H
 #define DOCXTOTXT_DOCPARSER_H
 
-#include "ParagraphParser.h"
+#include "../ParserCommons/FileSpecificCommons/DocCommons.h"
 #include "Parser.h"
 
 namespace docxtotxt {
@@ -19,14 +19,16 @@ namespace docxtotxt {
         ///Настройки специфичные для файла .docx формата
         docInfo_t &docInfo;
 
-        void parseSection(XMLElement *section);
+        void writeParagraph(paragraph paragraph);
 
+        void writeImage(paragraph paragraph);
+
+        void writeTable(paragraph paragraph);
     public:
         DocParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer);
 
-        void parseFile() override{};
+        void parseFile() override;
 
-        void parseFile(XMLDocument *mainFile);
     };
 
 }

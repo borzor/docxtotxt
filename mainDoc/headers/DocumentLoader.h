@@ -31,8 +31,14 @@ namespace docxtotxt {
         tinyxml2::XMLDocument mainDoc;
         BufferWriter &writer;
 
+        /*!
+         * test
+         */
         void loadDocxData();
 
+        /*!
+         * test
+         */
         void loadXlsxData();
 
         void loadPptxData();
@@ -76,17 +82,16 @@ namespace docxtotxt {
 
         void parseCoreFile(XMLDocument *doc);
 
-        static void parseWordApp(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
+        void parseDocFile(XMLDocument *doc);
 
-        static void parseWordCore(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
+        void parseParagraph(XMLElement *paragraph, ::docxtotxt::paragraph &par);
 
-        static void parsePptApp(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
+        void parseTextProperties(XMLElement *properties, paragraph &paragraph);
 
-        static void parsePptCore(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
+        void parseTable(XMLElement *paragraph, ::docxtotxt::paragraph &par);
 
-        static void parseXlsxApp(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
+        void parseSection(XMLElement *section);
 
-        static void parseXlsxCore(tinyxml2::XMLDocument &doc, fileMetadata_t &data);
 
     public:
         explicit DocumentLoader(options_t &options, BufferWriter &writer);
@@ -97,21 +102,17 @@ namespace docxtotxt {
         void loadData();
 
         /*!
-         *
-         * @return
-         */
-        XMLDocument *getMainDocument();
-
-        /*!
          * Возвращает структуру .docx документа
          * @return Структура .docx документа
          */
         docInfo_t getDocxData() const;
+
         /*!
          * Возвращает структуру .xlsx документа
          * @return Структура .xlsx документа
          */
         xlsInfo_t getXlsxData() const;
+
         /*!
          * Возвращает структуру .pptx документа
          * @return Структура .pptx документа

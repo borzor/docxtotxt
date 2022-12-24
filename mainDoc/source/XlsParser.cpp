@@ -14,12 +14,12 @@ namespace docxtotxt {
         for (auto &sh: xlsInfo.worksheets) {
             insertSheetMetadata(sh);
             auto array = sh.sheetArray;
-            if (array.empty())
-                continue;
+            if (array.empty())continue;
             auto col = sh.col;
             size_t numberOfColumn = 0;
-            for (auto &i: array)
+            for (auto &i: array){
                 numberOfColumn = std::max(numberOfColumn, i.back().cellNumber + 1);
+            }
             std::vector<size_t> columnSize(numberOfColumn, 0);
             size_t tableWidth = numberOfColumn - 1;
             for (int column = 0; column < columnSize.size(); column++) {
@@ -35,7 +35,7 @@ namespace docxtotxt {
                 bool lineDone = true;
                 size_t currentIndex = 0;
                 for (int column = 0; column < numberOfColumn; column++) {
-                    if (array[line][currentIndex].cellNumber == currentIndex) {
+                    if (array[line].size() > currentIndex && array[line][currentIndex].cellNumber == currentIndex) {
                         currentIndex++;
                     } else {
                         sheetCell tmpCell;

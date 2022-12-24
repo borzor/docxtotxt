@@ -24,48 +24,6 @@ namespace docxtotxt {
         tabs,
         textAlignment
     };
-    enum paragraphJustify {
-        left,
-        right,
-        center,
-        both,
-        distribute
-    };
-
-    enum tabCharacter {
-        dot,
-        heavy,
-        hyphen,
-        middleDot,
-        none,
-        underscore
-    };
-
-    typedef struct {
-        int left;
-        int right;
-        int hanging;
-        int firstLine;
-    } indentation;
-
-    typedef struct {
-        size_t before;
-        size_t after;
-    } lineSpacing;
-
-    typedef struct { //val needed?
-        size_t pos;
-        tabCharacter character;
-    } tabulation;
-
-    typedef struct {
-        bool outline;
-        paragraphJustify justify;
-        indentation ind;
-        lineSpacing spacing;
-        std::queue<tabulation> tab;
-    } paragraphSettings;
-
 
     static std::map<std::string, int> paragraphProperties = {{"w:framePr",       framePr},
                                                              {"w:ind",           ind},

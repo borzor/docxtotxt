@@ -3,7 +3,6 @@
 //
 
 #include "../headers/DocParser.h"
-#include "../headers/TableParser.h"
 
 namespace docxtotxt {
     DocParser::DocParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer) : docInfo(docInfo),
@@ -11,49 +10,124 @@ namespace docxtotxt {
 
     }
 
-    void DocParser::parseFile(XMLDocument *mainFile) {
-        auto mainElement = mainFile->RootElement()->FirstChildElement()->FirstChildElement();
-        XMLElement *section = mainFile->RootElement()->FirstChildElement()->FirstChildElement("w:sectPr");
-        parseSection(section);
-        ParagraphParser paragraphParser(docInfo, options, writer);
-        auto tableParser = TableParser(docInfo, options);
+    void DocParser::parseFile() {
         writer.newLine();
-        while (mainElement != nullptr) {
-            try {
-                if (!strcmp(mainElement->Value(), "w:p")) {
-                    paragraphParser.parseParagraph(mainElement);
-                    paragraphParser.writeResult();
-                    paragraphParser.flush();
-                } else if (!strcmp(mainElement->Value(), "w:tbl")) {
-//                    tableParser.parseTable(mainElement);
-//                    tableParser.insertTable();
-//                    tableParser.flush();
-                } else if (!strcmp(mainElement->Value(), "w:sdt")) {
-                    auto sdtContent = mainElement->FirstChildElement("w:sdtContent");
-                    if (sdtContent != nullptr) {
-                        auto paragraphElement = sdtContent->FirstChildElement("w:p");
-                        while (paragraphElement != nullptr) {
-                            paragraphParser.parseParagraph(paragraphElement);
-                            paragraphParser.writeResult();
-                            paragraphParser.flush();
-                            paragraphElement = paragraphElement->NextSiblingElement();
-                        }
-                    }
+        auto body = docInfo.body;
+        for (auto &elem: body) {
+            switch (elem.type) {
+                case par: {
+                    writeParagraph(elem);
+                    break;
                 }
-                mainElement = mainElement->NextSiblingElement();
-            } catch (exception &e) {
-                std::cout << "Allocation failed: " << e.what() << '\n';
+                case table:
+                    writeTable(elem);
+                    break;
+                case image:
+                    writeImage(elem);
+                    break;
             }
         }
     }
 
-    void DocParser::parseSection(XMLElement *section) {
-        XMLElement *sectionProperty = section->FirstChildElement("w:pgSz");
-        if (sectionProperty != nullptr) {
-            if (sectionProperty->Attribute("w:w") != nullptr)
-                this->docInfo.docWidth = atoi(sectionProperty->Attribute("w:w")) / TWIP_TO_CHARACTER;
-            if (sectionProperty->Attribute("w:h") != nullptr)
-                this->docInfo.docHeight = atoi(sectionProperty->Attribute("w:h")) / TWIP_TO_CHARACTER;
+    void DocParser::writeParagraph(paragraph paragraph) {
+        auto justify = paragraph.settings.justify;
+        int left = paragraph.settings.ind.left;
+        int right = paragraph.settings.ind.right;
+        int firstLineLeft;
+        if (paragraph.settings.ind.hanging == 0) {
+            firstLineLeft = left + paragraph.settings.ind.firstLine;
+        } else {
+            firstLineLeft = left == 0 ? 0 : left - paragraph.settings.ind.hanging;
+        }
+        bool isFirstLine = true;
+        auto before = paragraph.settings.spacing.before;
+        auto after = paragraph.settings.spacing.after;
+        for (auto &elem: paragraph.body) {
+            auto currentSize = elem.length();
+            if (!elem.empty()) {
+                for (int i = 0; i < before; i++) {
+                    writer.newLine();
+                }
+                while (currentSize != 0) {
+                    auto availableBufferInLine = docInfo.docWidth - writer.getCurrentLength();
+                    if (justify == left)
+                        if (isFirstLine) {
+                            availableBufferInLine = availableBufferInLine - firstLineLeft - right;
+                        } else {
+                            availableBufferInLine = availableBufferInLine - left - right;
+                        }
+                    size_t ind = 0;
+                    if (currentSize > availableBufferInLine) { // 167
+                        auto indexLastElement = elem.find_last_of(L' ', availableBufferInLine);
+                        if (indexLastElement == string::npos) {
+//                            writer.newLine();
+//                            availableBufferInLine = docInfo.docWidth - writer.getCurrentLength();
+//                            indexLastElement = elem.find_last_of(L' ', availableBufferInLine);
+                        }
+                        switch (justify) {
+                            case justify_t::left: {
+                                ind = isFirstLine ? firstLineLeft : left;
+                                break;
+                            }
+                            case justify_t::right: {
+                                ind = docInfo.docWidth - indexLastElement;
+                                break;
+                            }
+//                            case justify_t::center: {
+//                                ind = (docInfo.docWidth - indexLastElement) / 2;
+//                                break;
+//                            }
+//                            case both:
+//                                break;
+//                            case distribute:
+//                                break;
+                        }
+                        writer.insertData(std::wstring(ind, L' ').append(elem.substr(0, indexLastElement)));
+                        elem = elem.substr(indexLastElement + 1);
+                        isFirstLine = false;
+                        currentSize -= indexLastElement;
+                    } else {
+                        switch (justify) {
+                            case justify_t::left: {
+                                ind = isFirstLine ? firstLineLeft : left;
+                                break;
+                            }
+                            case justify_t::right: {
+                                ind = docInfo.docWidth - currentSize;
+                                break;
+                            }
+                            case justify_t::center: {
+                                ind = (docInfo.docWidth - currentSize) / 2;
+                                break;
+                            }
+//                            case both:
+//                                break;
+//                            case distribute:
+//                                break;
+                        }
+                        writer.insertData(std::wstring(ind, L' ').append(elem), false, false);
+                        currentSize = 0;
+                    }
+                }
+                for (int i = 0; i < after; i++) {
+                    writer.newLine();
+                }
+            }
+        }
+        writer.newLine();
+    }
+
+    void DocParser::writeImage(paragraph paragraph) {
+        for (auto &line: paragraph.body) {
+            auto leftBorder = docInfo.docWidth > line.size() ? (docInfo.docWidth - line.size()) / 2 : 0;
+            writer.insertData(std::wstring(leftBorder, L' ') + line);
+        }
+    }
+
+    void DocParser::writeTable(docxtotxt::paragraph paragraph) {
+        for (auto &line: paragraph.body) {
+            auto leftBorder = docInfo.docWidth > line.size() ? (docInfo.docWidth - line.size()) / 2 : 0;
+            writer.insertData(std::wstring(leftBorder, L' ') + line);
         }
     }
 

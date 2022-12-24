@@ -48,6 +48,40 @@ namespace docxtotxt {
         return value.rfind(starting, 0) == 0;
     }
 
+    enum justify_t {
+        left,
+        right,
+        center,
+        both,
+        distribute
+    };
+
+    enum tabCharacter {
+        dot,
+        heavy,
+        hyphen,
+        middleDot,
+        none,
+        underscore
+    };
+
+    typedef struct {
+        int left;
+        int right;
+        int hanging;
+        int firstLine;
+    } indentation;
+
+    typedef struct {
+        size_t before;
+        size_t after;
+    } lineSpacing;
+
+    typedef struct { //val needed?
+        size_t pos;
+        tabCharacter character;
+    } tabulation;
+
     typedef struct {
         std::map<std::string, std::string> imageRelationship;
         std::map<std::string, std::string> hyperlinkRelationship;
@@ -89,35 +123,7 @@ namespace docxtotxt {
         zip_t *input;
         std::string pathToDraws;
         docTypes docType;
-        bool printDocProps;
     } options_t;
-
-    struct buffer {
-        std::vector<std::wstring> buffer;
-        uint pointer;
-//        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convertor;
-
-        void newLine() {
-            buffer.emplace_back();
-            pointer++;
-        };
-
-        void insertData(const std::string &data, bool addLineBefore = false, bool addLineAfter = true) {
-            if (addLineBefore)
-                newLine();
-            std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> a;
-//        buffer.emplace_back(convertor.from_bytes(data));
-            if (addLineAfter)
-                newLine();
-        }
-
-    };
-
-
-    typedef struct {
-        fileMetadata_t fileMetadata;
-        buffer resultBuffer;
-    } documentData_t;
 
 }
 #endif //DOCXTOTXT_DOCUMENTCOMMONS_H

@@ -9,6 +9,7 @@
 namespace docxtotxt {
     BufferWriter::BufferWriter(options_t &options) : options(options) {
         buffer.emplace_back();
+        fileMetadata.slides = 0;
     }
 
     void BufferWriter::newLine() {

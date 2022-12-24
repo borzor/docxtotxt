@@ -6,7 +6,7 @@
 #define DOCXTOTXT_PPTPARSER_H
 
 #include "../ParserCommons/FileSpecificCommons/PptCommons.h"
-#include "../ParserCommons/BufferWriter.h"
+
 #include "Parser.h"
 
 namespace docxtotxt {

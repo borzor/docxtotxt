@@ -12,11 +12,11 @@ namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
     /*!
-	\brief Реализация парсера, обрабатывающая .docx формат
+	\brief Реализация парсера, обрабатывающая WordprocessingML формат
     */
     class DocParser : public Parser {
     private:
-        ///Настройки специфичные для файла .docx формата
+        ///Настройки специфичные для файла WordprocessingML формата
         docInfo_t &docInfo;
         /*!
          * Записывает параграф в результирующий буфер с учетом форматирования

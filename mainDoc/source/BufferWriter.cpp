@@ -2,7 +2,6 @@
 // Created by borzor on 12/17/22.
 //
 
-#include <stdexcept>
 #include <string>
 #include "../ParserCommons/BufferWriter.h"
 

@@ -13,11 +13,11 @@ namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
     /*!
-	\brief Реализация парсера, обрабатывающая .xlsx формат
+	\brief Реализация парсера, обрабатывающая SpreadsheetML формат
     */
     class XlsParser : public Parser{
     private:
-        ///Настройки специфичные для файла .xlsx формата
+        ///Настройки специфичные для файла SpreadsheetML формата
         xlsInfo_t &xlsInfo;
         /*!
          * Вычисляет размер колонны в таблице

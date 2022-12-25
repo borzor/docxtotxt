@@ -5,6 +5,7 @@
 #ifndef DOCXTOTXT_XLSCOMMONS_H
 #define DOCXTOTXT_XLSCOMMONS_H
 
+
 #include "../DocumentCommons.h"
 
 namespace docxtotxt {

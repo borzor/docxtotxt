@@ -13,15 +13,15 @@ namespace docxtotxt {
     using namespace tinyxml2;
 
     /*!
-	\brief Класс для вызова загрузчка и обработки сторонних файлов
+	\brief Класс для вызова загрузчика и обработки сторонних файлов
     */
     class MainDocParser {
     private:
         options_t &options;
         wstringConvert convertor;
         /*!
-         * Функция для вставки имеющихся в документе гипер ссылок
-         * @param hyperlinkRelationship Массив взаимотношений гипер ссылок
+         * Функция для вставки имеющихся в документе гиперссылок
+         * @param hyperlinkRelationship Массив взаимотношений гиперссылок
          */
         void insertHyperlinks(std::map<std::string, std::string> hyperlinkRelationship);
         /*!

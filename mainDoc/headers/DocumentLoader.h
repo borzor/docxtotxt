@@ -32,16 +32,16 @@ namespace docxtotxt {
         BufferWriter &writer;
 
         /*!
-         * Загружает данные специфичные для .docx формата
+         * Загружает данные специфичные для WordprocessingML формата
          */
         void loadDocxData();
 
         /*!
-         * Загружает данные специфичные для .xlsx формата
+         * Загружает данные специфичные для SpreadsheetML формата
          */
         void loadXlsxData();
         /*!
-         * Загружает данные специфичные для .pptx формата
+         * Загружает данные специфичные для PresentationML формата
          */
         void loadPptxData();
         /*!
@@ -149,7 +149,7 @@ namespace docxtotxt {
          */
         void parseCoreFile(XMLDocument *doc);
         /*!
-         * Обрабатывает основной файл .docx
+         * Обрабатывает основной файл WordprocessingML
          * @param doc Корневой элемент
          */
         void parseDocFile(XMLDocument *doc);
@@ -187,20 +187,20 @@ namespace docxtotxt {
         void loadData();
 
         /*!
-         * Возвращает структуру .docx документа
-         * @return Структура .docx документа
+         * Возвращает структуру WordprocessingML документа
+         * @return Структура WordprocessingML документа
          */
         docInfo_t getDocxData() const;
 
         /*!
-         * Возвращает структуру .xlsx документа
-         * @return Структура .xlsx документа
+         * Возвращает структуру SpreadsheetML документа
+         * @return Структура SpreadsheetML документа
          */
         xlsInfo_t getXlsxData() const;
 
         /*!
-         * Возвращает структуру .pptx документа
-         * @return Структура .pptx документа
+         * Возвращает структуру PresentationML документа
+         * @return Структура PresentationML документа
          */
         pptInfo_t getPptxData() const;
     };

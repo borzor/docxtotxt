@@ -8,8 +8,7 @@ set(CMAKE_CXX_STANDARD 11)
 #find_package(LibZip REQUIRED)
 
 add_executable(docxtotxt main.cpp mainDoc/source/MainDocParser.cpp mainDoc/headers/MainDocParser.h
-        mainDoc/ParserCommons/ParagraphCommons.h
-        mainDoc/ParserCommons/DocumentCommons.h mainDoc/ParserCommons/TableCommons.h mainDoc/ParserCommons/DocumentMetaDataCommons.h
+        mainDoc/ParserCommons/DocumentCommons.h mainDoc/ParserCommons/DocumentMetaDataCommons.h
         mainDoc/source/XlsParser.cpp mainDoc/headers/XlsParser.h mainDoc/source/DocumentLoader.cpp mainDoc/headers/DocumentLoader.h
         mainDoc/source/PptParser.cpp mainDoc/headers/PptParser.h mainDoc/source/DocParser.cpp mainDoc/headers/DocParser.h
         mainDoc/ParserCommons/FileSpecificCommons/PptCommons.h mainDoc/ParserCommons/FileSpecificCommons/XlsCommons.h

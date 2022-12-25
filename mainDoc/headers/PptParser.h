@@ -13,12 +13,12 @@ namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
     /*!
-	\brief Реализация парсера, обрабатывающая .PrsentationML формат
+	\brief Реализация парсера, обрабатывающая PresentationML формат
     */
     class PptParser : public Parser{
 
     private:
-        ///Настройки специфичные для файла PrsentationML формата
+        ///Настройки специфичные для файла PresentationML формата
         pptInfo_t &pptInfo;
         std::vector<slideInsertInfo> slideInsertData;
         /*!

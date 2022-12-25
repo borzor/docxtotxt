@@ -6,10 +6,9 @@
 #include <zip.h>
 #include <map>
 #include <tinyxml2.h>
-#include "ParagraphCommons.h"
-#include "TableCommons.h"
 #include "DocumentMetaDataCommons.h"
 #include <algorithm>
+#include <vector>
 
 #ifndef DOCXTOTXT_DOCUMENTCOMMONS_H
 #define DOCXTOTXT_DOCUMENTCOMMONS_H

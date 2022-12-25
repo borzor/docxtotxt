@@ -18,11 +18,20 @@ namespace docxtotxt {
     private:
         ///Настройки специфичные для файла .docx формата
         docInfo_t &docInfo;
-
+        /*!
+         * Записывает параграф в результирующий буфер с учетом форматирования
+         * @param paragraph Структура параграфа
+         */
         void writeParagraph(paragraph paragraph);
-
+        /*!
+         * Записывает параграф содержащий изображение в результирующий буфер с учетом форматирования
+         * @param paragraph Структура параграфа
+         */
         void writeImage(paragraph paragraph);
-
+        /*!
+         * Записывает параграф содержащий таблицу в результирующий буфер с учетом форматирования
+         * @param paragraph Структура параграфа
+         */
         void writeTable(paragraph paragraph);
     public:
         DocParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer);

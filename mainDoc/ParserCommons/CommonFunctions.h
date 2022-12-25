@@ -53,7 +53,11 @@ namespace docxtotxt {
         return object;
     }
 }
-
+/*!
+ * Функция для установки настроек выравнивания
+ * @param jc Элемент, содержащий настройки выравнивания
+ * @param settings Структура настроек
+ */
 static void setJustify(tinyxml2::XMLElement *jc, docxtotxt::justify_t &settings) {
     if (jc != nullptr) {
         std::string justify = jc->Attribute("w:val");
@@ -67,7 +71,11 @@ static void setJustify(tinyxml2::XMLElement *jc, docxtotxt::justify_t &settings)
             settings = docxtotxt::justify_t::left;
     }
 }
-
+/*!
+ * Функция для установки настроек отступа
+ * @param jc Элемент, содержащий настройки отступа
+ * @param settings Структура настроек
+ */
 static void setIndentation(tinyxml2::XMLElement *ind, docxtotxt::indentation &settings) {
     if (ind != nullptr) {
         auto left = ind->Attribute("w:left");
@@ -88,7 +96,11 @@ static void setIndentation(tinyxml2::XMLElement *ind, docxtotxt::indentation &se
         }
     }
 }
-
+/*!
+ * Функция для установки настроек межстрочного отступа
+ * @param jc Элемент, содержащий настройки омежстрочного тступа
+ * @param settings Структура настроек
+ */
 static void setSpacing(tinyxml2::XMLElement *spacing, docxtotxt::lineSpacing &settings) {
     if (spacing != nullptr) {
         auto before = spacing->Attribute("w:before");
@@ -101,7 +113,11 @@ static void setSpacing(tinyxml2::XMLElement *spacing, docxtotxt::lineSpacing &se
         }
     }
 }
-
+/*!
+ * Функция для установки настроек заполнения
+ * @param jc Элемент, содержащий настройки заполнения
+ * @param settings Структура настроек
+ */
 static void setTabulation(tinyxml2::XMLElement *tabs, std::vector<docxtotxt::tabulation> &settings) {
     if (tabs != nullptr) {
         auto *tab = tabs->FirstChildElement();

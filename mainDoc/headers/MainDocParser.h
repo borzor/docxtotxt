@@ -19,9 +19,15 @@ namespace docxtotxt {
     private:
         options_t &options;
         wstringConvert convertor;
-
+        /*!
+         * Функция для вставки имеющихся в документе гипер ссылок
+         * @param hyperlinkRelationship Массив взаимотношений гипер ссылок
+         */
         void insertHyperlinks(std::map<std::string, std::string> hyperlinkRelationship);
-
+        /*!
+         * Функция для сохранения картинок в документе
+         * @param imageRelationship Массив взаимотношений изабражений
+         */
         void saveImages(const std::map<std::string, std::string> &imageRelationship) const;
 
     public:

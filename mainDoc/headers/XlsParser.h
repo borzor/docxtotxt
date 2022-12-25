@@ -17,11 +17,19 @@ namespace docxtotxt {
     */
     class XlsParser : public Parser{
     private:
-        ///Настройки специфичные для файла .pptx формата
+        ///Настройки специфичные для файла .xlsx формата
         xlsInfo_t &xlsInfo;
-
+        /*!
+         * Вычисляет размер колонны в таблице
+         * @param settings Массив структур настроек таблицы
+         * @param index Индекс колонны
+         * @return
+         */
         static size_t getColumnWidth(const std::vector<columnSettings> &settings, size_t index);
-
+        /*!
+         * Записывает таблицу в результирующий буфер
+         * @param sheet Структура таблицы
+         */
         void insertSheetMetadata(const sheet &sheet);
 
     public:

@@ -13,21 +13,33 @@ namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
     /*!
-	\brief Реализация парсера, обрабатывающая .pptx формат
+	\brief Реализация парсера, обрабатывающая .PrsentationML формат
     */
     class PptParser : public Parser{
 
     private:
-        ///Настройки специфичные для файла .pptx формата
+        ///Настройки специфичные для файла PrsentationML формата
         pptInfo_t &pptInfo;
         std::vector<slideInsertInfo> slideInsertData;
-
+        /*!
+         * Преобразовывает входные структуры в структуру для вставки
+         */
         void prepareSlides();
-
+        /*!
+         * Записывает объекты слайда
+         * @param insertObjects Массив вставляемых объектов
+         */
         void insertSlide(std::vector<insertObject> insertObjects);
-
+        /*!
+         * Записывает часть обрабатываемого объекта в результируюий буфер
+         * @param obj Структура записываемого объекта
+         * @param currentIndex Текущий индекс, необходимый для установки размера вставки
+         */
         void insertLineBuffer(insertObject &obj, size_t *currentIndex);
-
+        /*!
+         * Зписывает мета информацию о слайде в результирующий буфер
+         * @param relations Структура метаданных
+         */
         void insertSlideMetadata(slideInsertInfo relations);
 
     public:

@@ -3,10 +3,11 @@
 //
 
 #include <string>
+#include <utility>
 #include "../ParserCommons/BufferWriter.h"
 
 namespace docxtotxt {
-    BufferWriter::BufferWriter(options_t &options) : options(options) {
+    BufferWriter::BufferWriter(options_t options) : options(std::move(options)) {
         buffer.emplace_back();
         fileMetadata.slides = 0;
     }
@@ -28,6 +29,7 @@ namespace docxtotxt {
         for (const auto &kv: buffer) {
             *options.output << kv << std::endl;
         }
+        options.output->flush();
     }
 
     std::wstring BufferWriter::convertString(const std::string &str) {

@@ -27,12 +27,14 @@ namespace docxtotxt {
          * Записывает параграф содержащий изображение в результирующий буфер с учетом форматирования
          * @param paragraph Структура параграфа
          */
-        void writeImage(paragraph paragraph);
+        void writeImage(const paragraph& paragraph);
         /*!
          * Записывает параграф содержащий таблицу в результирующий буфер с учетом форматирования
          * @param paragraph Структура параграфа
          */
-        void writeTable(paragraph paragraph);
+        void writeTable(const paragraph& paragraph);
+
+        void writeNote(const note &note);
     public:
         DocParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer);
 

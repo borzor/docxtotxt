@@ -6,7 +6,7 @@
 #define DOCXTOTXT_MAINDOCPARSER_H
 
 
-#include "../ParserCommons/DocumentCommons.h"
+#include "../headers/DocumentLoader.h"
 
 namespace docxtotxt {
     using namespace std;

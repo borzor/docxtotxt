@@ -11,10 +11,10 @@
 
 namespace docxtotxt {
     typedef struct {
-        int slides;
-        int pages;
-        int words;
-        int revision;
+        size_t slides;
+        size_t pages;
+        size_t words;
+        size_t revision;
         std::wstring creator;
         std::wstring lastModifiedBy;
         std::wstring created;

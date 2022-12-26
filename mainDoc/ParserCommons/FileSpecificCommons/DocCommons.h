@@ -18,13 +18,13 @@ namespace docxtotxt {
         lineSpacing spacing;
         std::vector<tabulation> tab;
     } paragraphSettings;
-    enum class tableJustify {
-        start,
-        end,
-        center
-    };
+//    enum class tableJustify {
+//        start,
+//        end,
+//        center
+//    };
     typedef struct {
-        tableJustify justify;
+//        tableJustify justify;
         size_t ind;
     } tableProperties;
 
@@ -67,6 +67,16 @@ namespace docxtotxt {
         paragraphSettings paragraph;
     } defaultDocSettings;
 
+    enum noteType{
+        footnote,
+        endnote
+    };
+    typedef struct {
+        std::wstring text;
+        size_t id;
+        noteType type;
+    } note;
+
     typedef struct {
         size_t docWidth;
         size_t docHeight;
@@ -74,6 +84,7 @@ namespace docxtotxt {
         stylesRelationship styles;
         defaultDocSettings defaultSettings;
         std::vector<paragraph> body;
+        std::vector<note> notes;
     } docInfo_t;
 
 

@@ -18,14 +18,14 @@ namespace docxtotxt {
 #define DOC_MAIN_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
 #define DOC_STYLES_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"
 #define DOC_IMAGE_FILE_PATH "word/_rels/document.xml.rels"
+#define DOC_FOOTNOTES_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"
+#define DOC_ENDNOTES_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"
 
-#define XLS_STYLES_FILE "application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"
 #define XLS_SHARED_STRINGS "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"
 #define XLS_WORKSHEET "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"
 #define XLS_WORKBOOK "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"
 #define XLS_SLIDE_NOTE "application/vnd.openxmlformats-officedocument.drawing+xml"
 
-#define PPT_STYLES_FILE "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"
 #define PPT_MAIN_FILE "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"
 #define PPT_SLIDE_CONTENT_TYPE "application/vnd.openxmlformats-officedocument.presentationml.slide+xml"
 #define PPT_SLIDE_NOTE "application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml"
@@ -50,25 +50,19 @@ namespace docxtotxt {
     enum justify_t {
         left,
         right,
-        center,
-        both,
-        distribute
+        center
     };
 
     enum tabCharacter {
         dot,
-        heavy,
-        hyphen,
-        middleDot,
-        none,
-        underscore
+        none
     };
 
     typedef struct {
-        int left;
-        int right;
-        int hanging;
-        int firstLine;
+        size_t left;
+        size_t right;
+        size_t hanging;
+        size_t firstLine;
     } indentation;
 
     typedef struct {
@@ -118,7 +112,7 @@ namespace docxtotxt {
     typedef struct {
         std::wostream *output;
         uint32_t flags;
-        char *filePath;
+        const char *filePath;
         zip_t *input;
         std::string pathToDraws;
         docTypes docType;

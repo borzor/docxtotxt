@@ -21,7 +21,7 @@ namespace docxtotxt {
         options_t options;
 
     public:
-        explicit BufferWriter(options_t &options);
+        explicit BufferWriter(options_t options);
 
         /*!
          * Преобразовывает входную строку string и возвращает wstring

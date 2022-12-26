@@ -12,13 +12,15 @@
 namespace docxtotxt {
     using namespace std;
     using namespace tinyxml2;
+
     /*!
 	\brief Реализация парсера, обрабатывающая SpreadsheetML формат
     */
-    class XlsParser : public Parser{
+    class XlsParser : public Parser {
     private:
         ///Настройки специфичные для файла SpreadsheetML формата
         xlsInfo_t &xlsInfo;
+
         /*!
          * Вычисляет размер колонны в таблице
          * @param settings Массив структур настроек таблицы
@@ -26,11 +28,16 @@ namespace docxtotxt {
          * @return
          */
         static size_t getColumnWidth(const std::vector<columnSettings> &settings, size_t index);
+
         /*!
          * Записывает таблицу в результирующий буфер
          * @param sheet Структура таблицы
          */
         void insertSheetMetadata(const sheet &sheet);
+
+        void insertSheet(std::vector<std::vector<sheetCell>> &sheet, const std::vector<columnSettings> &col);
+
+        void insertSheetRaw(std::vector<std::vector<sheetCell>> &sheet);
 
     public:
         XlsParser(xlsInfo_t &xlsInfo, options_t &options, BufferWriter &writer);

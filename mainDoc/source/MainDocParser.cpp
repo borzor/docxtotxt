@@ -3,7 +3,6 @@
 //
 
 #include <string>
-#include <locale>
 #include <fstream>
 #include "../headers/MainDocParser.h"
 #include "../headers/XlsParser.h"
@@ -22,7 +21,7 @@ namespace docxtotxt {
         switch (options.docType) {
             case pptx: {
                 auto pptInfo = documentLoader.getPptxData();
-                PptParser pptParser(pptInfo, options,writer);
+                PptParser pptParser(pptInfo, options, writer);
                 pptParser.parseFile();
                 if ((options.flags >> 1) & 1) {
                     for (auto &slide: pptInfo.slides)
@@ -46,7 +45,6 @@ namespace docxtotxt {
             }
             case xlsx: {
                 auto xlsInfo = documentLoader.getXlsxData();
-                options.output->flush();
                 XlsParser xlsParser(xlsInfo, options, writer);
                 xlsParser.parseFile();
                 if ((options.flags >> 1) & 1) {
@@ -67,9 +65,9 @@ namespace docxtotxt {
     }
 
     void MainDocParser::insertHyperlinks(std::map<std::string, std::string> hyperlinkRelationship) {
+        *options.output << L"Document hyperlinks:" <<'\n';
         for (const auto &kv: hyperlinkRelationship) {
-            auto number = distance(hyperlinkRelationship.begin(),
-                                   hyperlinkRelationship.find(kv.first));
+            auto number = distance(hyperlinkRelationship.begin(), hyperlinkRelationship.find(kv.first));
             auto result = wstring(L"{h").append(
                     to_wstring(number).append(L"} -  ").append(convertor.from_bytes(kv.second)));
             *options.output << result << '\n';
@@ -86,15 +84,14 @@ namespace docxtotxt {
             auto currentImage = zip_fopen(options.input, kv.second.c_str(), ZIP_FL_NODIR);
             if (zip_fread(currentImage, &tmpImageBuffer, file_info.size) == -1)throw runtime_error("Error: Cannot read " + kv.second + " file");
             zip_fclose(currentImage);
-            if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second).write(tmpImageBuffer, file_info.size)) {throw runtime_error("Error writing file" + kv.second);
-            }
+            if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second).write(tmpImageBuffer,
+                                                                                    (long) file_info.size))throw runtime_error("Error writing file" + kv.second);
         }
     }
 
 
 
 
-
-
-
 }
+
+

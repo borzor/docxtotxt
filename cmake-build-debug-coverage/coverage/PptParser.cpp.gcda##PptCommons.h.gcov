@@ -1,0 +1,168 @@
+        -:    0:Source:/home/borzor/CLionProjects/docxtotxt/mainDoc/ParserCommons/FileSpecificCommons/PptCommons.h
+        -:    0:Graph:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/PptParser.cpp.gcno
+        -:    0:Data:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/PptParser.cpp.gcda
+        -:    0:Runs:1
+        -:    1://
+        -:    2:// Created by borzor on 12/14/22.
+        -:    3://
+        -:    4:
+        -:    5:#ifndef DOCXTOTXT_PPTCOMMONS_H
+        -:    6:#define DOCXTOTXT_PPTCOMMONS_H
+        -:    7:
+        -:    8:#include "../DocumentCommons.h"
+        -:    9:namespace docxtotxt {
+        -:   10:    typedef struct {
+        -:   11:        size_t slideWidth;
+        -:   12:        size_t slideHeight;
+        -:   13:        size_t widthCoefficient;
+        -:   14:        size_t heightCoefficient;
+        -:   15:    } presentationSettings;
+        -:   16:
+        -:   17:    enum algn {
+        -:   18:        l,
+        -:   19:        r,
+        -:   20:        ctr
+        -:   21:    };
+        -:   22:
+        -:   23:    struct textBody {
+        -:   24:        algn align;
+        -:   25:        std::wstring text;
+        -:   26:    };
+        -:   27:
+        -:   28:
+        -:   29:    typedef struct {
+        -:   30:        objectInfo_t objectInfo;
+        -:   31:        std::vector<size_t> gridColSize;
+        -:   32:        std::vector<std::vector<std::vector<textBody>>> table;
+        -:   33:    } presentationTable;
+        -:   34:
+        -:   35:    typedef struct {
+        -:   36:        objectInfo_t objectInfo;
+        -:   37:        std::vector<textBody> paragraph;
+        -:   38:    } presentationText;
+        -:   39:
+        -:   40:    struct insertObject {
+        -:   41:        size_t startLine;
+        -:   42:        size_t offset;
+        -:   43:        size_t length;
+        -:   44:        bool inProgress;
+        -:   45:        std::vector<textBody> paragraph;
+        -:   46:
+function _ZNK9docxtotxt12insertObjectltERKS0_ called 53 returned 100% blocks executed 100%
+       53:   47:        bool operator<(const insertObject &str) const {
+       53:   48:            return (offset < str.offset);
+       53:   48-block  0
+        -:   49:        }
+        -:   50:    };
+        -:   51:
+        -:   52:    struct insertImage {
+        -:   53:        size_t startLine;
+        -:   54:        size_t offset;
+        -:   55:        size_t length;
+        -:   56:        std::string rId;
+        -:   57:
+function _ZNK9docxtotxt11insertImageeqERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE called 12 returned 100% blocks executed 100%
+       12:   58:        bool operator==(const std::string &str) const {
+       12:   59:            return (rId == str);
+       12:   59-block  0
+call    0 returned 12
+        -:   60:        }
+        -:   61:
+function _ZNK9docxtotxt11insertImage8toStringB5cxx11Ev called 10 returned 100% blocks executed 49%
+       10:   62:        std::wstring toString() const {
+       20:   63:            return L"Line - " + std::to_wstring(startLine) + L" Offset - " + std::to_wstring(offset) + L" Length - " +
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0 (throw)
+       10:   63-block  0
+call    3 returned 10
+branch  4 taken 10 (fallthrough)
+branch  5 taken 0 (throw)
+       10:   63-block  1
+call    6 returned 10
+branch  7 taken 10 (fallthrough)
+branch  8 taken 0 (throw)
+       10:   63-block  2
+call    9 returned 10
+branch 10 taken 10 (fallthrough)
+branch 11 taken 0 (throw)
+       10:   63-block  3
+call   12 returned 10
+branch 13 taken 10 (fallthrough)
+branch 14 taken 0 (throw)
+       10:   63-block  4
+call   15 returned 10
+branch 16 taken 10 (fallthrough)
+branch 17 taken 0 (throw)
+       10:   63-block  5
+call   18 returned 10
+call   19 returned 10
+call   20 returned 10
+call   21 returned 10
+call   22 returned 10
+call   23 returned 10
+    $$$$$:   63-block  6
+call   24 never executed
+    $$$$$:   63-block  7
+    $$$$$:   63-block  8
+call   25 never executed
+    $$$$$:   63-block  9
+    $$$$$:   63-block 10
+call   26 never executed
+    $$$$$:   63-block 11
+    $$$$$:   63-block 12
+call   27 never executed
+    $$$$$:   63-block 13
+    $$$$$:   63-block 14
+call   28 never executed
+    $$$$$:   63-block 15
+    $$$$$:   63-block 16
+call   29 never executed
+    $$$$$:   63-block 17
+       30:   64:                   std::to_wstring(length);
+       10:   64-block  0
+call    0 returned 10
+       10:   64-block  1
+call    1 returned 10
+branch  2 taken 10 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 10
+       10:   64-block  2
+    $$$$$:   64-block  3
+call    5 never executed
+        -:   65:        }
+        -:   66:    };
+        -:   67:
+        -:   68:    struct slideInsertInfo {
+        -:   69:        std::vector<insertObject> insertObjects;
+        -:   70:        std::vector<insertImage> insertImages;
+        -:   71:        size_t slideNum;
+        -:   72:        relations_t relations;
+        -:   73:    };
+        -:   74:
+        -:   75:    struct noteInfo_t {
+        -:   76:        std::string noteName;
+        -:   77:        std::vector<textBody> text;
+        -:   78:
+function _ZNK9docxtotxt10noteInfo_teqERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE called 6 returned 100% blocks executed 100%
+        6:   79:        bool operator==(const std::string &str) const {
+        6:   80:            return (noteName == str);
+        6:   80-block  0
+call    0 returned 6
+        -:   81:        }
+        -:   82:    };
+        -:   83:
+        -:   84:    typedef struct {
+        -:   85:        std::vector<presentationText> objects;
+        -:   86:        std::vector<presentationTable> tables;
+        -:   87:        std::vector<picture> pictures;
+        -:   88:        relations_t relations;
+        -:   89:    } slideInfo;
+        -:   90:
+        -:   91:    typedef struct {
+        -:   92:        presentationSettings settings;
+        -:   93:        std::vector<slideInfo> slides;
+        -:   94:        std::vector<noteInfo_t> notes;
+        -:   95:    } pptInfo_t;
+        -:   96:}
+        -:   97:#endif //DOCXTOTXT_PPTCOMMONS_H

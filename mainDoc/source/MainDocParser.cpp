@@ -79,14 +79,17 @@ namespace docxtotxt {
         struct zip_stat file_info{};
         zip_stat_init(&file_info);
         for (const auto &kv: imageRelationship) {
-            if (zip_stat(options.input, kv.second.c_str(), ZIP_FL_NODIR, &file_info) == -1)throw runtime_error("Error: Cannot get info about " + kv.second + " file");
-            char tmpImageBuffer[file_info.size];
+            if (zip_stat(options.input, kv.second.c_str(), ZIP_FL_NODIR, &file_info) == -1)
+                throw runtime_error("Error: Cannot get info about " + kv.second + " file");
+            char *buff;
+            buff = (char *) malloc(file_info.size);
             auto currentImage = zip_fopen(options.input, kv.second.c_str(), ZIP_FL_NODIR);
-            if (zip_fread(currentImage, &tmpImageBuffer, file_info.size) == -1)throw runtime_error("Error: Cannot read " + kv.second + " file");
+            if (zip_fread(currentImage, &buff, file_info.size) == -1)
+                throw runtime_error("Error: Cannot read " + kv.second + " file");
             zip_fclose(currentImage);
-            if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second).write(tmpImageBuffer,
-                                                                                    (long) file_info.size))throw runtime_error("Error writing file" + kv.second);
-        }
+            if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second)
+                    .write(buff, (long) file_info.size))throw runtime_error("Error writing file" + kv.second);
+            ::free(buff);
     }
 
 

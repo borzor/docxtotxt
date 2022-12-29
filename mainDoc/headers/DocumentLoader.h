@@ -200,10 +200,17 @@ namespace docxtotxt {
          * @param section Элемент секции
          */
         void parseSection(XMLElement *section);
-
+        /*!
+         * Обрабатывает элемент sdt и извлекает содержимое в переданный массив
+         * @param element Элемент sdt
+         * @param body массив параграфов
+         */
         void addSdtContent(XMLElement *element, std::vector<paragraph> &body);
-
-        void parseDocNotes(XMLDocument *element);
+        /*!
+         * Обрабатывает элемент файла, содержащего заметки
+         * @param doc Документ заметок
+         */
+        void parseDocNotes(XMLDocument *doc);
 
     public:
         explicit DocumentLoader(options_t &options, BufferWriter &writer);

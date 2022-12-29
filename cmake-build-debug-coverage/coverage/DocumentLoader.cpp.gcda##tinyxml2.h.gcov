@@ -1,0 +1,2440 @@
+        -:    0:Source:/usr/include/tinyxml2.h
+        -:    0:Graph:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/DocumentLoader.cpp.gcno
+        -:    0:Data:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/DocumentLoader.cpp.gcda
+        -:    0:Runs:1
+        -:    1:/*
+        -:    2:Original code by Lee Thomason (www.grinninglizard.com)
+        -:    3:
+        -:    4:This software is provided 'as-is', without any express or implied
+        -:    5:warranty. In no event will the authors be held liable for any
+        -:    6:damages arising from the use of this software.
+        -:    7:
+        -:    8:Permission is granted to anyone to use this software for any
+        -:    9:purpose, including commercial applications, and to alter it and
+        -:   10:redistribute it freely, subject to the following restrictions:
+        -:   11:
+        -:   12:1. The origin of this software must not be misrepresented; you must
+        -:   13:not claim that you wrote the original software. If you use this
+        -:   14:software in a product, an acknowledgment in the product documentation
+        -:   15:would be appreciated but is not required.
+        -:   16:
+        -:   17:2. Altered source versions must be plainly marked as such, and
+        -:   18:must not be misrepresented as being the original software.
+        -:   19:
+        -:   20:3. This notice may not be removed or altered from any source
+        -:   21:distribution.
+        -:   22:*/
+        -:   23:
+        -:   24:#ifndef TINYXML2_INCLUDED
+        -:   25:#define TINYXML2_INCLUDED
+        -:   26:
+        -:   27:#if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
+        -:   28:#   include <ctype.h>
+        -:   29:#   include <limits.h>
+        -:   30:#   include <stdio.h>
+        -:   31:#   include <stdlib.h>
+        -:   32:#   include <string.h>
+        -:   33:#	if defined(__PS3__)
+        -:   34:#		include <stddef.h>
+        -:   35:#	endif
+        -:   36:#else
+        -:   37:#   include <cctype>
+        -:   38:#   include <climits>
+        -:   39:#   include <cstdio>
+        -:   40:#   include <cstdlib>
+        -:   41:#   include <cstring>
+        -:   42:#endif
+        -:   43:#include <stdint.h>
+        -:   44:
+        -:   45:/*
+        -:   46:   TODO: intern strings instead of allocation.
+        -:   47:*/
+        -:   48:/*
+        -:   49:	gcc:
+        -:   50:        g++ -Wall -DTINYXML2_DEBUG tinyxml2.cpp xmltest.cpp -o gccxmltest.exe
+        -:   51:
+        -:   52:    Formatting, Artistic Style:
+        -:   53:        AStyle.exe --style=1tbs --indent-switches --break-closing-brackets --indent-preprocessor tinyxml2.cpp tinyxml2.h
+        -:   54:*/
+        -:   55:
+        -:   56:#if defined( _DEBUG ) || defined (__DEBUG__)
+        -:   57:#   ifndef TINYXML2_DEBUG
+        -:   58:#       define TINYXML2_DEBUG
+        -:   59:#   endif
+        -:   60:#endif
+        -:   61:
+        -:   62:#ifdef _MSC_VER
+        -:   63:#   pragma warning(push)
+        -:   64:#   pragma warning(disable: 4251)
+        -:   65:#endif
+        -:   66:
+        -:   67:#ifdef _WIN32
+        -:   68:#   ifdef TINYXML2_EXPORT
+        -:   69:#       define TINYXML2_LIB __declspec(dllexport)
+        -:   70:#   elif defined(TINYXML2_IMPORT)
+        -:   71:#       define TINYXML2_LIB __declspec(dllimport)
+        -:   72:#   else
+        -:   73:#       define TINYXML2_LIB
+        -:   74:#   endif
+        -:   75:#elif __GNUC__ >= 4
+        -:   76:#   define TINYXML2_LIB __attribute__((visibility("default")))
+        -:   77:#else
+        -:   78:#   define TINYXML2_LIB
+        -:   79:#endif
+        -:   80:
+        -:   81:
+        -:   82:#if defined(TINYXML2_DEBUG)
+        -:   83:#   if defined(_MSC_VER)
+        -:   84:#       // "(void)0," is for suppressing C4127 warning in "assert(false)", "assert(true)" and the like
+        -:   85:#       define TIXMLASSERT( x )           if ( !((void)0,(x))) { __debugbreak(); }
+        -:   86:#   elif defined (ANDROID_NDK)
+        -:   87:#       include <android/log.h>
+        -:   88:#       define TIXMLASSERT( x )           if ( !(x)) { __android_log_assert( "assert", "grinliz", "ASSERT in '%s' at %d.", __FILE__, __LINE__ ); }
+        -:   89:#   else
+        -:   90:#       include <assert.h>
+        -:   91:#       define TIXMLASSERT                assert
+        -:   92:#   endif
+        -:   93:#else
+        -:   94:#   define TIXMLASSERT( x )               {}
+        -:   95:#endif
+        -:   96:
+        -:   97:
+        -:   98:/* Versioning, past 1.0.14:
+        -:   99:	http://semver.org/
+        -:  100:*/
+        -:  101:static const int TIXML2_MAJOR_VERSION = 6;
+        -:  102:static const int TIXML2_MINOR_VERSION = 2;
+        -:  103:static const int TIXML2_PATCH_VERSION = 0;
+        -:  104:
+        -:  105:#define TINYXML2_MAJOR_VERSION 6
+        -:  106:#define TINYXML2_MINOR_VERSION 2
+        -:  107:#define TINYXML2_PATCH_VERSION 0
+        -:  108:
+        -:  109:// A fixed element depth limit is problematic. There needs to be a 
+        -:  110:// limit to avoid a stack overflow. However, that limit varies per 
+        -:  111:// system, and the capacity of the stack. On the other hand, it's a trivial 
+        -:  112:// attack that can result from ill, malicious, or even correctly formed XML, 
+        -:  113:// so there needs to be a limit in place.
+        -:  114:static const int TINYXML2_MAX_ELEMENT_DEPTH = 100;
+        -:  115:
+        -:  116:namespace tinyxml2
+        -:  117:{
+        -:  118:class XMLDocument;
+        -:  119:class XMLElement;
+        -:  120:class XMLAttribute;
+        -:  121:class XMLComment;
+        -:  122:class XMLText;
+        -:  123:class XMLDeclaration;
+        -:  124:class XMLUnknown;
+        -:  125:class XMLPrinter;
+        -:  126:
+        -:  127:/*
+        -:  128:	A class that wraps strings. Normally stores the start and end
+        -:  129:	pointers into the XML file itself, and will apply normalization
+        -:  130:	and entity translation if actually read. Can also store (and memory
+        -:  131:	manage) a traditional char[]
+        -:  132:*/
+        -:  133:class StrPair
+        -:  134:{
+        -:  135:public:
+        -:  136:    enum {
+        -:  137:        NEEDS_ENTITY_PROCESSING			= 0x01,
+        -:  138:        NEEDS_NEWLINE_NORMALIZATION		= 0x02,
+        -:  139:        NEEDS_WHITESPACE_COLLAPSING     = 0x04,
+        -:  140:
+        -:  141:        TEXT_ELEMENT		            = NEEDS_ENTITY_PROCESSING | NEEDS_NEWLINE_NORMALIZATION,
+        -:  142:        TEXT_ELEMENT_LEAVE_ENTITIES		= NEEDS_NEWLINE_NORMALIZATION,
+        -:  143:        ATTRIBUTE_NAME		            = 0,
+        -:  144:        ATTRIBUTE_VALUE		            = NEEDS_ENTITY_PROCESSING | NEEDS_NEWLINE_NORMALIZATION,
+        -:  145:        ATTRIBUTE_VALUE_LEAVE_ENTITIES  = NEEDS_NEWLINE_NORMALIZATION,
+        -:  146:        COMMENT							= NEEDS_NEWLINE_NORMALIZATION
+        -:  147:    };
+        -:  148:
+        -:  149:    StrPair() : _flags( 0 ), _start( 0 ), _end( 0 ) {}
+        -:  150:    ~StrPair();
+        -:  151:
+        -:  152:    void Set( char* start, char* end, int flags ) {
+        -:  153:        TIXMLASSERT( start );
+        -:  154:        TIXMLASSERT( end );
+        -:  155:        Reset();
+        -:  156:        _start  = start;
+        -:  157:        _end    = end;
+        -:  158:        _flags  = flags | NEEDS_FLUSH;
+        -:  159:    }
+        -:  160:
+        -:  161:    const char* GetStr();
+        -:  162:
+        -:  163:    bool Empty() const {
+        -:  164:        return _start == _end;
+        -:  165:    }
+        -:  166:
+        -:  167:    void SetInternedStr( const char* str ) {
+        -:  168:        Reset();
+        -:  169:        _start = const_cast<char*>(str);
+        -:  170:    }
+        -:  171:
+        -:  172:    void SetStr( const char* str, int flags=0 );
+        -:  173:
+        -:  174:    char* ParseText( char* in, const char* endTag, int strFlags, int* curLineNumPtr );
+        -:  175:    char* ParseName( char* in );
+        -:  176:
+        -:  177:    void TransferTo( StrPair* other );
+        -:  178:	void Reset();
+        -:  179:
+        -:  180:private:
+        -:  181:    void CollapseWhitespace();
+        -:  182:
+        -:  183:    enum {
+        -:  184:        NEEDS_FLUSH = 0x100,
+        -:  185:        NEEDS_DELETE = 0x200
+        -:  186:    };
+        -:  187:
+        -:  188:    int     _flags;
+        -:  189:    char*   _start;
+        -:  190:    char*   _end;
+        -:  191:
+        -:  192:    StrPair( const StrPair& other );	// not supported
+        -:  193:    void operator=( StrPair& other );	// not supported, use TransferTo()
+        -:  194:};
+        -:  195:
+        -:  196:
+        -:  197:/*
+        -:  198:	A dynamic array of Plain Old Data. Doesn't support constructors, etc.
+        -:  199:	Has a small initial memory pool, so that low or no usage will not
+        -:  200:	cause a call to new/delete
+        -:  201:*/
+        -:  202:template <class T, int INITIAL_SIZE>
+        -:  203:class DynArray
+        -:  204:{
+        -:  205:public:
+        -:  206:    DynArray() :
+        -:  207:        _mem( _pool ),
+        -:  208:        _allocated( INITIAL_SIZE ),
+        -:  209:        _size( 0 )
+        -:  210:    {
+        -:  211:    }
+        -:  212:
+       14:  213:    ~DynArray() {
+       14:  214:        if ( _mem != _pool ) {
+       7*:  215:            delete [] _mem;
+        -:  216:        }
+       14:  217:    }
+------------------
+_ZN8tinyxml28DynArrayIcLi20EED2Ev:
+function _ZN8tinyxml28DynArrayIcLi20EED2Ev called 7 returned 100% blocks executed 100%
+        7:  213:    ~DynArray() {
+        7:  214:        if ( _mem != _pool ) {
+        7:  214-block  0
+branch  0 taken 7 (fallthrough)
+branch  1 taken 0
+        7:  215:            delete [] _mem;
+        7:  215-block  0
+branch  0 taken 7 (fallthrough)
+branch  1 taken 0
+        7:  215-block  1
+call    2 returned 7
+        -:  216:        }
+        7:  217:    }
+------------------
+_ZN8tinyxml28DynArrayIPKcLi10EED2Ev:
+function _ZN8tinyxml28DynArrayIPKcLi10EED2Ev called 7 returned 100% blocks executed 50%
+        7:  213:    ~DynArray() {
+        7:  214:        if ( _mem != _pool ) {
+        7:  214-block  0
+branch  0 taken 0 (fallthrough)
+branch  1 taken 7
+    #####:  215:            delete [] _mem;
+    %%%%%:  215-block  0
+branch  0 never executed
+branch  1 never executed
+    %%%%%:  215-block  1
+call    2 never executed
+        -:  216:        }
+        7:  217:    }
+------------------
+        -:  218:
+function _ZN8tinyxml28DynArrayIcLi20EE5ClearEv called 146 returned 100% blocks executed 100%
+      146:  219:    void Clear() {
+      146:  220:        _size = 0;
+      146:  221:    }
+        -:  222:
+function _ZN8tinyxml28DynArrayIcLi20EE4PushEc called 146 returned 100% blocks executed 100%
+      146:  223:    void Push( T t ) {
+        -:  224:        TIXMLASSERT( _size < INT_MAX );
+      146:  225:        EnsureCapacity( _size+1 );
+      146:  225-block  0
+call    0 returned 146
+      146:  226:        _mem[_size] = t;
+      146:  227:        ++_size;
+      146:  228:    }
+        -:  229:
+        -:  230:    T* PushArr( int count ) {
+        -:  231:        TIXMLASSERT( count >= 0 );
+        -:  232:        TIXMLASSERT( _size <= INT_MAX - count );
+        -:  233:        EnsureCapacity( _size+count );
+        -:  234:        T* ret = &_mem[_size];
+        -:  235:        _size += count;
+        -:  236:        return ret;
+        -:  237:    }
+        -:  238:
+        -:  239:    T Pop() {
+        -:  240:        TIXMLASSERT( _size > 0 );
+        -:  241:        --_size;
+        -:  242:        return _mem[_size];
+        -:  243:    }
+        -:  244:
+        -:  245:    void PopArr( int count ) {
+        -:  246:        TIXMLASSERT( _size >= count );
+        -:  247:        _size -= count;
+        -:  248:    }
+        -:  249:
+        -:  250:    bool Empty() const					{
+        -:  251:        return _size == 0;
+        -:  252:    }
+        -:  253:
+        -:  254:    T& operator[](int i)				{
+        -:  255:        TIXMLASSERT( i>= 0 && i < _size );
+        -:  256:        return _mem[i];
+        -:  257:    }
+        -:  258:
+        -:  259:    const T& operator[](int i) const	{
+        -:  260:        TIXMLASSERT( i>= 0 && i < _size );
+        -:  261:        return _mem[i];
+        -:  262:    }
+        -:  263:
+        -:  264:    const T& PeekTop() const            {
+        -:  265:        TIXMLASSERT( _size > 0 );
+        -:  266:        return _mem[ _size - 1];
+        -:  267:    }
+        -:  268:
+        -:  269:    int Size() const					{
+        -:  270:        TIXMLASSERT( _size >= 0 );
+        -:  271:        return _size;
+        -:  272:    }
+        -:  273:
+        -:  274:    int Capacity() const				{
+        -:  275:        TIXMLASSERT( _allocated >= INITIAL_SIZE );
+        -:  276:        return _allocated;
+        -:  277:    }
+        -:  278:
+        -:  279:	void SwapRemove(int i) {
+        -:  280:		TIXMLASSERT(i >= 0 && i < _size);
+        -:  281:		TIXMLASSERT(_size > 0);
+        -:  282:		_mem[i] = _mem[_size - 1];
+        -:  283:		--_size;
+        -:  284:	}
+        -:  285:
+function _ZNK8tinyxml28DynArrayIcLi20EE3MemEv called 146 returned 100% blocks executed 100%
+      146:  286:    const T* Mem() const				{
+        -:  287:        TIXMLASSERT( _mem );
+      146:  288:        return _mem;
+      146:  288-block  0
+        -:  289:    }
+        -:  290:
+        -:  291:    T* Mem()							{
+        -:  292:        TIXMLASSERT( _mem );
+        -:  293:        return _mem;
+        -:  294:    }
+        -:  295:
+        -:  296:private:
+        -:  297:    DynArray( const DynArray& ); // not supported
+        -:  298:    void operator=( const DynArray& ); // not supported
+        -:  299:
+function _ZN8tinyxml28DynArrayIcLi20EE14EnsureCapacityEi called 146 returned 100% blocks executed 29%
+      146:  300:    void EnsureCapacity( int cap ) {
+        -:  301:        TIXMLASSERT( cap > 0 );
+      146:  302:        if ( cap > _allocated ) {
+      146:  302-block  0
+branch  0 taken 0 (fallthrough)
+branch  1 taken 146
+        -:  303:            TIXMLASSERT( cap <= INT_MAX / 2 );
+    #####:  304:            int newAllocated = cap * 2;
+    #####:  305:            T* newMem = new T[newAllocated];
+    %%%%%:  305-block  0
+call    0 never executed
+        -:  306:            TIXMLASSERT( newAllocated >= _size );
+    #####:  307:            memcpy( newMem, _mem, sizeof(T)*_size );	// warning: not using constructors, only works for PODs
+    #####:  308:            if ( _mem != _pool ) {
+branch  0 never executed
+branch  1 never executed
+    #####:  309:                delete [] _mem;
+    %%%%%:  309-block  0
+branch  0 never executed
+branch  1 never executed
+    %%%%%:  309-block  1
+call    2 never executed
+        -:  310:            }
+    #####:  311:            _mem = newMem;
+    #####:  312:            _allocated = newAllocated;
+    %%%%%:  312-block  0
+        -:  313:        }
+      146:  314:    }
+        -:  315:
+        -:  316:    T*  _mem;
+        -:  317:    T   _pool[INITIAL_SIZE];
+        -:  318:    int _allocated;		// objects allocated
+        -:  319:    int _size;			// number objects in use
+        -:  320:};
+        -:  321:
+        -:  322:
+        -:  323:/*
+        -:  324:	Parent virtual class of a pool for fast allocation
+        -:  325:	and deallocation of objects.
+        -:  326:*/
+        -:  327:class MemPool
+        -:  328:{
+        -:  329:public:
+        -:  330:    MemPool() {}
+        -:  331:    virtual ~MemPool() {}
+        -:  332:
+        -:  333:    virtual int ItemSize() const = 0;
+        -:  334:    virtual void* Alloc() = 0;
+        -:  335:    virtual void Free( void* ) = 0;
+        -:  336:    virtual void SetTracked() = 0;
+        -:  337:    virtual void Clear() = 0;
+        -:  338:};
+        -:  339:
+        -:  340:
+        -:  341:/*
+        -:  342:	Template child class to create pools of the correct type.
+        -:  343:*/
+        -:  344:template< int ITEM_SIZE >
+        -:  345:class MemPoolT : public MemPool
+        -:  346:{
+        -:  347:public:
+        -:  348:    MemPoolT() : _blockPtrs(), _root(0), _currentAllocs(0), _nAllocs(0), _maxAllocs(0), _nUntracked(0)	{}
+        -:  349:    ~MemPoolT() {
+        -:  350:        Clear();
+        -:  351:    }
+        -:  352:    
+        -:  353:    void Clear() {
+        -:  354:        // Delete the blocks.
+        -:  355:        while( !_blockPtrs.Empty()) {
+        -:  356:            Block* lastBlock = _blockPtrs.Pop();
+        -:  357:            delete lastBlock;
+        -:  358:        }
+        -:  359:        _root = 0;
+        -:  360:        _currentAllocs = 0;
+        -:  361:        _nAllocs = 0;
+        -:  362:        _maxAllocs = 0;
+        -:  363:        _nUntracked = 0;
+        -:  364:    }
+        -:  365:
+        -:  366:    virtual int ItemSize() const	{
+        -:  367:        return ITEM_SIZE;
+        -:  368:    }
+        -:  369:    int CurrentAllocs() const		{
+        -:  370:        return _currentAllocs;
+        -:  371:    }
+        -:  372:
+        -:  373:    virtual void* Alloc() {
+        -:  374:        if ( !_root ) {
+        -:  375:            // Need a new block.
+        -:  376:            Block* block = new Block();
+        -:  377:            _blockPtrs.Push( block );
+        -:  378:
+        -:  379:            Item* blockItems = block->items;
+        -:  380:            for( int i = 0; i < ITEMS_PER_BLOCK - 1; ++i ) {
+        -:  381:                blockItems[i].next = &(blockItems[i + 1]);
+        -:  382:            }
+        -:  383:            blockItems[ITEMS_PER_BLOCK - 1].next = 0;
+        -:  384:            _root = blockItems;
+        -:  385:        }
+        -:  386:        Item* const result = _root;
+        -:  387:        TIXMLASSERT( result != 0 );
+        -:  388:        _root = _root->next;
+        -:  389:
+        -:  390:        ++_currentAllocs;
+        -:  391:        if ( _currentAllocs > _maxAllocs ) {
+        -:  392:            _maxAllocs = _currentAllocs;
+        -:  393:        }
+        -:  394:        ++_nAllocs;
+        -:  395:        ++_nUntracked;
+        -:  396:        return result;
+        -:  397:    }
+        -:  398:    
+        -:  399:    virtual void Free( void* mem ) {
+        -:  400:        if ( !mem ) {
+        -:  401:            return;
+        -:  402:        }
+        -:  403:        --_currentAllocs;
+        -:  404:        Item* item = static_cast<Item*>( mem );
+        -:  405:#ifdef TINYXML2_DEBUG
+        -:  406:        memset( item, 0xfe, sizeof( *item ) );
+        -:  407:#endif
+        -:  408:        item->next = _root;
+        -:  409:        _root = item;
+        -:  410:    }
+        -:  411:    void Trace( const char* name ) {
+        -:  412:        printf( "Mempool %s watermark=%d [%dk] current=%d size=%d nAlloc=%d blocks=%d\n",
+        -:  413:                name, _maxAllocs, _maxAllocs * ITEM_SIZE / 1024, _currentAllocs,
+        -:  414:                ITEM_SIZE, _nAllocs, _blockPtrs.Size() );
+        -:  415:    }
+        -:  416:
+        -:  417:    void SetTracked() {
+        -:  418:        --_nUntracked;
+        -:  419:    }
+        -:  420:
+        -:  421:    int Untracked() const {
+        -:  422:        return _nUntracked;
+        -:  423:    }
+        -:  424:
+        -:  425:	// This number is perf sensitive. 4k seems like a good tradeoff on my machine.
+        -:  426:	// The test file is large, 170k.
+        -:  427:	// Release:		VS2010 gcc(no opt)
+        -:  428:	//		1k:		4000
+        -:  429:	//		2k:		4000
+        -:  430:	//		4k:		3900	21000
+        -:  431:	//		16k:	5200
+        -:  432:	//		32k:	4300
+        -:  433:	//		64k:	4000	21000
+        -:  434:    // Declared public because some compilers do not accept to use ITEMS_PER_BLOCK
+        -:  435:    // in private part if ITEMS_PER_BLOCK is private
+        -:  436:    enum { ITEMS_PER_BLOCK = (4 * 1024) / ITEM_SIZE };
+        -:  437:
+        -:  438:private:
+        -:  439:    MemPoolT( const MemPoolT& ); // not supported
+        -:  440:    void operator=( const MemPoolT& ); // not supported
+        -:  441:
+        -:  442:    union Item {
+        -:  443:        Item*   next;
+        -:  444:        char    itemData[ITEM_SIZE];
+        -:  445:    };
+        -:  446:    struct Block {
+        -:  447:        Item items[ITEMS_PER_BLOCK];
+        -:  448:    };
+        -:  449:    DynArray< Block*, 10 > _blockPtrs;
+        -:  450:    Item* _root;
+        -:  451:
+        -:  452:    int _currentAllocs;
+        -:  453:    int _nAllocs;
+        -:  454:    int _maxAllocs;
+        -:  455:    int _nUntracked;
+        -:  456:};
+        -:  457:
+        -:  458:
+        -:  459:
+        -:  460:/**
+        -:  461:	Implements the interface to the "Visitor pattern" (see the Accept() method.)
+        -:  462:	If you call the Accept() method, it requires being passed a XMLVisitor
+        -:  463:	class to handle callbacks. For nodes that contain other nodes (Document, Element)
+        -:  464:	you will get called with a VisitEnter/VisitExit pair. Nodes that are always leafs
+        -:  465:	are simply called with Visit().
+        -:  466:
+        -:  467:	If you return 'true' from a Visit method, recursive parsing will continue. If you return
+        -:  468:	false, <b>no children of this node or its siblings</b> will be visited.
+        -:  469:
+        -:  470:	All flavors of Visit methods have a default implementation that returns 'true' (continue
+        -:  471:	visiting). You need to only override methods that are interesting to you.
+        -:  472:
+        -:  473:	Generally Accept() is called on the XMLDocument, although all nodes support visiting.
+        -:  474:
+        -:  475:	You should never change the document from a callback.
+        -:  476:
+        -:  477:	@sa XMLNode::Accept()
+        -:  478:*/
+        -:  479:class TINYXML2_LIB XMLVisitor
+        -:  480:{
+        -:  481:public:
+       7*:  482:    virtual ~XMLVisitor() {}
+------------------
+_ZN8tinyxml210XMLVisitorD0Ev:
+function _ZN8tinyxml210XMLVisitorD0Ev called 0 returned 0% blocks executed 0%
+    #####:  482:    virtual ~XMLVisitor() {}
+    %%%%%:  482-block  0
+call    0 never executed
+call    1 never executed
+------------------
+_ZN8tinyxml210XMLVisitorD2Ev:
+function _ZN8tinyxml210XMLVisitorD2Ev called 7 returned 100% blocks executed 100%
+        7:  482:    virtual ~XMLVisitor() {}
+------------------
+        -:  483:
+        -:  484:    /// Visit a document.
+function _ZN8tinyxml210XMLVisitor10VisitEnterERKNS_11XMLDocumentE called 0 returned 0% blocks executed 0%
+    #####:  485:    virtual bool VisitEnter( const XMLDocument& /*doc*/ )			{
+    #####:  486:        return true;
+    %%%%%:  486-block  0
+        -:  487:    }
+        -:  488:    /// Visit a document.
+function _ZN8tinyxml210XMLVisitor9VisitExitERKNS_11XMLDocumentE called 0 returned 0% blocks executed 0%
+    #####:  489:    virtual bool VisitExit( const XMLDocument& /*doc*/ )			{
+    #####:  490:        return true;
+    %%%%%:  490-block  0
+        -:  491:    }
+        -:  492:
+        -:  493:    /// Visit an element.
+function _ZN8tinyxml210XMLVisitor10VisitEnterERKNS_10XMLElementEPKNS_12XMLAttributeE called 0 returned 0% blocks executed 0%
+    #####:  494:    virtual bool VisitEnter( const XMLElement& /*element*/, const XMLAttribute* /*firstAttribute*/ )	{
+    #####:  495:        return true;
+    %%%%%:  495-block  0
+        -:  496:    }
+        -:  497:    /// Visit an element.
+function _ZN8tinyxml210XMLVisitor9VisitExitERKNS_10XMLElementE called 0 returned 0% blocks executed 0%
+    #####:  498:    virtual bool VisitExit( const XMLElement& /*element*/ )			{
+    #####:  499:        return true;
+    %%%%%:  499-block  0
+        -:  500:    }
+        -:  501:
+        -:  502:    /// Visit a declaration.
+function _ZN8tinyxml210XMLVisitor5VisitERKNS_14XMLDeclarationE called 0 returned 0% blocks executed 0%
+    #####:  503:    virtual bool Visit( const XMLDeclaration& /*declaration*/ )		{
+    #####:  504:        return true;
+    %%%%%:  504-block  0
+        -:  505:    }
+        -:  506:    /// Visit a text node.
+function _ZN8tinyxml210XMLVisitor5VisitERKNS_7XMLTextE called 0 returned 0% blocks executed 0%
+    #####:  507:    virtual bool Visit( const XMLText& /*text*/ )					{
+    #####:  508:        return true;
+    %%%%%:  508-block  0
+        -:  509:    }
+        -:  510:    /// Visit a comment node.
+function _ZN8tinyxml210XMLVisitor5VisitERKNS_10XMLCommentE called 0 returned 0% blocks executed 0%
+    #####:  511:    virtual bool Visit( const XMLComment& /*comment*/ )				{
+    #####:  512:        return true;
+    %%%%%:  512-block  0
+        -:  513:    }
+        -:  514:    /// Visit an unknown node.
+function _ZN8tinyxml210XMLVisitor5VisitERKNS_10XMLUnknownE called 0 returned 0% blocks executed 0%
+    #####:  515:    virtual bool Visit( const XMLUnknown& /*unknown*/ )				{
+    #####:  516:        return true;
+    %%%%%:  516-block  0
+        -:  517:    }
+        -:  518:};
+        -:  519:
+        -:  520:// WARNING: must match XMLDocument::_errorNames[]
+        -:  521:enum XMLError {
+        -:  522:    XML_SUCCESS = 0,
+        -:  523:    XML_NO_ATTRIBUTE,
+        -:  524:    XML_WRONG_ATTRIBUTE_TYPE,
+        -:  525:    XML_ERROR_FILE_NOT_FOUND,
+        -:  526:    XML_ERROR_FILE_COULD_NOT_BE_OPENED,
+        -:  527:    XML_ERROR_FILE_READ_ERROR,
+        -:  528:    UNUSED_XML_ERROR_ELEMENT_MISMATCH,	// remove at next major version
+        -:  529:    XML_ERROR_PARSING_ELEMENT,
+        -:  530:    XML_ERROR_PARSING_ATTRIBUTE,
+        -:  531:    UNUSED_XML_ERROR_IDENTIFYING_TAG,	// remove at next major version
+        -:  532:    XML_ERROR_PARSING_TEXT,
+        -:  533:    XML_ERROR_PARSING_CDATA,
+        -:  534:    XML_ERROR_PARSING_COMMENT,
+        -:  535:    XML_ERROR_PARSING_DECLARATION,
+        -:  536:    XML_ERROR_PARSING_UNKNOWN,
+        -:  537:    XML_ERROR_EMPTY_DOCUMENT,
+        -:  538:    XML_ERROR_MISMATCHED_ELEMENT,
+        -:  539:    XML_ERROR_PARSING,
+        -:  540:    XML_CAN_NOT_CONVERT_TEXT,
+        -:  541:    XML_NO_TEXT_NODE,
+        -:  542:	XML_ELEMENT_DEPTH_EXCEEDED,
+        -:  543:
+        -:  544:	XML_ERROR_COUNT
+        -:  545:};
+        -:  546:
+        -:  547:
+        -:  548:/*
+        -:  549:	Utility functionality.
+        -:  550:*/
+        -:  551:class TINYXML2_LIB XMLUtil
+        -:  552:{
+        -:  553:public:
+        -:  554:    static const char* SkipWhiteSpace( const char* p, int* curLineNumPtr )	{
+        -:  555:        TIXMLASSERT( p );
+        -:  556:
+        -:  557:        while( IsWhiteSpace(*p) ) {
+        -:  558:            if (curLineNumPtr && *p == '\n') {
+        -:  559:                ++(*curLineNumPtr);
+        -:  560:            }
+        -:  561:            ++p;
+        -:  562:        }
+        -:  563:        TIXMLASSERT( p );
+        -:  564:        return p;
+        -:  565:    }
+        -:  566:    static char* SkipWhiteSpace( char* p, int* curLineNumPtr )				{
+        -:  567:        return const_cast<char*>( SkipWhiteSpace( const_cast<const char*>(p), curLineNumPtr ) );
+        -:  568:    }
+        -:  569:
+        -:  570:    // Anything in the high order range of UTF-8 is assumed to not be whitespace. This isn't
+        -:  571:    // correct, but simple, and usually works.
+        -:  572:    static bool IsWhiteSpace( char p )					{
+        -:  573:        return !IsUTF8Continuation(p) && isspace( static_cast<unsigned char>(p) );
+        -:  574:    }
+        -:  575:    
+        -:  576:    inline static bool IsNameStartChar( unsigned char ch ) {
+        -:  577:        if ( ch >= 128 ) {
+        -:  578:            // This is a heuristic guess in attempt to not implement Unicode-aware isalpha()
+        -:  579:            return true;
+        -:  580:        }
+        -:  581:        if ( isalpha( ch ) ) {
+        -:  582:            return true;
+        -:  583:        }
+        -:  584:        return ch == ':' || ch == '_';
+        -:  585:    }
+        -:  586:    
+        -:  587:    inline static bool IsNameChar( unsigned char ch ) {
+        -:  588:        return IsNameStartChar( ch )
+        -:  589:               || isdigit( ch )
+        -:  590:               || ch == '.'
+        -:  591:               || ch == '-';
+        -:  592:    }
+        -:  593:
+        -:  594:    inline static bool StringEqual( const char* p, const char* q, int nChar=INT_MAX )  {
+        -:  595:        if ( p == q ) {
+        -:  596:            return true;
+        -:  597:        }
+        -:  598:        TIXMLASSERT( p );
+        -:  599:        TIXMLASSERT( q );
+        -:  600:        TIXMLASSERT( nChar >= 0 );
+        -:  601:        return strncmp( p, q, nChar ) == 0;
+        -:  602:    }
+        -:  603:    
+        -:  604:    inline static bool IsUTF8Continuation( char p ) {
+        -:  605:        return ( p & 0x80 ) != 0;
+        -:  606:    }
+        -:  607:
+        -:  608:    static const char* ReadBOM( const char* p, bool* hasBOM );
+        -:  609:    // p is the starting location,
+        -:  610:    // the UTF-8 value of the entity will be placed in value, and length filled in.
+        -:  611:    static const char* GetCharacterRef( const char* p, char* value, int* length );
+        -:  612:    static void ConvertUTF32ToUTF8( unsigned long input, char* output, int* length );
+        -:  613:
+        -:  614:    // converts primitive types to strings
+        -:  615:    static void ToStr( int v, char* buffer, int bufferSize );
+        -:  616:    static void ToStr( unsigned v, char* buffer, int bufferSize );
+        -:  617:    static void ToStr( bool v, char* buffer, int bufferSize );
+        -:  618:    static void ToStr( float v, char* buffer, int bufferSize );
+        -:  619:    static void ToStr( double v, char* buffer, int bufferSize );
+        -:  620:	static void ToStr(int64_t v, char* buffer, int bufferSize);
+        -:  621:
+        -:  622:    // converts strings to primitive types
+        -:  623:    static bool	ToInt( const char* str, int* value );
+        -:  624:    static bool ToUnsigned( const char* str, unsigned* value );
+        -:  625:    static bool	ToBool( const char* str, bool* value );
+        -:  626:    static bool	ToFloat( const char* str, float* value );
+        -:  627:    static bool ToDouble( const char* str, double* value );
+        -:  628:	static bool ToInt64(const char* str, int64_t* value);
+        -:  629:
+        -:  630:	// Changes what is serialized for a boolean value.
+        -:  631:	// Default to "true" and "false". Shouldn't be changed
+        -:  632:	// unless you have a special testing or compatibility need.
+        -:  633:	// Be careful: static, global, & not thread safe.
+        -:  634:	// Be sure to set static const memory as parameters.
+        -:  635:	static void SetBoolSerialization(const char* writeTrue, const char* writeFalse);
+        -:  636:
+        -:  637:private:
+        -:  638:	static const char* writeBoolTrue;
+        -:  639:	static const char* writeBoolFalse;
+        -:  640:};
+        -:  641:
+        -:  642:
+        -:  643:/** XMLNode is a base class for every object that is in the
+        -:  644:	XML Document Object Model (DOM), except XMLAttributes.
+        -:  645:	Nodes have siblings, a parent, and children which can
+        -:  646:	be navigated. A node is always in a XMLDocument.
+        -:  647:	The type of a XMLNode can be queried, and it can
+        -:  648:	be cast to its more defined type.
+        -:  649:
+        -:  650:	A XMLDocument allocates memory for all its Nodes.
+        -:  651:	When the XMLDocument gets deleted, all its Nodes
+        -:  652:	will also be deleted.
+        -:  653:
+        -:  654:	@verbatim
+        -:  655:	A Document can contain:	Element	(container or leaf)
+        -:  656:							Comment (leaf)
+        -:  657:							Unknown (leaf)
+        -:  658:							Declaration( leaf )
+        -:  659:
+        -:  660:	An Element can contain:	Element (container or leaf)
+        -:  661:							Text	(leaf)
+        -:  662:							Attributes (not on tree)
+        -:  663:							Comment (leaf)
+        -:  664:							Unknown (leaf)
+        -:  665:
+        -:  666:	@endverbatim
+        -:  667:*/
+        -:  668:class TINYXML2_LIB XMLNode
+        -:  669:{
+        -:  670:    friend class XMLDocument;
+        -:  671:    friend class XMLElement;
+        -:  672:public:
+        -:  673:
+        -:  674:    /// Get the XMLDocument that owns this XMLNode.
+        -:  675:    const XMLDocument* GetDocument() const	{
+        -:  676:        TIXMLASSERT( _document );
+        -:  677:        return _document;
+        -:  678:    }
+        -:  679:    /// Get the XMLDocument that owns this XMLNode.
+        -:  680:    XMLDocument* GetDocument()				{
+        -:  681:        TIXMLASSERT( _document );
+        -:  682:        return _document;
+        -:  683:    }
+        -:  684:
+        -:  685:    /// Safely cast to an Element, or null.
+        -:  686:    virtual XMLElement*		ToElement()		{
+        -:  687:        return 0;
+        -:  688:    }
+        -:  689:    /// Safely cast to Text, or null.
+        -:  690:    virtual XMLText*		ToText()		{
+        -:  691:        return 0;
+        -:  692:    }
+        -:  693:    /// Safely cast to a Comment, or null.
+        -:  694:    virtual XMLComment*		ToComment()		{
+        -:  695:        return 0;
+        -:  696:    }
+        -:  697:    /// Safely cast to a Document, or null.
+        -:  698:    virtual XMLDocument*	ToDocument()	{
+        -:  699:        return 0;
+        -:  700:    }
+        -:  701:    /// Safely cast to a Declaration, or null.
+        -:  702:    virtual XMLDeclaration*	ToDeclaration()	{
+        -:  703:        return 0;
+        -:  704:    }
+        -:  705:    /// Safely cast to an Unknown, or null.
+        -:  706:    virtual XMLUnknown*		ToUnknown()		{
+        -:  707:        return 0;
+        -:  708:    }
+        -:  709:
+        -:  710:    virtual const XMLElement*		ToElement() const		{
+        -:  711:        return 0;
+        -:  712:    }
+        -:  713:    virtual const XMLText*			ToText() const			{
+        -:  714:        return 0;
+        -:  715:    }
+        -:  716:    virtual const XMLComment*		ToComment() const		{
+        -:  717:        return 0;
+        -:  718:    }
+        -:  719:    virtual const XMLDocument*		ToDocument() const		{
+        -:  720:        return 0;
+        -:  721:    }
+        -:  722:    virtual const XMLDeclaration*	ToDeclaration() const	{
+        -:  723:        return 0;
+        -:  724:    }
+        -:  725:    virtual const XMLUnknown*		ToUnknown() const		{
+        -:  726:        return 0;
+        -:  727:    }
+        -:  728:
+        -:  729:    /** The meaning of 'value' changes for the specific type.
+        -:  730:    	@verbatim
+        -:  731:    	Document:	empty (NULL is returned, not an empty string)
+        -:  732:    	Element:	name of the element
+        -:  733:    	Comment:	the comment text
+        -:  734:    	Unknown:	the tag contents
+        -:  735:    	Text:		the text string
+        -:  736:    	@endverbatim
+        -:  737:    */
+        -:  738:    const char* Value() const;
+        -:  739:
+        -:  740:    /** Set the Value of an XML node.
+        -:  741:    	@sa Value()
+        -:  742:    */
+        -:  743:    void SetValue( const char* val, bool staticMem=false );
+        -:  744:
+        -:  745:    /// Gets the line number the node is in, if the document was parsed from a file.
+        -:  746:    int GetLineNum() const { return _parseLineNum; }
+        -:  747:
+        -:  748:    /// Get the parent of this node on the DOM.
+        -:  749:    const XMLNode*	Parent() const			{
+        -:  750:        return _parent;
+        -:  751:    }
+        -:  752:
+        -:  753:    XMLNode* Parent()						{
+        -:  754:        return _parent;
+        -:  755:    }
+        -:  756:
+        -:  757:    /// Returns true if this node has no children.
+        -:  758:    bool NoChildren() const					{
+        -:  759:        return !_firstChild;
+        -:  760:    }
+        -:  761:
+        -:  762:    /// Get the first child node, or null if none exists.
+        -:  763:    const XMLNode*  FirstChild() const		{
+        -:  764:        return _firstChild;
+        -:  765:    }
+        -:  766:
+        -:  767:    XMLNode*		FirstChild()			{
+        -:  768:        return _firstChild;
+        -:  769:    }
+        -:  770:
+        -:  771:    /** Get the first child element, or optionally the first child
+        -:  772:        element with the specified name.
+        -:  773:    */
+        -:  774:    const XMLElement* FirstChildElement( const char* name = 0 ) const;
+        -:  775:
+function _ZN8tinyxml27XMLNode17FirstChildElementEPKc called 0 returned 0% blocks executed 0%
+    #####:  776:    XMLElement* FirstChildElement( const char* name = 0 )	{
+    #####:  777:        return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->FirstChildElement( name ));
+    %%%%%:  777-block  0
+call    0 never executed
+        -:  778:    }
+        -:  779:
+        -:  780:    /// Get the last child node, or null if none exists.
+        -:  781:    const XMLNode*	LastChild() const						{
+        -:  782:        return _lastChild;
+        -:  783:    }
+        -:  784:
+        -:  785:    XMLNode*		LastChild()								{
+        -:  786:        return _lastChild;
+        -:  787:    }
+        -:  788:
+        -:  789:    /** Get the last child element or optionally the last child
+        -:  790:        element with the specified name.
+        -:  791:    */
+        -:  792:    const XMLElement* LastChildElement( const char* name = 0 ) const;
+        -:  793:
+        -:  794:    XMLElement* LastChildElement( const char* name = 0 )	{
+        -:  795:        return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->LastChildElement(name) );
+        -:  796:    }
+        -:  797:
+        -:  798:    /// Get the previous (left) sibling node of this node.
+        -:  799:    const XMLNode*	PreviousSibling() const					{
+        -:  800:        return _prev;
+        -:  801:    }
+        -:  802:
+        -:  803:    XMLNode*	PreviousSibling()							{
+        -:  804:        return _prev;
+        -:  805:    }
+        -:  806:
+        -:  807:    /// Get the previous (left) sibling element of this node, with an optionally supplied name.
+        -:  808:    const XMLElement*	PreviousSiblingElement( const char* name = 0 ) const ;
+        -:  809:
+        -:  810:    XMLElement*	PreviousSiblingElement( const char* name = 0 ) {
+        -:  811:        return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->PreviousSiblingElement( name ) );
+        -:  812:    }
+        -:  813:
+        -:  814:    /// Get the next (right) sibling node of this node.
+        -:  815:    const XMLNode*	NextSibling() const						{
+        -:  816:        return _next;
+        -:  817:    }
+        -:  818:
+        -:  819:    XMLNode*	NextSibling()								{
+        -:  820:        return _next;
+        -:  821:    }
+        -:  822:
+        -:  823:    /// Get the next (right) sibling element of this node, with an optionally supplied name.
+        -:  824:    const XMLElement*	NextSiblingElement( const char* name = 0 ) const;
+        -:  825:
+function _ZN8tinyxml27XMLNode18NextSiblingElementEPKc called 0 returned 0% blocks executed 0%
+    #####:  826:    XMLElement*	NextSiblingElement( const char* name = 0 )	{
+    #####:  827:        return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->NextSiblingElement( name ) );
+    %%%%%:  827-block  0
+call    0 never executed
+        -:  828:    }
+        -:  829:
+        -:  830:    /**
+        -:  831:    	Add a child node as the last (right) child.
+        -:  832:		If the child node is already part of the document,
+        -:  833:		it is moved from its old location to the new location.
+        -:  834:		Returns the addThis argument or 0 if the node does not
+        -:  835:		belong to the same document.
+        -:  836:    */
+        -:  837:    XMLNode* InsertEndChild( XMLNode* addThis );
+        -:  838:
+        -:  839:    XMLNode* LinkEndChild( XMLNode* addThis )	{
+        -:  840:        return InsertEndChild( addThis );
+        -:  841:    }
+        -:  842:    /**
+        -:  843:    	Add a child node as the first (left) child.
+        -:  844:		If the child node is already part of the document,
+        -:  845:		it is moved from its old location to the new location.
+        -:  846:		Returns the addThis argument or 0 if the node does not
+        -:  847:		belong to the same document.
+        -:  848:    */
+        -:  849:    XMLNode* InsertFirstChild( XMLNode* addThis );
+        -:  850:    /**
+        -:  851:    	Add a node after the specified child node.
+        -:  852:		If the child node is already part of the document,
+        -:  853:		it is moved from its old location to the new location.
+        -:  854:		Returns the addThis argument or 0 if the afterThis node
+        -:  855:		is not a child of this node, or if the node does not
+        -:  856:		belong to the same document.
+        -:  857:    */
+        -:  858:    XMLNode* InsertAfterChild( XMLNode* afterThis, XMLNode* addThis );
+        -:  859:
+        -:  860:    /**
+        -:  861:    	Delete all the children of this node.
+        -:  862:    */
+        -:  863:    void DeleteChildren();
+        -:  864:
+        -:  865:    /**
+        -:  866:    	Delete a child of this node.
+        -:  867:    */
+        -:  868:    void DeleteChild( XMLNode* node );
+        -:  869:
+        -:  870:    /**
+        -:  871:    	Make a copy of this node, but not its children.
+        -:  872:    	You may pass in a Document pointer that will be
+        -:  873:    	the owner of the new Node. If the 'document' is
+        -:  874:    	null, then the node returned will be allocated
+        -:  875:    	from the current Document. (this->GetDocument())
+        -:  876:
+        -:  877:    	Note: if called on a XMLDocument, this will return null.
+        -:  878:    */
+        -:  879:    virtual XMLNode* ShallowClone( XMLDocument* document ) const = 0;
+        -:  880:
+        -:  881:	/**
+        -:  882:		Make a copy of this node and all its children.
+        -:  883:
+        -:  884:		If the 'target' is null, then the nodes will
+        -:  885:		be allocated in the current document. If 'target' 
+        -:  886:        is specified, the memory will be allocated is the 
+        -:  887:        specified XMLDocument.
+        -:  888:
+        -:  889:		NOTE: This is probably not the correct tool to 
+        -:  890:		copy a document, since XMLDocuments can have multiple
+        -:  891:		top level XMLNodes. You probably want to use
+        -:  892:        XMLDocument::DeepCopy()
+        -:  893:	*/
+        -:  894:	XMLNode* DeepClone( XMLDocument* target ) const;
+        -:  895:
+        -:  896:    /**
+        -:  897:    	Test if 2 nodes are the same, but don't test children.
+        -:  898:    	The 2 nodes do not need to be in the same Document.
+        -:  899:
+        -:  900:    	Note: if called on a XMLDocument, this will return false.
+        -:  901:    */
+        -:  902:    virtual bool ShallowEqual( const XMLNode* compare ) const = 0;
+        -:  903:
+        -:  904:    /** Accept a hierarchical visit of the nodes in the TinyXML-2 DOM. Every node in the
+        -:  905:    	XML tree will be conditionally visited and the host will be called back
+        -:  906:    	via the XMLVisitor interface.
+        -:  907:
+        -:  908:    	This is essentially a SAX interface for TinyXML-2. (Note however it doesn't re-parse
+        -:  909:    	the XML for the callbacks, so the performance of TinyXML-2 is unchanged by using this
+        -:  910:    	interface versus any other.)
+        -:  911:
+        -:  912:    	The interface has been based on ideas from:
+        -:  913:
+        -:  914:    	- http://www.saxproject.org/
+        -:  915:    	- http://c2.com/cgi/wiki?HierarchicalVisitorPattern
+        -:  916:
+        -:  917:    	Which are both good references for "visiting".
+        -:  918:
+        -:  919:    	An example of using Accept():
+        -:  920:    	@verbatim
+        -:  921:    	XMLPrinter printer;
+        -:  922:    	tinyxmlDoc.Accept( &printer );
+        -:  923:    	const char* xmlcstr = printer.CStr();
+        -:  924:    	@endverbatim
+        -:  925:    */
+        -:  926:    virtual bool Accept( XMLVisitor* visitor ) const = 0;
+        -:  927:
+        -:  928:	/** 
+        -:  929:		Set user data into the XMLNode. TinyXML-2 in 
+        -:  930:		no way processes or interprets user data.
+        -:  931:		It is initially 0.
+        -:  932:	*/
+        -:  933:	void SetUserData(void* userData)	{ _userData = userData; }
+        -:  934:
+        -:  935:	/**
+        -:  936:		Get user data set into the XMLNode. TinyXML-2 in
+        -:  937:		no way processes or interprets user data.
+        -:  938:		It is initially 0.
+        -:  939:	*/
+        -:  940:	void* GetUserData() const			{ return _userData; }
+        -:  941:
+        -:  942:protected:
+        -:  943:    XMLNode( XMLDocument* );
+        -:  944:    virtual ~XMLNode();
+        -:  945:
+        -:  946:    virtual char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr);
+        -:  947:
+        -:  948:    XMLDocument*	_document;
+        -:  949:    XMLNode*		_parent;
+        -:  950:    mutable StrPair	_value;
+        -:  951:    int             _parseLineNum;
+        -:  952:
+        -:  953:    XMLNode*		_firstChild;
+        -:  954:    XMLNode*		_lastChild;
+        -:  955:
+        -:  956:    XMLNode*		_prev;
+        -:  957:    XMLNode*		_next;
+        -:  958:
+        -:  959:	void*			_userData;
+        -:  960:
+        -:  961:private:
+        -:  962:    MemPool*		_memPool;
+        -:  963:    void Unlink( XMLNode* child );
+        -:  964:    static void DeleteNode( XMLNode* node );
+        -:  965:    void InsertChildPreamble( XMLNode* insertThis ) const;
+        -:  966:    const XMLElement* ToElementWithName( const char* name ) const;
+        -:  967:
+        -:  968:    XMLNode( const XMLNode& );	// not supported
+        -:  969:    XMLNode& operator=( const XMLNode& );	// not supported
+        -:  970:};
+        -:  971:
+        -:  972:
+        -:  973:/** XML text.
+        -:  974:
+        -:  975:	Note that a text node can have child element nodes, for example:
+        -:  976:	@verbatim
+        -:  977:	<root>This is <b>bold</b></root>
+        -:  978:	@endverbatim
+        -:  979:
+        -:  980:	A text node can have 2 ways to output the next. "normal" output
+        -:  981:	and CDATA. It will default to the mode it was parsed from the XML file and
+        -:  982:	you generally want to leave it alone, but you can change the output mode with
+        -:  983:	SetCData() and query it with CData().
+        -:  984:*/
+        -:  985:class TINYXML2_LIB XMLText : public XMLNode
+        -:  986:{
+        -:  987:    friend class XMLDocument;
+        -:  988:public:
+        -:  989:    virtual bool Accept( XMLVisitor* visitor ) const;
+        -:  990:
+        -:  991:    virtual XMLText* ToText()			{
+        -:  992:        return this;
+        -:  993:    }
+        -:  994:    virtual const XMLText* ToText() const	{
+        -:  995:        return this;
+        -:  996:    }
+        -:  997:
+        -:  998:    /// Declare whether this should be CDATA or standard text.
+        -:  999:    void SetCData( bool isCData )			{
+        -: 1000:        _isCData = isCData;
+        -: 1001:    }
+        -: 1002:    /// Returns true if this is a CDATA text element.
+        -: 1003:    bool CData() const						{
+        -: 1004:        return _isCData;
+        -: 1005:    }
+        -: 1006:
+        -: 1007:    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
+        -: 1008:    virtual bool ShallowEqual( const XMLNode* compare ) const;
+        -: 1009:
+        -: 1010:protected:
+        -: 1011:    XMLText( XMLDocument* doc )	: XMLNode( doc ), _isCData( false )	{}
+        -: 1012:    virtual ~XMLText()												{}
+        -: 1013:
+        -: 1014:    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
+        -: 1015:
+        -: 1016:private:
+        -: 1017:    bool _isCData;
+        -: 1018:
+        -: 1019:    XMLText( const XMLText& );	// not supported
+        -: 1020:    XMLText& operator=( const XMLText& );	// not supported
+        -: 1021:};
+        -: 1022:
+        -: 1023:
+        -: 1024:/** An XML Comment. */
+        -: 1025:class TINYXML2_LIB XMLComment : public XMLNode
+        -: 1026:{
+        -: 1027:    friend class XMLDocument;
+        -: 1028:public:
+        -: 1029:    virtual XMLComment*	ToComment()					{
+        -: 1030:        return this;
+        -: 1031:    }
+        -: 1032:    virtual const XMLComment* ToComment() const		{
+        -: 1033:        return this;
+        -: 1034:    }
+        -: 1035:
+        -: 1036:    virtual bool Accept( XMLVisitor* visitor ) const;
+        -: 1037:
+        -: 1038:    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
+        -: 1039:    virtual bool ShallowEqual( const XMLNode* compare ) const;
+        -: 1040:
+        -: 1041:protected:
+        -: 1042:    XMLComment( XMLDocument* doc );
+        -: 1043:    virtual ~XMLComment();
+        -: 1044:
+        -: 1045:    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr);
+        -: 1046:
+        -: 1047:private:
+        -: 1048:    XMLComment( const XMLComment& );	// not supported
+        -: 1049:    XMLComment& operator=( const XMLComment& );	// not supported
+        -: 1050:};
+        -: 1051:
+        -: 1052:
+        -: 1053:/** In correct XML the declaration is the first entry in the file.
+        -: 1054:	@verbatim
+        -: 1055:		<?xml version="1.0" standalone="yes"?>
+        -: 1056:	@endverbatim
+        -: 1057:
+        -: 1058:	TinyXML-2 will happily read or write files without a declaration,
+        -: 1059:	however.
+        -: 1060:
+        -: 1061:	The text of the declaration isn't interpreted. It is parsed
+        -: 1062:	and written as a string.
+        -: 1063:*/
+        -: 1064:class TINYXML2_LIB XMLDeclaration : public XMLNode
+        -: 1065:{
+        -: 1066:    friend class XMLDocument;
+        -: 1067:public:
+        -: 1068:    virtual XMLDeclaration*	ToDeclaration()					{
+        -: 1069:        return this;
+        -: 1070:    }
+        -: 1071:    virtual const XMLDeclaration* ToDeclaration() const		{
+        -: 1072:        return this;
+        -: 1073:    }
+        -: 1074:
+        -: 1075:    virtual bool Accept( XMLVisitor* visitor ) const;
+        -: 1076:
+        -: 1077:    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
+        -: 1078:    virtual bool ShallowEqual( const XMLNode* compare ) const;
+        -: 1079:
+        -: 1080:protected:
+        -: 1081:    XMLDeclaration( XMLDocument* doc );
+        -: 1082:    virtual ~XMLDeclaration();
+        -: 1083:
+        -: 1084:    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
+        -: 1085:
+        -: 1086:private:
+        -: 1087:    XMLDeclaration( const XMLDeclaration& );	// not supported
+        -: 1088:    XMLDeclaration& operator=( const XMLDeclaration& );	// not supported
+        -: 1089:};
+        -: 1090:
+        -: 1091:
+        -: 1092:/** Any tag that TinyXML-2 doesn't recognize is saved as an
+        -: 1093:	unknown. It is a tag of text, but should not be modified.
+        -: 1094:	It will be written back to the XML, unchanged, when the file
+        -: 1095:	is saved.
+        -: 1096:
+        -: 1097:	DTD tags get thrown into XMLUnknowns.
+        -: 1098:*/
+        -: 1099:class TINYXML2_LIB XMLUnknown : public XMLNode
+        -: 1100:{
+        -: 1101:    friend class XMLDocument;
+        -: 1102:public:
+        -: 1103:    virtual XMLUnknown*	ToUnknown()					{
+        -: 1104:        return this;
+        -: 1105:    }
+        -: 1106:    virtual const XMLUnknown* ToUnknown() const		{
+        -: 1107:        return this;
+        -: 1108:    }
+        -: 1109:
+        -: 1110:    virtual bool Accept( XMLVisitor* visitor ) const;
+        -: 1111:
+        -: 1112:    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
+        -: 1113:    virtual bool ShallowEqual( const XMLNode* compare ) const;
+        -: 1114:
+        -: 1115:protected:
+        -: 1116:    XMLUnknown( XMLDocument* doc );
+        -: 1117:    virtual ~XMLUnknown();
+        -: 1118:
+        -: 1119:    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
+        -: 1120:
+        -: 1121:private:
+        -: 1122:    XMLUnknown( const XMLUnknown& );	// not supported
+        -: 1123:    XMLUnknown& operator=( const XMLUnknown& );	// not supported
+        -: 1124:};
+        -: 1125:
+        -: 1126:
+        -: 1127:
+        -: 1128:/** An attribute is a name-value pair. Elements have an arbitrary
+        -: 1129:	number of attributes, each with a unique name.
+        -: 1130:
+        -: 1131:	@note The attributes are not XMLNodes. You may only query the
+        -: 1132:	Next() attribute in a list.
+        -: 1133:*/
+        -: 1134:class TINYXML2_LIB XMLAttribute
+        -: 1135:{
+        -: 1136:    friend class XMLElement;
+        -: 1137:public:
+        -: 1138:    /// The name of the attribute.
+        -: 1139:    const char* Name() const;
+        -: 1140:
+        -: 1141:    /// The value of the attribute.
+        -: 1142:    const char* Value() const;
+        -: 1143:
+        -: 1144:    /// Gets the line number the attribute is in, if the document was parsed from a file.
+        -: 1145:    int GetLineNum() const { return _parseLineNum; }
+        -: 1146:
+        -: 1147:    /// The next attribute in the list.
+        -: 1148:    const XMLAttribute* Next() const {
+        -: 1149:        return _next;
+        -: 1150:    }
+        -: 1151:
+        -: 1152:    /** IntValue interprets the attribute as an integer, and returns the value.
+        -: 1153:        If the value isn't an integer, 0 will be returned. There is no error checking;
+        -: 1154:    	use QueryIntValue() if you need error checking.
+        -: 1155:    */
+function _ZNK8tinyxml212XMLAttribute8IntValueEv called 25 returned 100% blocks executed 100%
+       25: 1156:	int	IntValue() const {
+       25: 1157:		int i = 0;
+       25: 1158:		QueryIntValue(&i);
+       25: 1158-block  0
+call    0 returned 25
+branch  1 taken 25 (fallthrough)
+branch  2 taken 0 (throw)
+       25: 1159:		return i;
+       25: 1159-block  0
+       25: 1159-block  1
+        -: 1160:	}
+        -: 1161:
+        -: 1162:	int64_t Int64Value() const {
+        -: 1163:		int64_t i = 0;
+        -: 1164:		QueryInt64Value(&i);
+        -: 1165:		return i;
+        -: 1166:	}
+        -: 1167:
+        -: 1168:    /// Query as an unsigned integer. See IntValue()
+        -: 1169:    unsigned UnsignedValue() const			{
+        -: 1170:        unsigned i=0;
+        -: 1171:        QueryUnsignedValue( &i );
+        -: 1172:        return i;
+        -: 1173:    }
+        -: 1174:    /// Query as a boolean. See IntValue()
+        -: 1175:    bool	 BoolValue() const				{
+        -: 1176:        bool b=false;
+        -: 1177:        QueryBoolValue( &b );
+        -: 1178:        return b;
+        -: 1179:    }
+        -: 1180:    /// Query as a double. See IntValue()
+        -: 1181:    double 	 DoubleValue() const			{
+        -: 1182:        double d=0;
+        -: 1183:        QueryDoubleValue( &d );
+        -: 1184:        return d;
+        -: 1185:    }
+        -: 1186:    /// Query as a float. See IntValue()
+        -: 1187:    float	 FloatValue() const				{
+        -: 1188:        float f=0;
+        -: 1189:        QueryFloatValue( &f );
+        -: 1190:        return f;
+        -: 1191:    }
+        -: 1192:
+        -: 1193:    /** QueryIntValue interprets the attribute as an integer, and returns the value
+        -: 1194:    	in the provided parameter. The function will return XML_SUCCESS on success,
+        -: 1195:    	and XML_WRONG_ATTRIBUTE_TYPE if the conversion is not successful.
+        -: 1196:    */
+        -: 1197:    XMLError QueryIntValue( int* value ) const;
+        -: 1198:    /// See QueryIntValue
+        -: 1199:    XMLError QueryUnsignedValue( unsigned int* value ) const;
+        -: 1200:	/// See QueryIntValue
+        -: 1201:	XMLError QueryInt64Value(int64_t* value) const;
+        -: 1202:	/// See QueryIntValue
+        -: 1203:    XMLError QueryBoolValue( bool* value ) const;
+        -: 1204:    /// See QueryIntValue
+        -: 1205:    XMLError QueryDoubleValue( double* value ) const;
+        -: 1206:    /// See QueryIntValue
+        -: 1207:    XMLError QueryFloatValue( float* value ) const;
+        -: 1208:
+        -: 1209:    /// Set the attribute to a string value.
+        -: 1210:    void SetAttribute( const char* value );
+        -: 1211:    /// Set the attribute to value.
+        -: 1212:    void SetAttribute( int value );
+        -: 1213:    /// Set the attribute to value.
+        -: 1214:    void SetAttribute( unsigned value );
+        -: 1215:	/// Set the attribute to value.
+        -: 1216:	void SetAttribute(int64_t value);
+        -: 1217:	/// Set the attribute to value.
+        -: 1218:    void SetAttribute( bool value );
+        -: 1219:    /// Set the attribute to value.
+        -: 1220:    void SetAttribute( double value );
+        -: 1221:    /// Set the attribute to value.
+        -: 1222:    void SetAttribute( float value );
+        -: 1223:
+        -: 1224:private:
+        -: 1225:    enum { BUF_SIZE = 200 };
+        -: 1226:
+        -: 1227:    XMLAttribute() : _name(), _value(),_parseLineNum( 0 ), _next( 0 ), _memPool( 0 ) {}
+        -: 1228:    virtual ~XMLAttribute()	{}
+        -: 1229:
+        -: 1230:    XMLAttribute( const XMLAttribute& );	// not supported
+        -: 1231:    void operator=( const XMLAttribute& );	// not supported
+        -: 1232:    void SetName( const char* name );
+        -: 1233:
+        -: 1234:    char* ParseDeep( char* p, bool processEntities, int* curLineNumPtr );
+        -: 1235:
+        -: 1236:    mutable StrPair _name;
+        -: 1237:    mutable StrPair _value;
+        -: 1238:    int             _parseLineNum;
+        -: 1239:    XMLAttribute*   _next;
+        -: 1240:    MemPool*        _memPool;
+        -: 1241:};
+        -: 1242:
+        -: 1243:
+        -: 1244:/** The element is a container class. It has a value, the element name,
+        -: 1245:	and can contain other elements, text, comments, and unknowns.
+        -: 1246:	Elements also contain an arbitrary number of attributes.
+        -: 1247:*/
+        -: 1248:class TINYXML2_LIB XMLElement : public XMLNode
+        -: 1249:{
+        -: 1250:    friend class XMLDocument;
+        -: 1251:public:
+        -: 1252:    /// Get the name of an element (which is the Value() of the node.)
+        -: 1253:    const char* Name() const		{
+        -: 1254:        return Value();
+        -: 1255:    }
+        -: 1256:    /// Set the name of the element.
+        -: 1257:    void SetName( const char* str, bool staticMem=false )	{
+        -: 1258:        SetValue( str, staticMem );
+        -: 1259:    }
+        -: 1260:
+        -: 1261:    virtual XMLElement* ToElement()				{
+        -: 1262:        return this;
+        -: 1263:    }
+        -: 1264:    virtual const XMLElement* ToElement() const {
+        -: 1265:        return this;
+        -: 1266:    }
+        -: 1267:    virtual bool Accept( XMLVisitor* visitor ) const;
+        -: 1268:
+        -: 1269:    /** Given an attribute name, Attribute() returns the value
+        -: 1270:    	for the attribute of that name, or null if none
+        -: 1271:    	exists. For example:
+        -: 1272:
+        -: 1273:    	@verbatim
+        -: 1274:    	const char* value = ele->Attribute( "foo" );
+        -: 1275:    	@endverbatim
+        -: 1276:
+        -: 1277:    	The 'value' parameter is normally null. However, if specified,
+        -: 1278:    	the attribute will only be returned if the 'name' and 'value'
+        -: 1279:    	match. This allow you to write code:
+        -: 1280:
+        -: 1281:    	@verbatim
+        -: 1282:    	if ( ele->Attribute( "foo", "bar" ) ) callFooIsBar();
+        -: 1283:    	@endverbatim
+        -: 1284:
+        -: 1285:    	rather than:
+        -: 1286:    	@verbatim
+        -: 1287:    	if ( ele->Attribute( "foo" ) ) {
+        -: 1288:    		if ( strcmp( ele->Attribute( "foo" ), "bar" ) == 0 ) callFooIsBar();
+        -: 1289:    	}
+        -: 1290:    	@endverbatim
+        -: 1291:    */
+        -: 1292:    const char* Attribute( const char* name, const char* value=0 ) const;
+        -: 1293:
+        -: 1294:    /** Given an attribute name, IntAttribute() returns the value
+        -: 1295:    	of the attribute interpreted as an integer. The default
+        -: 1296:        value will be returned if the attribute isn't present,
+        -: 1297:        or if there is an error. (For a method with error
+        -: 1298:    	checking, see QueryIntAttribute()).
+        -: 1299:    */
+        -: 1300:	int IntAttribute(const char* name, int defaultValue = 0) const;
+        -: 1301:    /// See IntAttribute()
+        -: 1302:	unsigned UnsignedAttribute(const char* name, unsigned defaultValue = 0) const;
+        -: 1303:	/// See IntAttribute()
+        -: 1304:	int64_t Int64Attribute(const char* name, int64_t defaultValue = 0) const;
+        -: 1305:	/// See IntAttribute()
+        -: 1306:	bool BoolAttribute(const char* name, bool defaultValue = false) const;
+        -: 1307:    /// See IntAttribute()
+        -: 1308:	double DoubleAttribute(const char* name, double defaultValue = 0) const;
+        -: 1309:    /// See IntAttribute()
+        -: 1310:	float FloatAttribute(const char* name, float defaultValue = 0) const;
+        -: 1311:
+        -: 1312:    /** Given an attribute name, QueryIntAttribute() returns
+        -: 1313:    	XML_SUCCESS, XML_WRONG_ATTRIBUTE_TYPE if the conversion
+        -: 1314:    	can't be performed, or XML_NO_ATTRIBUTE if the attribute
+        -: 1315:    	doesn't exist. If successful, the result of the conversion
+        -: 1316:    	will be written to 'value'. If not successful, nothing will
+        -: 1317:    	be written to 'value'. This allows you to provide default
+        -: 1318:    	value:
+        -: 1319:
+        -: 1320:    	@verbatim
+        -: 1321:    	int value = 10;
+        -: 1322:    	QueryIntAttribute( "foo", &value );		// if "foo" isn't found, value will still be 10
+        -: 1323:    	@endverbatim
+        -: 1324:    */
+        -: 1325:    XMLError QueryIntAttribute( const char* name, int* value ) const				{
+        -: 1326:        const XMLAttribute* a = FindAttribute( name );
+        -: 1327:        if ( !a ) {
+        -: 1328:            return XML_NO_ATTRIBUTE;
+        -: 1329:        }
+        -: 1330:        return a->QueryIntValue( value );
+        -: 1331:    }
+        -: 1332:
+        -: 1333:	/// See QueryIntAttribute()
+        -: 1334:    XMLError QueryUnsignedAttribute( const char* name, unsigned int* value ) const	{
+        -: 1335:        const XMLAttribute* a = FindAttribute( name );
+        -: 1336:        if ( !a ) {
+        -: 1337:            return XML_NO_ATTRIBUTE;
+        -: 1338:        }
+        -: 1339:        return a->QueryUnsignedValue( value );
+        -: 1340:    }
+        -: 1341:
+        -: 1342:	/// See QueryIntAttribute()
+        -: 1343:	XMLError QueryInt64Attribute(const char* name, int64_t* value) const {
+        -: 1344:		const XMLAttribute* a = FindAttribute(name);
+        -: 1345:		if (!a) {
+        -: 1346:			return XML_NO_ATTRIBUTE;
+        -: 1347:		}
+        -: 1348:		return a->QueryInt64Value(value);
+        -: 1349:	}
+        -: 1350:
+        -: 1351:	/// See QueryIntAttribute()
+        -: 1352:    XMLError QueryBoolAttribute( const char* name, bool* value ) const				{
+        -: 1353:        const XMLAttribute* a = FindAttribute( name );
+        -: 1354:        if ( !a ) {
+        -: 1355:            return XML_NO_ATTRIBUTE;
+        -: 1356:        }
+        -: 1357:        return a->QueryBoolValue( value );
+        -: 1358:    }
+        -: 1359:    /// See QueryIntAttribute()
+        -: 1360:    XMLError QueryDoubleAttribute( const char* name, double* value ) const			{
+        -: 1361:        const XMLAttribute* a = FindAttribute( name );
+        -: 1362:        if ( !a ) {
+        -: 1363:            return XML_NO_ATTRIBUTE;
+        -: 1364:        }
+        -: 1365:        return a->QueryDoubleValue( value );
+        -: 1366:    }
+        -: 1367:    /// See QueryIntAttribute()
+        -: 1368:    XMLError QueryFloatAttribute( const char* name, float* value ) const			{
+        -: 1369:        const XMLAttribute* a = FindAttribute( name );
+        -: 1370:        if ( !a ) {
+        -: 1371:            return XML_NO_ATTRIBUTE;
+        -: 1372:        }
+        -: 1373:        return a->QueryFloatValue( value );
+        -: 1374:    }
+        -: 1375:
+        -: 1376:	/// See QueryIntAttribute()
+        -: 1377:	XMLError QueryStringAttribute(const char* name, const char** value) const {
+        -: 1378:		const XMLAttribute* a = FindAttribute(name);
+        -: 1379:		if (!a) {
+        -: 1380:			return XML_NO_ATTRIBUTE;
+        -: 1381:		}
+        -: 1382:		*value = a->Value();
+        -: 1383:		return XML_SUCCESS;
+        -: 1384:	}
+        -: 1385:
+        -: 1386:
+        -: 1387:	
+        -: 1388:    /** Given an attribute name, QueryAttribute() returns
+        -: 1389:    	XML_SUCCESS, XML_WRONG_ATTRIBUTE_TYPE if the conversion
+        -: 1390:    	can't be performed, or XML_NO_ATTRIBUTE if the attribute
+        -: 1391:    	doesn't exist. It is overloaded for the primitive types,
+        -: 1392:		and is a generally more convenient replacement of
+        -: 1393:		QueryIntAttribute() and related functions.
+        -: 1394:		
+        -: 1395:		If successful, the result of the conversion
+        -: 1396:    	will be written to 'value'. If not successful, nothing will
+        -: 1397:    	be written to 'value'. This allows you to provide default
+        -: 1398:    	value:
+        -: 1399:
+        -: 1400:    	@verbatim
+        -: 1401:    	int value = 10;
+        -: 1402:    	QueryAttribute( "foo", &value );		// if "foo" isn't found, value will still be 10
+        -: 1403:    	@endverbatim
+        -: 1404:    */
+        -: 1405:	int QueryAttribute( const char* name, int* value ) const {
+        -: 1406:		return QueryIntAttribute( name, value );
+        -: 1407:	}
+        -: 1408:
+        -: 1409:	int QueryAttribute( const char* name, unsigned int* value ) const {
+        -: 1410:		return QueryUnsignedAttribute( name, value );
+        -: 1411:	}
+        -: 1412:
+        -: 1413:	int QueryAttribute(const char* name, int64_t* value) const {
+        -: 1414:		return QueryInt64Attribute(name, value);
+        -: 1415:	}
+        -: 1416:
+        -: 1417:	int QueryAttribute( const char* name, bool* value ) const {
+        -: 1418:		return QueryBoolAttribute( name, value );
+        -: 1419:	}
+        -: 1420:
+        -: 1421:	int QueryAttribute( const char* name, double* value ) const {
+        -: 1422:		return QueryDoubleAttribute( name, value );
+        -: 1423:	}
+        -: 1424:
+        -: 1425:	int QueryAttribute( const char* name, float* value ) const {
+        -: 1426:		return QueryFloatAttribute( name, value );
+        -: 1427:	}
+        -: 1428:
+        -: 1429:	/// Sets the named attribute to value.
+        -: 1430:    void SetAttribute( const char* name, const char* value )	{
+        -: 1431:        XMLAttribute* a = FindOrCreateAttribute( name );
+        -: 1432:        a->SetAttribute( value );
+        -: 1433:    }
+        -: 1434:    /// Sets the named attribute to value.
+        -: 1435:    void SetAttribute( const char* name, int value )			{
+        -: 1436:        XMLAttribute* a = FindOrCreateAttribute( name );
+        -: 1437:        a->SetAttribute( value );
+        -: 1438:    }
+        -: 1439:    /// Sets the named attribute to value.
+        -: 1440:    void SetAttribute( const char* name, unsigned value )		{
+        -: 1441:        XMLAttribute* a = FindOrCreateAttribute( name );
+        -: 1442:        a->SetAttribute( value );
+        -: 1443:    }
+        -: 1444:
+        -: 1445:	/// Sets the named attribute to value.
+        -: 1446:	void SetAttribute(const char* name, int64_t value) {
+        -: 1447:		XMLAttribute* a = FindOrCreateAttribute(name);
+        -: 1448:		a->SetAttribute(value);
+        -: 1449:	}
+        -: 1450:
+        -: 1451:	/// Sets the named attribute to value.
+        -: 1452:    void SetAttribute( const char* name, bool value )			{
+        -: 1453:        XMLAttribute* a = FindOrCreateAttribute( name );
+        -: 1454:        a->SetAttribute( value );
+        -: 1455:    }
+        -: 1456:    /// Sets the named attribute to value.
+        -: 1457:    void SetAttribute( const char* name, double value )		{
+        -: 1458:        XMLAttribute* a = FindOrCreateAttribute( name );
+        -: 1459:        a->SetAttribute( value );
+        -: 1460:    }
+        -: 1461:    /// Sets the named attribute to value.
+        -: 1462:    void SetAttribute( const char* name, float value )		{
+        -: 1463:        XMLAttribute* a = FindOrCreateAttribute( name );
+        -: 1464:        a->SetAttribute( value );
+        -: 1465:    }
+        -: 1466:
+        -: 1467:    /**
+        -: 1468:    	Delete an attribute.
+        -: 1469:    */
+        -: 1470:    void DeleteAttribute( const char* name );
+        -: 1471:
+        -: 1472:    /// Return the first attribute in the list.
+function _ZNK8tinyxml210XMLElement14FirstAttributeEv called 984 returned 100% blocks executed 100%
+      984: 1473:    const XMLAttribute* FirstAttribute() const {
+      984: 1474:        return _rootAttribute;
+      984: 1474-block  0
+        -: 1475:    }
+        -: 1476:    /// Query a specific attribute in the list.
+        -: 1477:    const XMLAttribute* FindAttribute( const char* name ) const;
+        -: 1478:
+        -: 1479:    /** Convenience function for easy access to the text inside an element. Although easy
+        -: 1480:    	and concise, GetText() is limited compared to getting the XMLText child
+        -: 1481:    	and accessing it directly.
+        -: 1482:
+        -: 1483:    	If the first child of 'this' is a XMLText, the GetText()
+        -: 1484:    	returns the character string of the Text node, else null is returned.
+        -: 1485:
+        -: 1486:    	This is a convenient method for getting the text of simple contained text:
+        -: 1487:    	@verbatim
+        -: 1488:    	<foo>This is text</foo>
+        -: 1489:    		const char* str = fooElement->GetText();
+        -: 1490:    	@endverbatim
+        -: 1491:
+        -: 1492:    	'str' will be a pointer to "This is text".
+        -: 1493:
+        -: 1494:    	Note that this function can be misleading. If the element foo was created from
+        -: 1495:    	this XML:
+        -: 1496:    	@verbatim
+        -: 1497:    		<foo><b>This is text</b></foo>
+        -: 1498:    	@endverbatim
+        -: 1499:
+        -: 1500:    	then the value of str would be null. The first child node isn't a text node, it is
+        -: 1501:    	another element. From this XML:
+        -: 1502:    	@verbatim
+        -: 1503:    		<foo>This is <b>text</b></foo>
+        -: 1504:    	@endverbatim
+        -: 1505:    	GetText() will return "This is ".
+        -: 1506:    */
+        -: 1507:    const char* GetText() const;
+        -: 1508:
+        -: 1509:    /** Convenience function for easy access to the text inside an element. Although easy
+        -: 1510:    	and concise, SetText() is limited compared to creating an XMLText child
+        -: 1511:    	and mutating it directly.
+        -: 1512:
+        -: 1513:    	If the first child of 'this' is a XMLText, SetText() sets its value to
+        -: 1514:		the given string, otherwise it will create a first child that is an XMLText.
+        -: 1515:
+        -: 1516:    	This is a convenient method for setting the text of simple contained text:
+        -: 1517:    	@verbatim
+        -: 1518:    	<foo>This is text</foo>
+        -: 1519:    		fooElement->SetText( "Hullaballoo!" );
+        -: 1520:     	<foo>Hullaballoo!</foo>
+        -: 1521:		@endverbatim
+        -: 1522:
+        -: 1523:    	Note that this function can be misleading. If the element foo was created from
+        -: 1524:    	this XML:
+        -: 1525:    	@verbatim
+        -: 1526:    		<foo><b>This is text</b></foo>
+        -: 1527:    	@endverbatim
+        -: 1528:
+        -: 1529:    	then it will not change "This is text", but rather prefix it with a text element:
+        -: 1530:    	@verbatim
+        -: 1531:    		<foo>Hullaballoo!<b>This is text</b></foo>
+        -: 1532:    	@endverbatim
+        -: 1533:		
+        -: 1534:		For this XML:
+        -: 1535:    	@verbatim
+        -: 1536:    		<foo />
+        -: 1537:    	@endverbatim
+        -: 1538:    	SetText() will generate
+        -: 1539:    	@verbatim
+        -: 1540:    		<foo>Hullaballoo!</foo>
+        -: 1541:    	@endverbatim
+        -: 1542:    */
+        -: 1543:	void SetText( const char* inText );
+        -: 1544:    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+        -: 1545:    void SetText( int value );
+        -: 1546:    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+        -: 1547:    void SetText( unsigned value );  
+        -: 1548:	/// Convenience method for setting text inside an element. See SetText() for important limitations.
+        -: 1549:	void SetText(int64_t value);
+        -: 1550:	/// Convenience method for setting text inside an element. See SetText() for important limitations.
+        -: 1551:    void SetText( bool value );  
+        -: 1552:    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+        -: 1553:    void SetText( double value );  
+        -: 1554:    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+        -: 1555:    void SetText( float value );  
+        -: 1556:
+        -: 1557:    /**
+        -: 1558:    	Convenience method to query the value of a child text node. This is probably best
+        -: 1559:    	shown by example. Given you have a document is this form:
+        -: 1560:    	@verbatim
+        -: 1561:    		<point>
+        -: 1562:    			<x>1</x>
+        -: 1563:    			<y>1.4</y>
+        -: 1564:    		</point>
+        -: 1565:    	@endverbatim
+        -: 1566:
+        -: 1567:    	The QueryIntText() and similar functions provide a safe and easier way to get to the
+        -: 1568:    	"value" of x and y.
+        -: 1569:
+        -: 1570:    	@verbatim
+        -: 1571:    		int x = 0;
+        -: 1572:    		float y = 0;	// types of x and y are contrived for example
+        -: 1573:    		const XMLElement* xElement = pointElement->FirstChildElement( "x" );
+        -: 1574:    		const XMLElement* yElement = pointElement->FirstChildElement( "y" );
+        -: 1575:    		xElement->QueryIntText( &x );
+        -: 1576:    		yElement->QueryFloatText( &y );
+        -: 1577:    	@endverbatim
+        -: 1578:
+        -: 1579:    	@returns XML_SUCCESS (0) on success, XML_CAN_NOT_CONVERT_TEXT if the text cannot be converted
+        -: 1580:    			 to the requested type, and XML_NO_TEXT_NODE if there is no child text to query.
+        -: 1581:
+        -: 1582:    */
+        -: 1583:    XMLError QueryIntText( int* ival ) const;
+        -: 1584:    /// See QueryIntText()
+        -: 1585:    XMLError QueryUnsignedText( unsigned* uval ) const;
+        -: 1586:	/// See QueryIntText()
+        -: 1587:	XMLError QueryInt64Text(int64_t* uval) const;
+        -: 1588:	/// See QueryIntText()
+        -: 1589:    XMLError QueryBoolText( bool* bval ) const;
+        -: 1590:    /// See QueryIntText()
+        -: 1591:    XMLError QueryDoubleText( double* dval ) const;
+        -: 1592:    /// See QueryIntText()
+        -: 1593:    XMLError QueryFloatText( float* fval ) const;
+        -: 1594:
+        -: 1595:	int IntText(int defaultValue = 0) const;
+        -: 1596:
+        -: 1597:	/// See QueryIntText()
+        -: 1598:	unsigned UnsignedText(unsigned defaultValue = 0) const;
+        -: 1599:	/// See QueryIntText()
+        -: 1600:	int64_t Int64Text(int64_t defaultValue = 0) const;
+        -: 1601:	/// See QueryIntText()
+        -: 1602:	bool BoolText(bool defaultValue = false) const;
+        -: 1603:	/// See QueryIntText()
+        -: 1604:	double DoubleText(double defaultValue = 0) const;
+        -: 1605:	/// See QueryIntText()
+        -: 1606:	float FloatText(float defaultValue = 0) const;
+        -: 1607:
+        -: 1608:    // internal:
+        -: 1609:    enum ElementClosingType {
+        -: 1610:        OPEN,		// <foo>
+        -: 1611:        CLOSED,		// <foo/>
+        -: 1612:        CLOSING		// </foo>
+        -: 1613:    };
+        -: 1614:    ElementClosingType ClosingType() const {
+        -: 1615:        return _closingType;
+        -: 1616:    }
+        -: 1617:    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
+        -: 1618:    virtual bool ShallowEqual( const XMLNode* compare ) const;
+        -: 1619:
+        -: 1620:protected:
+        -: 1621:    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
+        -: 1622:
+        -: 1623:private:
+        -: 1624:    XMLElement( XMLDocument* doc );
+        -: 1625:    virtual ~XMLElement();
+        -: 1626:    XMLElement( const XMLElement& );	// not supported
+        -: 1627:    void operator=( const XMLElement& );	// not supported
+        -: 1628:
+        -: 1629:    XMLAttribute* FindAttribute( const char* name ) {
+        -: 1630:        return const_cast<XMLAttribute*>(const_cast<const XMLElement*>(this)->FindAttribute( name ));
+        -: 1631:    }
+        -: 1632:    XMLAttribute* FindOrCreateAttribute( const char* name );
+        -: 1633:    //void LinkAttribute( XMLAttribute* attrib );
+        -: 1634:    char* ParseAttributes( char* p, int* curLineNumPtr );
+        -: 1635:    static void DeleteAttribute( XMLAttribute* attribute );
+        -: 1636:    XMLAttribute* CreateAttribute();
+        -: 1637:
+        -: 1638:    enum { BUF_SIZE = 200 };
+        -: 1639:    ElementClosingType _closingType;
+        -: 1640:    // The attribute list is ordered; there is no 'lastAttribute'
+        -: 1641:    // because the list needs to be scanned for dupes before adding
+        -: 1642:    // a new attribute.
+        -: 1643:    XMLAttribute* _rootAttribute;
+        -: 1644:};
+        -: 1645:
+        -: 1646:
+        -: 1647:enum Whitespace {
+        -: 1648:    PRESERVE_WHITESPACE,
+        -: 1649:    COLLAPSE_WHITESPACE
+        -: 1650:};
+        -: 1651:
+        -: 1652:
+        -: 1653:/** A Document binds together all the functionality.
+        -: 1654:	It can be saved, loaded, and printed to the screen.
+        -: 1655:	All Nodes are connected and allocated to a Document.
+        -: 1656:	If the Document is deleted, all its Nodes are also deleted.
+        -: 1657:*/
+        -: 1658:class TINYXML2_LIB XMLDocument : public XMLNode
+        -: 1659:{
+        -: 1660:    friend class XMLElement;
+        -: 1661:    // Gives access to SetError and Push/PopDepth, but over-access for everything else.
+        -: 1662:    // Wishing C++ had "internal" scope.
+        -: 1663:    friend class XMLNode;       
+        -: 1664:    friend class XMLText;
+        -: 1665:    friend class XMLComment;
+        -: 1666:    friend class XMLDeclaration;
+        -: 1667:    friend class XMLUnknown;
+        -: 1668:public:
+        -: 1669:    /// constructor
+        -: 1670:    XMLDocument( bool processEntities = true, Whitespace whitespaceMode = PRESERVE_WHITESPACE );
+        -: 1671:    ~XMLDocument();
+        -: 1672:
+        -: 1673:    virtual XMLDocument* ToDocument()				{
+        -: 1674:        TIXMLASSERT( this == _document );
+        -: 1675:        return this;
+        -: 1676:    }
+        -: 1677:    virtual const XMLDocument* ToDocument() const	{
+        -: 1678:        TIXMLASSERT( this == _document );
+        -: 1679:        return this;
+        -: 1680:    }
+        -: 1681:
+        -: 1682:    /**
+        -: 1683:    	Parse an XML file from a character string.
+        -: 1684:    	Returns XML_SUCCESS (0) on success, or
+        -: 1685:    	an errorID.
+        -: 1686:
+        -: 1687:    	You may optionally pass in the 'nBytes', which is
+        -: 1688:    	the number of bytes which will be parsed. If not
+        -: 1689:    	specified, TinyXML-2 will assume 'xml' points to a
+        -: 1690:    	null terminated string.
+        -: 1691:    */
+        -: 1692:    XMLError Parse( const char* xml, size_t nBytes=(size_t)(-1) );
+        -: 1693:
+        -: 1694:    /**
+        -: 1695:    	Load an XML file from disk.
+        -: 1696:    	Returns XML_SUCCESS (0) on success, or
+        -: 1697:    	an errorID.
+        -: 1698:    */
+        -: 1699:    XMLError LoadFile( const char* filename );
+        -: 1700:
+        -: 1701:    /**
+        -: 1702:    	Load an XML file from disk. You are responsible
+        -: 1703:    	for providing and closing the FILE*. 
+        -: 1704:     
+        -: 1705:        NOTE: The file should be opened as binary ("rb")
+        -: 1706:        not text in order for TinyXML-2 to correctly
+        -: 1707:        do newline normalization.
+        -: 1708:
+        -: 1709:    	Returns XML_SUCCESS (0) on success, or
+        -: 1710:    	an errorID.
+        -: 1711:    */
+        -: 1712:    XMLError LoadFile( FILE* );
+        -: 1713:
+        -: 1714:    /**
+        -: 1715:    	Save the XML file to disk.
+        -: 1716:    	Returns XML_SUCCESS (0) on success, or
+        -: 1717:    	an errorID.
+        -: 1718:    */
+        -: 1719:    XMLError SaveFile( const char* filename, bool compact = false );
+        -: 1720:
+        -: 1721:    /**
+        -: 1722:    	Save the XML file to disk. You are responsible
+        -: 1723:    	for providing and closing the FILE*.
+        -: 1724:
+        -: 1725:    	Returns XML_SUCCESS (0) on success, or
+        -: 1726:    	an errorID.
+        -: 1727:    */
+        -: 1728:    XMLError SaveFile( FILE* fp, bool compact = false );
+        -: 1729:
+        -: 1730:    bool ProcessEntities() const		{
+        -: 1731:        return _processEntities;
+        -: 1732:    }
+        -: 1733:    Whitespace WhitespaceMode() const	{
+        -: 1734:        return _whitespaceMode;
+        -: 1735:    }
+        -: 1736:
+        -: 1737:    /**
+        -: 1738:    	Returns true if this document has a leading Byte Order Mark of UTF8.
+        -: 1739:    */
+        -: 1740:    bool HasBOM() const {
+        -: 1741:        return _writeBOM;
+        -: 1742:    }
+        -: 1743:    /** Sets whether to write the BOM when writing the file.
+        -: 1744:    */
+        -: 1745:    void SetBOM( bool useBOM ) {
+        -: 1746:        _writeBOM = useBOM;
+        -: 1747:    }
+        -: 1748:
+        -: 1749:    /** Return the root element of DOM. Equivalent to FirstChildElement().
+        -: 1750:        To get the first node, use FirstChild().
+        -: 1751:    */
+function _ZN8tinyxml211XMLDocument11RootElementEv called 78 returned 100% blocks executed 100%
+       78: 1752:    XMLElement* RootElement()				{
+       78: 1753:        return FirstChildElement();
+       78: 1753-block  0
+call    0 returned 78
+        -: 1754:    }
+        -: 1755:    const XMLElement* RootElement() const	{
+        -: 1756:        return FirstChildElement();
+        -: 1757:    }
+        -: 1758:
+        -: 1759:    /** Print the Document. If the Printer is not provided, it will
+        -: 1760:        print to stdout. If you provide Printer, this can print to a file:
+        -: 1761:    	@verbatim
+        -: 1762:    	XMLPrinter printer( fp );
+        -: 1763:    	doc.Print( &printer );
+        -: 1764:    	@endverbatim
+        -: 1765:
+        -: 1766:    	Or you can use a printer to print to memory:
+        -: 1767:    	@verbatim
+        -: 1768:    	XMLPrinter printer;
+        -: 1769:    	doc.Print( &printer );
+        -: 1770:    	// printer.CStr() has a const char* to the XML
+        -: 1771:    	@endverbatim
+        -: 1772:    */
+        -: 1773:    void Print( XMLPrinter* streamer=0 ) const;
+        -: 1774:    virtual bool Accept( XMLVisitor* visitor ) const;
+        -: 1775:
+        -: 1776:    /**
+        -: 1777:    	Create a new Element associated with
+        -: 1778:    	this Document. The memory for the Element
+        -: 1779:    	is managed by the Document.
+        -: 1780:    */
+        -: 1781:    XMLElement* NewElement( const char* name );
+        -: 1782:    /**
+        -: 1783:    	Create a new Comment associated with
+        -: 1784:    	this Document. The memory for the Comment
+        -: 1785:    	is managed by the Document.
+        -: 1786:    */
+        -: 1787:    XMLComment* NewComment( const char* comment );
+        -: 1788:    /**
+        -: 1789:    	Create a new Text associated with
+        -: 1790:    	this Document. The memory for the Text
+        -: 1791:    	is managed by the Document.
+        -: 1792:    */
+        -: 1793:    XMLText* NewText( const char* text );
+        -: 1794:    /**
+        -: 1795:    	Create a new Declaration associated with
+        -: 1796:    	this Document. The memory for the object
+        -: 1797:    	is managed by the Document.
+        -: 1798:
+        -: 1799:    	If the 'text' param is null, the standard
+        -: 1800:    	declaration is used.:
+        -: 1801:    	@verbatim
+        -: 1802:    		<?xml version="1.0" encoding="UTF-8"?>
+        -: 1803:    	@endverbatim
+        -: 1804:    */
+        -: 1805:    XMLDeclaration* NewDeclaration( const char* text=0 );
+        -: 1806:    /**
+        -: 1807:    	Create a new Unknown associated with
+        -: 1808:    	this Document. The memory for the object
+        -: 1809:    	is managed by the Document.
+        -: 1810:    */
+        -: 1811:    XMLUnknown* NewUnknown( const char* text );
+        -: 1812:
+        -: 1813:    /**
+        -: 1814:    	Delete a node associated with this document.
+        -: 1815:    	It will be unlinked from the DOM.
+        -: 1816:    */
+        -: 1817:    void DeleteNode( XMLNode* node );
+        -: 1818:
+        -: 1819:    void ClearError() {
+        -: 1820:        SetError(XML_SUCCESS, 0, 0);
+        -: 1821:    }
+        -: 1822:
+        -: 1823:    /// Return true if there was an error parsing the document.
+        -: 1824:    bool Error() const {
+        -: 1825:        return _errorID != XML_SUCCESS;
+        -: 1826:    }
+        -: 1827:    /// Return the errorID.
+        -: 1828:    XMLError  ErrorID() const {
+        -: 1829:        return _errorID;
+        -: 1830:    }
+        -: 1831:	const char* ErrorName() const;
+        -: 1832:    static const char* ErrorIDToName(XMLError errorID);
+        -: 1833:
+        -: 1834:    /** Returns a "long form" error description. A hopefully helpful 
+        -: 1835:        diagnostic with location, line number, and/or additional info.
+        -: 1836:    */
+        -: 1837:	const char* ErrorStr() const;
+        -: 1838:
+        -: 1839:    /// A (trivial) utility function that prints the ErrorStr() to stdout.
+        -: 1840:    void PrintError() const;
+        -: 1841:
+        -: 1842:    /// Return the line where the error occured, or zero if unknown.
+        -: 1843:    int ErrorLineNum() const
+        -: 1844:    {
+        -: 1845:        return _errorLineNum;
+        -: 1846:    }
+        -: 1847:    
+        -: 1848:    /// Clear the document, resetting it to the initial state.
+        -: 1849:    void Clear();
+        -: 1850:
+        -: 1851:	/**
+        -: 1852:		Copies this document to a target document.
+        -: 1853:		The target will be completely cleared before the copy.
+        -: 1854:		If you want to copy a sub-tree, see XMLNode::DeepClone().
+        -: 1855:
+        -: 1856:		NOTE: that the 'target' must be non-null.
+        -: 1857:	*/
+        -: 1858:	void DeepCopy(XMLDocument* target) const;
+        -: 1859:
+        -: 1860:	// internal
+        -: 1861:    char* Identify( char* p, XMLNode** node );
+        -: 1862:
+        -: 1863:	// internal
+        -: 1864:	void MarkInUse(XMLNode*);
+        -: 1865:
+        -: 1866:    virtual XMLNode* ShallowClone( XMLDocument* /*document*/ ) const	{
+        -: 1867:        return 0;
+        -: 1868:    }
+        -: 1869:    virtual bool ShallowEqual( const XMLNode* /*compare*/ ) const	{
+        -: 1870:        return false;
+        -: 1871:    }
+        -: 1872:
+        -: 1873:private:
+        -: 1874:    XMLDocument( const XMLDocument& );	// not supported
+        -: 1875:    void operator=( const XMLDocument& );	// not supported
+        -: 1876:
+        -: 1877:    bool			_writeBOM;
+        -: 1878:    bool			_processEntities;
+        -: 1879:    XMLError		_errorID;
+        -: 1880:    Whitespace		_whitespaceMode;
+        -: 1881:    mutable StrPair	_errorStr;
+        -: 1882:    int             _errorLineNum;
+        -: 1883:    char*			_charBuffer;
+        -: 1884:    int				_parseCurLineNum;
+        -: 1885:	int				_parsingDepth;
+        -: 1886:	// Memory tracking does add some overhead.
+        -: 1887:	// However, the code assumes that you don't
+        -: 1888:	// have a bunch of unlinked nodes around.
+        -: 1889:	// Therefore it takes less memory to track
+        -: 1890:	// in the document vs. a linked list in the XMLNode,
+        -: 1891:	// and the performance is the same.
+        -: 1892:	DynArray<XMLNode*, 10> _unlinked;
+        -: 1893:
+        -: 1894:    MemPoolT< sizeof(XMLElement) >	 _elementPool;
+        -: 1895:    MemPoolT< sizeof(XMLAttribute) > _attributePool;
+        -: 1896:    MemPoolT< sizeof(XMLText) >		 _textPool;
+        -: 1897:    MemPoolT< sizeof(XMLComment) >	 _commentPool;
+        -: 1898:
+        -: 1899:	static const char* _errorNames[XML_ERROR_COUNT];
+        -: 1900:
+        -: 1901:    void Parse();
+        -: 1902:
+        -: 1903:    void SetError( XMLError error, int lineNum, const char* format, ... );
+        -: 1904:
+        -: 1905:	// Something of an obvious security hole, once it was discovered.
+        -: 1906:	// Either an ill-formed XML or an excessively deep one can overflow
+        -: 1907:	// the stack. Track stack depth, and error out if needed.
+        -: 1908:	class DepthTracker {
+        -: 1909:	public:
+        -: 1910:		DepthTracker(XMLDocument * document) { 
+        -: 1911:			this->_document = document; 
+        -: 1912:			document->PushDepth();
+        -: 1913:		}
+        -: 1914:		~DepthTracker() {
+        -: 1915:			_document->PopDepth();
+        -: 1916:		}
+        -: 1917:	private:
+        -: 1918:		XMLDocument * _document;
+        -: 1919:	};
+        -: 1920:	void PushDepth();
+        -: 1921:	void PopDepth();
+        -: 1922:
+        -: 1923:    template<class NodeType, int PoolElementSize>
+        -: 1924:    NodeType* CreateUnlinkedNode( MemPoolT<PoolElementSize>& pool );
+        -: 1925:};
+        -: 1926:
+        -: 1927:template<class NodeType, int PoolElementSize>
+        -: 1928:inline NodeType* XMLDocument::CreateUnlinkedNode( MemPoolT<PoolElementSize>& pool )
+        -: 1929:{
+        -: 1930:    TIXMLASSERT( sizeof( NodeType ) == PoolElementSize );
+        -: 1931:    TIXMLASSERT( sizeof( NodeType ) == pool.ItemSize() );
+        -: 1932:    NodeType* returnNode = new (pool.Alloc()) NodeType( this );
+        -: 1933:    TIXMLASSERT( returnNode );
+        -: 1934:    returnNode->_memPool = &pool;
+        -: 1935:
+        -: 1936:	_unlinked.Push(returnNode);
+        -: 1937:    return returnNode;
+        -: 1938:}
+        -: 1939:
+        -: 1940:/**
+        -: 1941:	A XMLHandle is a class that wraps a node pointer with null checks; this is
+        -: 1942:	an incredibly useful thing. Note that XMLHandle is not part of the TinyXML-2
+        -: 1943:	DOM structure. It is a separate utility class.
+        -: 1944:
+        -: 1945:	Take an example:
+        -: 1946:	@verbatim
+        -: 1947:	<Document>
+        -: 1948:		<Element attributeA = "valueA">
+        -: 1949:			<Child attributeB = "value1" />
+        -: 1950:			<Child attributeB = "value2" />
+        -: 1951:		</Element>
+        -: 1952:	</Document>
+        -: 1953:	@endverbatim
+        -: 1954:
+        -: 1955:	Assuming you want the value of "attributeB" in the 2nd "Child" element, it's very
+        -: 1956:	easy to write a *lot* of code that looks like:
+        -: 1957:
+        -: 1958:	@verbatim
+        -: 1959:	XMLElement* root = document.FirstChildElement( "Document" );
+        -: 1960:	if ( root )
+        -: 1961:	{
+        -: 1962:		XMLElement* element = root->FirstChildElement( "Element" );
+        -: 1963:		if ( element )
+        -: 1964:		{
+        -: 1965:			XMLElement* child = element->FirstChildElement( "Child" );
+        -: 1966:			if ( child )
+        -: 1967:			{
+        -: 1968:				XMLElement* child2 = child->NextSiblingElement( "Child" );
+        -: 1969:				if ( child2 )
+        -: 1970:				{
+        -: 1971:					// Finally do something useful.
+        -: 1972:	@endverbatim
+        -: 1973:
+        -: 1974:	And that doesn't even cover "else" cases. XMLHandle addresses the verbosity
+        -: 1975:	of such code. A XMLHandle checks for null pointers so it is perfectly safe
+        -: 1976:	and correct to use:
+        -: 1977:
+        -: 1978:	@verbatim
+        -: 1979:	XMLHandle docHandle( &document );
+        -: 1980:	XMLElement* child2 = docHandle.FirstChildElement( "Document" ).FirstChildElement( "Element" ).FirstChildElement().NextSiblingElement();
+        -: 1981:	if ( child2 )
+        -: 1982:	{
+        -: 1983:		// do something useful
+        -: 1984:	@endverbatim
+        -: 1985:
+        -: 1986:	Which is MUCH more concise and useful.
+        -: 1987:
+        -: 1988:	It is also safe to copy handles - internally they are nothing more than node pointers.
+        -: 1989:	@verbatim
+        -: 1990:	XMLHandle handleCopy = handle;
+        -: 1991:	@endverbatim
+        -: 1992:
+        -: 1993:	See also XMLConstHandle, which is the same as XMLHandle, but operates on const objects.
+        -: 1994:*/
+        -: 1995:class TINYXML2_LIB XMLHandle
+        -: 1996:{
+        -: 1997:public:
+        -: 1998:    /// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
+        -: 1999:    XMLHandle( XMLNode* node ) : _node( node ) {
+        -: 2000:    }
+        -: 2001:    /// Create a handle from a node.
+        -: 2002:    XMLHandle( XMLNode& node ) : _node( &node ) {
+        -: 2003:    }
+        -: 2004:    /// Copy constructor
+        -: 2005:    XMLHandle( const XMLHandle& ref ) : _node( ref._node ) {
+        -: 2006:    }
+        -: 2007:    /// Assignment
+        -: 2008:    XMLHandle& operator=( const XMLHandle& ref )							{
+        -: 2009:        _node = ref._node;
+        -: 2010:        return *this;
+        -: 2011:    }
+        -: 2012:
+        -: 2013:    /// Get the first child of this handle.
+        -: 2014:    XMLHandle FirstChild() 													{
+        -: 2015:        return XMLHandle( _node ? _node->FirstChild() : 0 );
+        -: 2016:    }
+        -: 2017:    /// Get the first child element of this handle.
+        -: 2018:    XMLHandle FirstChildElement( const char* name = 0 )						{
+        -: 2019:        return XMLHandle( _node ? _node->FirstChildElement( name ) : 0 );
+        -: 2020:    }
+        -: 2021:    /// Get the last child of this handle.
+        -: 2022:    XMLHandle LastChild()													{
+        -: 2023:        return XMLHandle( _node ? _node->LastChild() : 0 );
+        -: 2024:    }
+        -: 2025:    /// Get the last child element of this handle.
+        -: 2026:    XMLHandle LastChildElement( const char* name = 0 )						{
+        -: 2027:        return XMLHandle( _node ? _node->LastChildElement( name ) : 0 );
+        -: 2028:    }
+        -: 2029:    /// Get the previous sibling of this handle.
+        -: 2030:    XMLHandle PreviousSibling()												{
+        -: 2031:        return XMLHandle( _node ? _node->PreviousSibling() : 0 );
+        -: 2032:    }
+        -: 2033:    /// Get the previous sibling element of this handle.
+        -: 2034:    XMLHandle PreviousSiblingElement( const char* name = 0 )				{
+        -: 2035:        return XMLHandle( _node ? _node->PreviousSiblingElement( name ) : 0 );
+        -: 2036:    }
+        -: 2037:    /// Get the next sibling of this handle.
+        -: 2038:    XMLHandle NextSibling()													{
+        -: 2039:        return XMLHandle( _node ? _node->NextSibling() : 0 );
+        -: 2040:    }
+        -: 2041:    /// Get the next sibling element of this handle.
+        -: 2042:    XMLHandle NextSiblingElement( const char* name = 0 )					{
+        -: 2043:        return XMLHandle( _node ? _node->NextSiblingElement( name ) : 0 );
+        -: 2044:    }
+        -: 2045:
+        -: 2046:    /// Safe cast to XMLNode. This can return null.
+        -: 2047:    XMLNode* ToNode()							{
+        -: 2048:        return _node;
+        -: 2049:    }
+        -: 2050:    /// Safe cast to XMLElement. This can return null.
+        -: 2051:    XMLElement* ToElement() 					{
+        -: 2052:        return ( _node ? _node->ToElement() : 0 );
+        -: 2053:    }
+        -: 2054:    /// Safe cast to XMLText. This can return null.
+        -: 2055:    XMLText* ToText() 							{
+        -: 2056:        return ( _node ? _node->ToText() : 0 );
+        -: 2057:    }
+        -: 2058:    /// Safe cast to XMLUnknown. This can return null.
+        -: 2059:    XMLUnknown* ToUnknown() 					{
+        -: 2060:        return ( _node ? _node->ToUnknown() : 0 );
+        -: 2061:    }
+        -: 2062:    /// Safe cast to XMLDeclaration. This can return null.
+        -: 2063:    XMLDeclaration* ToDeclaration() 			{
+        -: 2064:        return ( _node ? _node->ToDeclaration() : 0 );
+        -: 2065:    }
+        -: 2066:
+        -: 2067:private:
+        -: 2068:    XMLNode* _node;
+        -: 2069:};
+        -: 2070:
+        -: 2071:
+        -: 2072:/**
+        -: 2073:	A variant of the XMLHandle class for working with const XMLNodes and Documents. It is the
+        -: 2074:	same in all regards, except for the 'const' qualifiers. See XMLHandle for API.
+        -: 2075:*/
+        -: 2076:class TINYXML2_LIB XMLConstHandle
+        -: 2077:{
+        -: 2078:public:
+        -: 2079:    XMLConstHandle( const XMLNode* node ) : _node( node ) {
+        -: 2080:    }
+        -: 2081:    XMLConstHandle( const XMLNode& node ) : _node( &node ) {
+        -: 2082:    }
+        -: 2083:    XMLConstHandle( const XMLConstHandle& ref ) : _node( ref._node ) {
+        -: 2084:    }
+        -: 2085:
+        -: 2086:    XMLConstHandle& operator=( const XMLConstHandle& ref )							{
+        -: 2087:        _node = ref._node;
+        -: 2088:        return *this;
+        -: 2089:    }
+        -: 2090:
+        -: 2091:    const XMLConstHandle FirstChild() const											{
+        -: 2092:        return XMLConstHandle( _node ? _node->FirstChild() : 0 );
+        -: 2093:    }
+        -: 2094:    const XMLConstHandle FirstChildElement( const char* name = 0 ) const				{
+        -: 2095:        return XMLConstHandle( _node ? _node->FirstChildElement( name ) : 0 );
+        -: 2096:    }
+        -: 2097:    const XMLConstHandle LastChild()	const										{
+        -: 2098:        return XMLConstHandle( _node ? _node->LastChild() : 0 );
+        -: 2099:    }
+        -: 2100:    const XMLConstHandle LastChildElement( const char* name = 0 ) const				{
+        -: 2101:        return XMLConstHandle( _node ? _node->LastChildElement( name ) : 0 );
+        -: 2102:    }
+        -: 2103:    const XMLConstHandle PreviousSibling() const									{
+        -: 2104:        return XMLConstHandle( _node ? _node->PreviousSibling() : 0 );
+        -: 2105:    }
+        -: 2106:    const XMLConstHandle PreviousSiblingElement( const char* name = 0 ) const		{
+        -: 2107:        return XMLConstHandle( _node ? _node->PreviousSiblingElement( name ) : 0 );
+        -: 2108:    }
+        -: 2109:    const XMLConstHandle NextSibling() const										{
+        -: 2110:        return XMLConstHandle( _node ? _node->NextSibling() : 0 );
+        -: 2111:    }
+        -: 2112:    const XMLConstHandle NextSiblingElement( const char* name = 0 ) const			{
+        -: 2113:        return XMLConstHandle( _node ? _node->NextSiblingElement( name ) : 0 );
+        -: 2114:    }
+        -: 2115:
+        -: 2116:
+        -: 2117:    const XMLNode* ToNode() const				{
+        -: 2118:        return _node;
+        -: 2119:    }
+        -: 2120:    const XMLElement* ToElement() const			{
+        -: 2121:        return ( _node ? _node->ToElement() : 0 );
+        -: 2122:    }
+        -: 2123:    const XMLText* ToText() const				{
+        -: 2124:        return ( _node ? _node->ToText() : 0 );
+        -: 2125:    }
+        -: 2126:    const XMLUnknown* ToUnknown() const			{
+        -: 2127:        return ( _node ? _node->ToUnknown() : 0 );
+        -: 2128:    }
+        -: 2129:    const XMLDeclaration* ToDeclaration() const	{
+        -: 2130:        return ( _node ? _node->ToDeclaration() : 0 );
+        -: 2131:    }
+        -: 2132:
+        -: 2133:private:
+        -: 2134:    const XMLNode* _node;
+        -: 2135:};
+        -: 2136:
+        -: 2137:
+        -: 2138:/**
+        -: 2139:	Printing functionality. The XMLPrinter gives you more
+        -: 2140:	options than the XMLDocument::Print() method.
+        -: 2141:
+        -: 2142:	It can:
+        -: 2143:	-# Print to memory.
+        -: 2144:	-# Print to a file you provide.
+        -: 2145:	-# Print XML without a XMLDocument.
+        -: 2146:
+        -: 2147:	Print to Memory
+        -: 2148:
+        -: 2149:	@verbatim
+        -: 2150:	XMLPrinter printer;
+        -: 2151:	doc.Print( &printer );
+        -: 2152:	SomeFunction( printer.CStr() );
+        -: 2153:	@endverbatim
+        -: 2154:
+        -: 2155:	Print to a File
+        -: 2156:
+        -: 2157:	You provide the file pointer.
+        -: 2158:	@verbatim
+        -: 2159:	XMLPrinter printer( fp );
+        -: 2160:	doc.Print( &printer );
+        -: 2161:	@endverbatim
+        -: 2162:
+        -: 2163:	Print without a XMLDocument
+        -: 2164:
+        -: 2165:	When loading, an XML parser is very useful. However, sometimes
+        -: 2166:	when saving, it just gets in the way. The code is often set up
+        -: 2167:	for streaming, and constructing the DOM is just overhead.
+        -: 2168:
+        -: 2169:	The Printer supports the streaming case. The following code
+        -: 2170:	prints out a trivially simple XML file without ever creating
+        -: 2171:	an XML document.
+        -: 2172:
+        -: 2173:	@verbatim
+        -: 2174:	XMLPrinter printer( fp );
+        -: 2175:	printer.OpenElement( "foo" );
+        -: 2176:	printer.PushAttribute( "foo", "bar" );
+        -: 2177:	printer.CloseElement();
+        -: 2178:	@endverbatim
+        -: 2179:*/
+        -: 2180:class TINYXML2_LIB XMLPrinter : public XMLVisitor
+        -: 2181:{
+        -: 2182:public:
+        -: 2183:    /** Construct the printer. If the FILE* is specified,
+        -: 2184:    	this will print to the FILE. Else it will print
+        -: 2185:    	to memory, and the result is available in CStr().
+        -: 2186:    	If 'compact' is set to true, then output is created
+        -: 2187:    	with only required whitespace and newlines.
+        -: 2188:    */
+        -: 2189:    XMLPrinter( FILE* file=0, bool compact = false, int depth = 0 );
+       7*: 2190:    virtual ~XMLPrinter()	{}
+------------------
+_ZN8tinyxml210XMLPrinterD0Ev:
+function _ZN8tinyxml210XMLPrinterD0Ev called 0 returned 0% blocks executed 0%
+    #####: 2190:    virtual ~XMLPrinter()	{}
+    %%%%%: 2190-block  0
+call    0 never executed
+call    1 never executed
+------------------
+_ZN8tinyxml210XMLPrinterD2Ev:
+function _ZN8tinyxml210XMLPrinterD2Ev called 7 returned 100% blocks executed 100%
+        7: 2190:    virtual ~XMLPrinter()	{}
+        7: 2190-block  0
+call    0 returned 7
+call    1 returned 7
+call    2 returned 7
+------------------
+        -: 2191:
+        -: 2192:    /** If streaming, write the BOM and declaration. */
+        -: 2193:    void PushHeader( bool writeBOM, bool writeDeclaration );
+        -: 2194:    /** If streaming, start writing an element.
+        -: 2195:        The element must be closed with CloseElement()
+        -: 2196:    */
+        -: 2197:    void OpenElement( const char* name, bool compactMode=false );
+        -: 2198:    /// If streaming, add an attribute to an open element.
+        -: 2199:    void PushAttribute( const char* name, const char* value );
+        -: 2200:    void PushAttribute( const char* name, int value );
+        -: 2201:    void PushAttribute( const char* name, unsigned value );
+        -: 2202:	void PushAttribute(const char* name, int64_t value);
+        -: 2203:	void PushAttribute( const char* name, bool value );
+        -: 2204:    void PushAttribute( const char* name, double value );
+        -: 2205:    /// If streaming, close the Element.
+        -: 2206:    virtual void CloseElement( bool compactMode=false );
+        -: 2207:
+        -: 2208:    /// Add a text node.
+        -: 2209:    void PushText( const char* text, bool cdata=false );
+        -: 2210:    /// Add a text node from an integer.
+        -: 2211:    void PushText( int value );
+        -: 2212:    /// Add a text node from an unsigned.
+        -: 2213:    void PushText( unsigned value );
+        -: 2214:	/// Add a text node from an unsigned.
+        -: 2215:	void PushText(int64_t value);
+        -: 2216:	/// Add a text node from a bool.
+        -: 2217:    void PushText( bool value );
+        -: 2218:    /// Add a text node from a float.
+        -: 2219:    void PushText( float value );
+        -: 2220:    /// Add a text node from a double.
+        -: 2221:    void PushText( double value );
+        -: 2222:
+        -: 2223:    /// Add a comment
+        -: 2224:    void PushComment( const char* comment );
+        -: 2225:
+        -: 2226:    void PushDeclaration( const char* value );
+        -: 2227:    void PushUnknown( const char* value );
+        -: 2228:
+        -: 2229:    virtual bool VisitEnter( const XMLDocument& /*doc*/ );
+        -: 2230:    virtual bool VisitExit( const XMLDocument& /*doc*/ )			{
+        -: 2231:        return true;
+        -: 2232:    }
+        -: 2233:
+        -: 2234:    virtual bool VisitEnter( const XMLElement& element, const XMLAttribute* attribute );
+        -: 2235:    virtual bool VisitExit( const XMLElement& element );
+        -: 2236:
+        -: 2237:    virtual bool Visit( const XMLText& text );
+        -: 2238:    virtual bool Visit( const XMLComment& comment );
+        -: 2239:    virtual bool Visit( const XMLDeclaration& declaration );
+        -: 2240:    virtual bool Visit( const XMLUnknown& unknown );
+        -: 2241:
+        -: 2242:    /**
+        -: 2243:    	If in print to memory mode, return a pointer to
+        -: 2244:    	the XML file in memory.
+        -: 2245:    */
+function _ZNK8tinyxml210XMLPrinter4CStrEv called 146 returned 100% blocks executed 100%
+      146: 2246:    const char* CStr() const {
+      146: 2247:        return _buffer.Mem();
+      146: 2247-block  0
+call    0 returned 146
+        -: 2248:    }
+        -: 2249:    /**
+        -: 2250:    	If in print to memory mode, return the size
+        -: 2251:    	of the XML file in memory. (Note the size returned
+        -: 2252:    	includes the terminating null.)
+        -: 2253:    */
+        -: 2254:    int CStrSize() const {
+        -: 2255:        return _buffer.Size();
+        -: 2256:    }
+        -: 2257:    /**
+        -: 2258:    	If in print to memory mode, reset the buffer to the
+        -: 2259:    	beginning.
+        -: 2260:    */
+function _ZN8tinyxml210XMLPrinter11ClearBufferEv called 146 returned 100% blocks executed 100%
+      146: 2261:    void ClearBuffer() {
+      146: 2262:        _buffer.Clear();
+      146: 2262-block  0
+call    0 returned 146
+      146: 2263:        _buffer.Push(0);
+call    0 returned 146
+      146: 2264:		_firstElement = true;
+      146: 2265:    }
+        -: 2266:
+        -: 2267:protected:
+        -: 2268:	virtual bool CompactMode( const XMLElement& )	{ return _compactMode; }
+        -: 2269:
+        -: 2270:	/** Prints out the space before an element. You may override to change
+        -: 2271:	    the space and tabs used. A PrintSpace() override should call Print().
+        -: 2272:	*/
+        -: 2273:    virtual void PrintSpace( int depth );
+        -: 2274:    void Print( const char* format, ... );
+        -: 2275:    void Write( const char* data, size_t size );
+        -: 2276:    inline void Write( const char* data )           { Write( data, strlen( data ) ); }
+        -: 2277:    void Putc( char ch );
+        -: 2278:
+        -: 2279:    void SealElementIfJustOpened();
+        -: 2280:    bool _elementJustOpened;
+        -: 2281:    DynArray< const char*, 10 > _stack;
+        -: 2282:
+        -: 2283:private:
+        -: 2284:    void PrintString( const char*, bool restrictedEntitySet );	// prints out, after detecting entities.
+        -: 2285:
+        -: 2286:    bool _firstElement;
+        -: 2287:    FILE* _fp;
+        -: 2288:    int _depth;
+        -: 2289:    int _textDepth;
+        -: 2290:    bool _processEntities;
+        -: 2291:	bool _compactMode;
+        -: 2292:
+        -: 2293:    enum {
+        -: 2294:        ENTITY_RANGE = 64,
+        -: 2295:        BUF_SIZE = 200
+        -: 2296:    };
+        -: 2297:    bool _entityFlag[ENTITY_RANGE];
+        -: 2298:    bool _restrictedEntityFlag[ENTITY_RANGE];
+        -: 2299:
+        -: 2300:    DynArray< char, 20 > _buffer;
+        -: 2301:
+        -: 2302:    // Prohibit cloning, intentionally not implemented
+        -: 2303:    XMLPrinter( const XMLPrinter& );
+        -: 2304:    XMLPrinter& operator=( const XMLPrinter& );
+        -: 2305:};
+        -: 2306:
+        -: 2307:
+        -: 2308:}	// tinyxml2
+        -: 2309:
+        -: 2310:#if defined(_MSC_VER)
+        -: 2311:#   pragma warning(pop)
+        -: 2312:#endif
+        -: 2313:
+        -: 2314:#endif // TINYXML2_INCLUDED

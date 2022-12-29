@@ -34,9 +34,16 @@ namespace docxtotxt {
          * @param sheet Структура таблицы
          */
         void insertSheetMetadata(const sheet &sheet);
-
+        /*!
+         * Функция для записи рабочего листа в результирующий буфер с форматированием
+         * @param sheet Структура таблицы
+         * @param col Массив структур настроек столбцов
+         */
         void insertSheet(std::vector<std::vector<sheetCell>> &sheet, const std::vector<columnSettings> &col);
-
+        /*!
+         *
+         * @param sheet Структура таблицы
+         */
         void insertSheetRaw(std::vector<std::vector<sheetCell>> &sheet);
 
     public:

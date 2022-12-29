@@ -33,7 +33,10 @@ namespace docxtotxt {
          * @param paragraph Структура параграфа
          */
         void writeTable(const paragraph& paragraph);
-
+        /*!
+         * Записывает заметку(сноску) в результирующий буфер
+         * @param note Структура заметки
+         */
         void writeNote(const note &note);
     public:
         DocParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer);

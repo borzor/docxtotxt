@@ -1,0 +1,895 @@
+        -:    0:Source:/home/borzor/CLionProjects/docxtotxt/mainDoc/source/PptParser.cpp
+        -:    0:Graph:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/PptParser.cpp.gcno
+        -:    0:Data:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/PptParser.cpp.gcda
+        -:    0:Runs:1
+        -:    1://
+        -:    2:// Created by borzor on 12/12/22.
+        -:    3://
+        -:    4:
+        -:    5:#include "../headers/PptParser.h"
+        -:    6:#include "algorithm"
+        -:    7:
+        -:    8:namespace docxtotxt {
+function _ZN9docxtotxt9PptParserC2ERNS_9pptInfo_tERNS_9options_tERNS_12BufferWriterE called 2 returned 100% blocks executed 100%
+        2:    9:    PptParser::PptParser(pptInfo_t &pptInfo, options_t &options, BufferWriter &writer) : pptInfo(pptInfo),
+        2:   10:                                                                                         Parser(options, writer) {
+        2:   10-block  0
+call    0 returned 2
+call    1 returned 2
+        2:   11:    }
+        -:   12:
+function _ZN9docxtotxt9PptParser9parseFileEv called 2 returned 100% blocks executed 73%
+        2:   13:    void PptParser::parseFile() {
+        2:   14:        prepareSlides();
+        2:   14-block  0
+call    0 returned 2
+        2:   15:        writer.newLine();
+call    0 returned 2
+       17:   16:        for (auto &obj: slideInsertData) {
+call    0 returned 2
+call    1 returned 2
+       17:   16-block  0
+call    2 returned 17
+branch  3 taken 15 (fallthrough)
+branch  4 taken 2
+       15:   16-block  1
+call    5 returned 15
+       15:   17:            insertSlideMetadata(obj);
+call    0 returned 15
+branch  1 taken 15 (fallthrough)
+branch  2 taken 0 (throw)
+       15:   17-block  0
+call    3 returned 15
+branch  4 taken 15 (fallthrough)
+branch  5 taken 0 (throw)
+       15:   17-block  1
+call    6 returned 15
+    $$$$$:   17-block  2
+call    7 never executed
+    $$$$$:   17-block  3
+       15:   18:            insertSlide(obj.insertObjects);
+call    0 returned 15
+branch  1 taken 15 (fallthrough)
+branch  2 taken 0 (throw)
+       15:   18-block  0
+call    3 returned 15
+branch  4 taken 15 (fallthrough)
+branch  5 taken 0 (throw)
+       15:   18-block  1
+call    6 returned 15
+call    7 returned 15
+    $$$$$:   18-block  2
+call    8 never executed
+    $$$$$:   18-block  3
+        -:   19:        }
+        2:   20:    }
+        2:   20-block  0
+        -:   21:
+function _ZN9docxtotxt9PptParser13prepareSlidesEv called 2 returned 100% blocks executed 76%
+        2:   22:    void PptParser::prepareSlides() {
+        2:   23:        size_t slideNum = 1;
+       17:   24:        for (const auto &slide: pptInfo.slides) {
+        2:   24-block  0
+call    0 returned 2
+call    1 returned 2
+       17:   24-block  1
+call    2 returned 17
+branch  3 taken 15 (fallthrough)
+branch  4 taken 2
+       15:   24-block  2
+call    5 returned 15
+call    6 returned 15
+       30:   25:            std::vector<insertObject> slideObjects;
+call    0 returned 15
+call    1 returned 15
+    $$$$$:   25-block  0
+call    2 never executed
+       30:   26:            std::vector<insertImage> insertImages;
+call    0 returned 15
+call    1 returned 15
+    $$$$$:   26-block  0
+call    2 never executed
+       81:   27:            for (const auto &presObj: slide.objects) {
+call    0 returned 15
+call    1 returned 15
+       81:   27-block  0
+call    2 returned 81
+branch  3 taken 66 (fallthrough)
+branch  4 taken 15
+       66:   27-block  1
+call    5 returned 66
+       66:   27-block  2
+call    6 returned 66
+       66:   28:                if (!presObj.paragraph.empty()) {
+call    0 returned 66
+branch  1 taken 33 (fallthrough)
+branch  2 taken 33
+       66:   29:                    insertObject obj;
+       33:   29-block  0
+call    0 returned 33
+       33:   29-block  1
+call    1 returned 33
+    $$$$$:   29-block  2
+call    2 never executed
+       33:   30:                    obj.offset = presObj.objectInfo.offsetX / pptInfo.settings.widthCoefficient;
+       33:   31:                    obj.startLine = presObj.objectInfo.offsetY / pptInfo.settings.heightCoefficient;
+       33:   32:                    obj.paragraph = presObj.paragraph;
+call    0 returned 33
+branch  1 taken 33 (fallthrough)
+branch  2 taken 0 (throw)
+       33:   33:                    obj.length = presObj.objectInfo.objectSizeX / pptInfo.settings.widthCoefficient;
+       33:   34:                    obj.inProgress = false;
+       33:   35:                    slideObjects.emplace_back(obj);
+       33:   35-block  0
+call    0 returned 33
+branch  1 taken 33 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   36:                }
+        -:   37:            }
+       16:   38:            for (const auto &table: slide.tables) {
+       15:   38-block  0
+call    0 returned 15
+call    1 returned 15
+       16:   38-block  1
+call    2 returned 16
+branch  3 taken 1 (fallthrough)
+branch  4 taken 15
+        1:   38-block  2
+call    5 returned 1
+        1:   38-block  3
+call    6 returned 1
+        1:   39:                size_t counter = 0;
+        1:   40:                size_t lineLength = 0;
+function _ZZN9docxtotxt9PptParser13prepareSlidesEvENKUliE_clEi called 3 returned 100% blocks executed 100%
+        3:   41:                std::for_each(table.gridColSize.begin(), table.gridColSize.end(), [&](int n) {
+        3:   42:                    lineLength += n;
+        1:   43:                });
+call    0 returned 1
+call    1 returned 1
+call    2 returned 1
+        9:   44:                for (auto &line: table.table) {
+call    0 returned 1
+call    1 returned 1
+        9:   44-block  0
+call    2 returned 9
+branch  3 taken 8 (fallthrough)
+branch  4 taken 1
+        8:   44-block  1
+call    5 returned 8
+call    6 returned 8
+        -:   45:                    bool repeatLine;
+       16:   46:                    auto tmpLine = line;
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+        8:   46-block  0
+call    3 returned 8
+    $$$$$:   46-block  1
+call    4 never executed
+        8:   47:                    do {
+branch  0 taken 0 (fallthrough)
+branch  1 taken 8
+       16:   48:                        insertObject obj;
+        8:   48-block  0
+call    0 returned 8
+call    1 returned 8
+    $$$$$:   48-block  1
+call    2 never executed
+        8:   49:                        repeatLine = false;
+        8:   50:                        counter++;
+       16:   51:                        textBody text;
+call    0 returned 8
+        8:   51-block  0
+call    1 returned 8
+    $$$$$:   51-block  1
+call    2 never executed
+       32:   52:                        for (auto &cell: tmpLine) {
+call    0 returned 8
+call    1 returned 8
+       32:   52-block  0
+call    2 returned 32
+branch  3 taken 24 (fallthrough)
+branch  4 taken 8
+       24:   52-block  1
+call    5 returned 24
+       24:   52-block  2
+call    6 returned 24
+       24:   53:                            auto colNum = 0;
+       48:   54:                            for (auto &txt: cell) {
+call    0 returned 24
+call    1 returned 24
+       48:   54-block  0
+call    2 returned 48
+branch  3 taken 24 (fallthrough)
+branch  4 taken 24
+       24:   54-block  1
+call    5 returned 24
+       24:   55:                                if (txt.text.length() > table.gridColSize[colNum]) {
+call    0 returned 24
+call    1 returned 24
+branch  2 taken 24 (fallthrough)
+branch  3 taken 0
+        -:   56://                                    text.text.append(txt.text.substr(0, table.gridColSize[colNum] - 1));
+        -:   57://                                    txt.text = txt.text.substr(table.gridColSize[colNum] - 1);
+        -:   58://                                    text.text.append(1, ' ');
+        -:   59://                                    repeatLine = true;
+        -:   60:                                } else {
+       24:   61:                                    text.text.append(txt.text);
+       24:   61-block  0
+call    0 returned 24
+branch  1 taken 24 (fallthrough)
+branch  2 taken 0 (throw)
+       24:   62:                                    text.text.append(table.gridColSize[colNum] - txt.text.length(), ' ');
+       24:   62-block  0
+call    0 returned 24
+call    1 returned 24
+call    2 returned 24
+branch  3 taken 24 (fallthrough)
+branch  4 taken 0 (throw)
+       24:   63:                                    txt.text = L"";
+       24:   63-block  0
+call    0 returned 24
+branch  1 taken 24 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   64:                                }
+       24:   65:                                colNum++;
+       24:   65-block  0
+call    0 returned 24
+        -:   66:                            }
+        -:   67:                        }
+        8:   68:                        text.align = l;
+        8:   69:                        obj.length = lineLength;
+        8:   70:                        obj.offset = table.objectInfo.offsetX / pptInfo.settings.widthCoefficient;
+        8:   71:                        obj.startLine = table.objectInfo.offsetY / pptInfo.settings.heightCoefficient + counter;
+        8:   72:                        obj.paragraph.emplace_back(text);
+        8:   72-block  0
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+        8:   73:                        obj.inProgress = false;
+        8:   74:                        slideObjects.emplace_back(obj);
+        8:   74-block  0
+call    0 returned 8
+branch  1 taken 8 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   75:                    } while (repeatLine);
+        -:   76:                }
+        -:   77:            }
+       25:   78:            for (const auto &presObj: slide.pictures) {
+       15:   78-block  0
+call    0 returned 15
+call    1 returned 15
+       25:   78-block  1
+call    2 returned 25
+branch  3 taken 10 (fallthrough)
+branch  4 taken 15
+       10:   78-block  2
+call    5 returned 10
+       10:   78-block  3
+call    6 returned 10
+       10:   79:                if (!presObj.rId.empty()) {
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0
+       20:   80:                    insertImage obj;
+       10:   80-block  0
+call    0 returned 10
+       10:   80-block  1
+call    1 returned 10
+    $$$$$:   80-block  2
+call    2 never executed
+       10:   81:                    obj.offset = presObj.objectInfo.offsetX / pptInfo.settings.widthCoefficient;
+       10:   82:                    obj.startLine = presObj.objectInfo.offsetY / pptInfo.settings.heightCoefficient;
+       10:   83:                    obj.length = presObj.objectInfo.objectSizeX / pptInfo.settings.widthCoefficient;
+       10:   84:                    obj.rId = presObj.rId;
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0 (throw)
+       10:   85:                    insertImages.emplace_back(obj);
+       10:   85-block  0
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   86:                }
+        -:   87:            }
+       15:   88:            std::sort(slideObjects.begin(), slideObjects.end());
+       15:   88-block  0
+call    0 returned 15
+call    1 returned 15
+call    2 returned 15
+branch  3 taken 15 (fallthrough)
+branch  4 taken 0 (throw)
+       30:   89:            slideInsertInfo slideData;
+       15:   89-block  0
+call    0 returned 15
+       15:   89-block  1
+call    1 returned 15
+    $$$$$:   89-block  2
+call    2 never executed
+       15:   90:            slideData.slideNum = slideNum++;
+       15:   91:            slideData.relations = slide.relations;
+call    0 returned 15
+branch  1 taken 15 (fallthrough)
+branch  2 taken 0 (throw)
+       15:   92:            slideData.insertObjects = (slideObjects);
+       15:   92-block  0
+call    0 returned 15
+branch  1 taken 15 (fallthrough)
+branch  2 taken 0 (throw)
+       15:   93:            slideData.insertImages = insertImages;
+       15:   93-block  0
+call    0 returned 15
+branch  1 taken 15 (fallthrough)
+branch  2 taken 0 (throw)
+       15:   94:            slideInsertData.emplace_back(slideData);
+       15:   94-block  0
+call    0 returned 15
+branch  1 taken 15 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   95:        }
+        2:   96:    }
+        2:   96-block  0
+        -:   97:
+function _ZN9docxtotxt9PptParser11insertSlideESt6vectorINS_12insertObjectESaIS2_EE called 15 returned 100% blocks executed 60%
+       15:   98:    void PptParser::insertSlide(std::vector<insertObject> insertObjects) {
+       15:   99:        size_t slideRange = PRESENTATION_WIDTH - 2;
+       15:  100:        writer.insertData(std::wstring(L"+").append(slideRange, L'-').append(L"+"), false, false);
+       15:  100-block  0
+call    0 returned 15
+call    1 returned 15
+branch  2 taken 15 (fallthrough)
+branch  3 taken 0 (throw)
+       15:  100-block  1
+call    4 returned 15
+branch  5 taken 15 (fallthrough)
+branch  6 taken 0 (throw)
+       15:  100-block  2
+call    7 returned 15
+branch  8 taken 15 (fallthrough)
+branch  9 taken 0 (throw)
+       15:  100-block  3
+call   10 returned 15
+branch 11 taken 15 (fallthrough)
+branch 12 taken 0 (throw)
+       15:  100-block  4
+call   13 returned 15
+call   14 returned 15
+    $$$$$:  100-block  5
+call   15 never executed
+    $$$$$:  100-block  6
+    $$$$$:  100-block  7
+call   16 never executed
+    $$$$$:  100-block  8
+call   17 never executed
+      600:  101:        for (int line = 1; line < PRESENTATION_HEIGHT; line++) {
+      600:  101-block  0
+branch  0 taken 585 (fallthrough)
+branch  1 taken 15
+      585:  102:            size_t currentIndex = 0;
+      585:  103:            writer.insertData(L"|", true, false);
+      585:  103-block  0
+call    0 returned 585
+call    1 returned 585
+branch  2 taken 585 (fallthrough)
+branch  3 taken 0 (throw)
+      585:  103-block  1
+call    4 returned 585
+branch  5 taken 585 (fallthrough)
+branch  6 taken 0 (throw)
+      585:  103-block  2
+call    7 returned 585
+call    8 returned 585
+    $$$$$:  103-block  3
+call    9 never executed
+    $$$$$:  103-block  4
+    $$$$$:  103-block  5
+call   10 never executed
+    $$$$$:  103-block  6
+     2184:  104:            for (auto &elem: insertObjects) {
+call    0 returned 585
+call    1 returned 585
+     2184:  104-block  0
+call    2 returned 2184
+branch  3 taken 1599 (fallthrough)
+branch  4 taken 585
+     1599:  104-block  1
+call    5 returned 1599
+     1599:  104-block  2
+call    6 returned 1599
+     1599:  105:                if (elem.startLine == line) {
+branch  0 taken 41 (fallthrough)
+branch  1 taken 1558
+       41:  106:                    elem.inProgress = true;
+       41:  107:                    insertLineBuffer(elem, &currentIndex);
+       41:  107-block  0
+call    0 returned 41
+branch  1 taken 41 (fallthrough)
+branch  2 taken 0 (throw)
+     1558:  108:                } else if (elem.inProgress) {
+     1558:  108-block  0
+branch  0 taken 26 (fallthrough)
+branch  1 taken 1532
+       26:  109:                    insertLineBuffer(elem, &currentIndex);
+       26:  109-block  0
+call    0 returned 26
+branch  1 taken 26 (fallthrough)
+branch  2 taken 0 (throw)
+        -:  110:                }
+        -:  111:            }
+      585:  112:            if (slideRange > currentIndex)
+      585:  112-block  0
+branch  0 taken 584 (fallthrough)
+branch  1 taken 1
+      584:  113:                writer.insertData(std::wstring(slideRange - currentIndex, L' '), false, false);
+      584:  113-block  0
+call    0 returned 584
+call    1 returned 584
+branch  2 taken 584 (fallthrough)
+branch  3 taken 0 (throw)
+      584:  113-block  1
+call    4 returned 584
+branch  5 taken 584 (fallthrough)
+branch  6 taken 0 (throw)
+      584:  113-block  2
+call    7 returned 584
+call    8 returned 584
+    $$$$$:  113-block  3
+call    9 never executed
+    $$$$$:  113-block  4
+    $$$$$:  113-block  5
+call   10 never executed
+    $$$$$:  113-block  6
+      585:  114:            writer.insertData(L"|", false, false);
+      585:  114-block  0
+call    0 returned 585
+call    1 returned 585
+branch  2 taken 585 (fallthrough)
+branch  3 taken 0 (throw)
+      585:  114-block  1
+call    4 returned 585
+branch  5 taken 585 (fallthrough)
+branch  6 taken 0 (throw)
+      585:  114-block  2
+call    7 returned 585
+call    8 returned 585
+    $$$$$:  114-block  3
+call    9 never executed
+    $$$$$:  114-block  4
+    $$$$$:  114-block  5
+call   10 never executed
+    $$$$$:  114-block  6
+        -:  115:        }
+       15:  116:        writer.insertData(std::wstring(L"+").append(slideRange, L'-').append(L"+"), true, true);
+       15:  116-block  0
+call    0 returned 15
+call    1 returned 15
+branch  2 taken 15 (fallthrough)
+branch  3 taken 0 (throw)
+       15:  116-block  1
+call    4 returned 15
+branch  5 taken 15 (fallthrough)
+branch  6 taken 0 (throw)
+       15:  116-block  2
+call    7 returned 15
+branch  8 taken 15 (fallthrough)
+branch  9 taken 0 (throw)
+       15:  116-block  3
+call   10 returned 15
+branch 11 taken 15 (fallthrough)
+branch 12 taken 0 (throw)
+       15:  116-block  4
+call   13 returned 15
+call   14 returned 15
+    $$$$$:  116-block  5
+call   15 never executed
+    $$$$$:  116-block  6
+    $$$$$:  116-block  7
+call   16 never executed
+       15:  117:    }
+        -:  118:
+function _ZN9docxtotxt9PptParser16insertLineBufferERNS_12insertObjectEPm called 67 returned 100% blocks executed 69%
+       67:  119:    void PptParser::insertLineBuffer(insertObject &obj, size_t *currentIndex) {
+       67:  120:        writer.insertData(std::wstring(obj.offset - *currentIndex, L' '), false, false);
+       67:  120-block  0
+call    0 returned 67
+call    1 returned 67
+branch  2 taken 67 (fallthrough)
+branch  3 taken 0 (throw)
+       67:  120-block  1
+call    4 returned 67
+branch  5 taken 67 (fallthrough)
+branch  6 taken 0 (throw)
+       67:  120-block  2
+call    7 returned 67
+call    8 returned 67
+    $$$$$:  120-block  3
+call    9 never executed
+    $$$$$:  120-block  4
+    $$$$$:  120-block  5
+call   10 never executed
+    $$$$$:  120-block  6
+       67:  121:        auto align = obj.paragraph.front().align;
+call    0 returned 67
+       67:  122:        auto textSize = obj.paragraph.front().text.length();
+call    0 returned 67
+call    1 returned 67
+       67:  123:        wstring textToInsert;
+call    0 returned 67
+    $$$$$:  123-block  0
+call    1 never executed
+       67:  124:        if (textSize > obj.length) {
+branch  0 taken 10 (fallthrough)
+branch  1 taken 57
+       10:  125:            auto indexLastElement = obj.paragraph.front().text.find_last_of(L' ', obj.length);
+       10:  125-block  0
+call    0 returned 10
+call    1 returned 10
+       10:  126:            if (indexLastElement == string::npos) {
+branch  0 taken 10 (fallthrough)
+branch  1 taken 0
+        -:  127://                textToInsert = obj.paragraph.front().text.substr(0, obj.length);
+        -:  128:            } else {
+       10:  129:                textToInsert = obj.paragraph.front().text.substr(0, indexLastElement);
+       10:  129-block  0
+call    0 returned 10
+call    1 returned 10
+branch  2 taken 10 (fallthrough)
+branch  3 taken 0 (throw)
+       10:  129-block  1
+call    4 returned 10
+call    5 returned 10
+        -:  130:            }
+       10:  131:            obj.paragraph.front().text.erase(0, textToInsert.size());
+       10:  131-block  0
+call    0 returned 10
+call    1 returned 10
+call    2 returned 10
+branch  3 taken 10 (fallthrough)
+branch  4 taken 0 (throw)
+        -:  132:        } else {
+       57:  133:            textToInsert = obj.paragraph.front().text;
+       57:  133-block  0
+call    0 returned 57
+call    1 returned 57
+branch  2 taken 57 (fallthrough)
+branch  3 taken 0 (throw)
+       57:  134:            obj.paragraph.erase(obj.paragraph.begin());
+       57:  134-block  0
+call    0 returned 57
+call    1 returned 57
+call    2 returned 57
+branch  3 taken 57 (fallthrough)
+branch  4 taken 0 (throw)
+       57:  134-block  1
+    $$$$$:  134-block  2
+    $$$$$:  134-block  3
+        -:  135:        }
+        -:  136:
+       67:  137:        switch (align) {
+       67:  137-block  0
+branch  0 taken 48
+branch  1 taken 9
+branch  2 taken 10
+branch  3 taken 0
+       48:  138:            case l: {
+       48:  139:                writer.insertData(textToInsert, false, false);
+       48:  139-block  0
+call    0 returned 48
+branch  1 taken 48 (fallthrough)
+branch  2 taken 0 (throw)
+       48:  140:                if (obj.length - textToInsert.length() != 0)
+       48:  140-block  0
+call    0 returned 48
+branch  1 taken 39 (fallthrough)
+branch  2 taken 9
+       39:  141:                    writer.insertData(std::wstring(obj.length - textToInsert.length(), L' '), false, false);
+       39:  141-block  0
+call    0 returned 39
+call    1 returned 39
+call    2 returned 39
+branch  3 taken 39 (fallthrough)
+branch  4 taken 0 (throw)
+       39:  141-block  1
+call    5 returned 39
+branch  6 taken 39 (fallthrough)
+branch  7 taken 0 (throw)
+       39:  141-block  2
+call    8 returned 39
+call    9 returned 39
+    $$$$$:  141-block  3
+call   10 never executed
+    $$$$$:  141-block  4
+    $$$$$:  141-block  5
+call   11 never executed
+    $$$$$:  141-block  6
+       48:  142:                break;
+       48:  142-block  0
+        -:  143:            }
+        9:  144:            case r: {
+        9:  145:                if (obj.length - textToInsert.length() != 0)
+        9:  145-block  0
+call    0 returned 9
+branch  1 taken 8 (fallthrough)
+branch  2 taken 1
+        8:  146:                    writer.insertData(std::wstring(obj.length - textToInsert.length(), L' '), false, false);
+        8:  146-block  0
+call    0 returned 8
+call    1 returned 8
+call    2 returned 8
+branch  3 taken 8 (fallthrough)
+branch  4 taken 0 (throw)
+        8:  146-block  1
+call    5 returned 8
+branch  6 taken 8 (fallthrough)
+branch  7 taken 0 (throw)
+        8:  146-block  2
+call    8 returned 8
+call    9 returned 8
+    $$$$$:  146-block  3
+call   10 never executed
+    $$$$$:  146-block  4
+    $$$$$:  146-block  5
+call   11 never executed
+    $$$$$:  146-block  6
+        9:  147:                writer.insertData(textToInsert, false, false);
+        9:  147-block  0
+call    0 returned 9
+branch  1 taken 9 (fallthrough)
+branch  2 taken 0 (throw)
+        9:  148:                break;
+        9:  148-block  0
+        -:  149:            }
+       10:  150:            case ctr: {
+       10:  151:                if (obj.length - textToInsert.length() != 0)
+       10:  151-block  0
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0
+       10:  152:                    writer.insertData(std::wstring((obj.length - textToInsert.length()) / 2, L' '), false, false);
+       10:  152-block  0
+call    0 returned 10
+call    1 returned 10
+call    2 returned 10
+branch  3 taken 10 (fallthrough)
+branch  4 taken 0 (throw)
+       10:  152-block  1
+call    5 returned 10
+branch  6 taken 10 (fallthrough)
+branch  7 taken 0 (throw)
+       10:  152-block  2
+call    8 returned 10
+call    9 returned 10
+    $$$$$:  152-block  3
+call   10 never executed
+    $$$$$:  152-block  4
+    $$$$$:  152-block  5
+call   11 never executed
+    $$$$$:  152-block  6
+       10:  153:                writer.insertData(textToInsert, false, false);
+       10:  153-block  0
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0 (throw)
+       10:  154:                if (obj.length - textToInsert.length() != 0)
+       10:  154-block  0
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0
+       10:  155:                    writer.insertData(std::wstring((obj.length - textToInsert.length()) / 2, L' '), false, false);
+       10:  155-block  0
+call    0 returned 10
+call    1 returned 10
+call    2 returned 10
+branch  3 taken 10 (fallthrough)
+branch  4 taken 0 (throw)
+       10:  155-block  1
+call    5 returned 10
+branch  6 taken 10 (fallthrough)
+branch  7 taken 0 (throw)
+       10:  155-block  2
+call    8 returned 10
+call    9 returned 10
+    $$$$$:  155-block  3
+call   10 never executed
+    $$$$$:  155-block  4
+    $$$$$:  155-block  5
+call   11 never executed
+    $$$$$:  155-block  6
+       10:  156:                break;
+       10:  156-block  0
+        -:  157:            }
+        -:  158:
+        -:  159:        }
+       67:  160:        if (obj.paragraph.empty())
+       67:  160-block  0
+call    0 returned 67
+branch  1 taken 41 (fallthrough)
+branch  2 taken 26
+       41:  161:            obj.inProgress = false;
+       41:  161-block  0
+       67:  162:        *currentIndex = writer.getCurrentLength() - 1;
+       67:  162-block  0
+call    0 returned 67
+branch  1 taken 67 (fallthrough)
+branch  2 taken 0 (throw)
+       67:  162-block  1
+call    3 returned 67
+       67:  163:    }
+        -:  164:
+function _ZN9docxtotxt9PptParser19insertSlideMetadataENS_15slideInsertInfoE called 15 returned 100% blocks executed 61%
+       15:  165:    void PptParser::insertSlideMetadata(slideInsertInfo slideInfo) {
+       15:  166:        writer.insertData(L"Slide info: ", true);
+       15:  166-block  0
+call    0 returned 15
+call    1 returned 15
+branch  2 taken 15 (fallthrough)
+branch  3 taken 0 (throw)
+       15:  166-block  1
+call    4 returned 15
+branch  5 taken 15 (fallthrough)
+branch  6 taken 0 (throw)
+       15:  166-block  2
+call    7 returned 15
+call    8 returned 15
+    $$$$$:  166-block  3
+call    9 never executed
+    $$$$$:  166-block  4
+    $$$$$:  166-block  5
+call   10 never executed
+    $$$$$:  166-block  6
+call   11 never executed
+       15:  167:        writer.insertData(L"Slide number - " + to_wstring(slideInfo.slideNum));
+call    0 returned 15
+call    1 returned 15
+branch  2 taken 15 (fallthrough)
+branch  3 taken 0 (throw)
+       15:  167-block  0
+call    4 returned 15
+branch  5 taken 15 (fallthrough)
+branch  6 taken 0 (throw)
+       15:  167-block  1
+call    7 returned 15
+call    8 returned 15
+    $$$$$:  167-block  2
+call    9 never executed
+    $$$$$:  167-block  3
+    $$$$$:  167-block  4
+call   10 never executed
+    $$$$$:  167-block  5
+call   11 never executed
+       15:  168:        if ((options.flags >> 3) & 1)
+branch  0 taken 15 (fallthrough)
+branch  1 taken 0
+       18:  169:            for (const auto &kv: slideInfo.relations.notes) {
+       15:  169-block  0
+call    0 returned 15
+call    1 returned 15
+       18:  169-block  1
+call    2 returned 18
+branch  3 taken 3 (fallthrough)
+branch  4 taken 15
+        3:  169-block  2
+call    5 returned 3
+call    6 returned 3
+        3:  170:                auto tmpNote = std::find(pptInfo.notes.begin(), pptInfo.notes.end(), kv.second);
+call    0 returned 3
+call    1 returned 3
+call    2 returned 3
+branch  3 taken 3 (fallthrough)
+branch  4 taken 0 (throw)
+        6:  171:                auto text = tmpNote->text;
+        3:  171-block  0
+call    0 returned 3
+call    1 returned 3
+branch  2 taken 3 (fallthrough)
+branch  3 taken 0 (throw)
+        3:  171-block  1
+call    4 returned 3
+    $$$$$:  171-block  2
+call    5 never executed
+        3:  172:                if (!text.empty()) {
+        3:  172-block  0
+call    0 returned 3
+branch  1 taken 2 (fallthrough)
+branch  2 taken 1
+        2:  173:                    writer.insertData(L"Slide note: " + text.front().text);
+        2:  173-block  0
+call    0 returned 2
+call    1 returned 2
+branch  2 taken 2 (fallthrough)
+branch  3 taken 0 (throw)
+        2:  173-block  1
+call    4 returned 2
+branch  5 taken 2 (fallthrough)
+branch  6 taken 0 (throw)
+        2:  173-block  2
+call    7 returned 2
+    $$$$$:  173-block  3
+call    8 never executed
+    $$$$$:  173-block  4
+        -:  174:
+        -:  175:                }
+        -:  176:            }
+       25:  177:        for (const auto &kv: slideInfo.relations.imageRelationship) {
+       15:  177-block  0
+call    0 returned 15
+call    1 returned 15
+       25:  177-block  1
+call    2 returned 25
+branch  3 taken 10 (fallthrough)
+branch  4 taken 15
+       10:  177-block  2
+call    5 returned 10
+       10:  177-block  3
+call    6 returned 10
+       10:  178:            auto tmpImage = std::find(slideInfo.insertImages.begin(), slideInfo.insertImages.end(), kv.first);
+call    0 returned 10
+call    1 returned 10
+call    2 returned 10
+branch  3 taken 10 (fallthrough)
+branch  4 taken 0 (throw)
+       10:  179:            writer.insertData(L"Slide image info: " + tmpImage->toString(), false, false);
+       10:  179-block  0
+call    0 returned 10
+call    1 returned 10
+branch  2 taken 10 (fallthrough)
+branch  3 taken 0 (throw)
+       10:  179-block  1
+call    4 returned 10
+branch  5 taken 10 (fallthrough)
+branch  6 taken 0 (throw)
+       10:  179-block  2
+call    7 returned 10
+branch  8 taken 10 (fallthrough)
+branch  9 taken 0 (throw)
+       10:  179-block  3
+call   10 returned 10
+call   11 returned 10
+    $$$$$:  179-block  4
+call   12 never executed
+    $$$$$:  179-block  5
+    $$$$$:  179-block  6
+call   13 never executed
+    $$$$$:  179-block  7
+       10:  180:            if ((options.flags >> 1) & 1) {
+branch  0 taken 10 (fallthrough)
+branch  1 taken 0
+       20:  181:                string image = ", saved to path: " + options.pathToDraws + '/' + kv.second;
+       10:  181-block  0
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0 (throw)
+       10:  181-block  1
+call    3 returned 10
+branch  4 taken 10 (fallthrough)
+branch  5 taken 0 (throw)
+       10:  181-block  2
+call    6 returned 10
+branch  7 taken 10 (fallthrough)
+branch  8 taken 0 (throw)
+call    9 returned 10
+    $$$$$:  181-block  3
+    $$$$$:  181-block  4
+    $$$$$:  181-block  5
+call   10 never executed
+       10:  182:                writer.insertData(writer.convertString(image));
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0 (throw)
+       10:  182-block  0
+call    3 returned 10
+branch  4 taken 10 (fallthrough)
+branch  5 taken 0 (throw)
+       10:  182-block  1
+call    6 returned 10
+call    7 returned 10
+    $$$$$:  182-block  2
+call    8 never executed
+    $$$$$:  182-block  3
+        -:  183:            }
+        -:  184:        }
+       15:  185:    }
+       15:  185-block  0
+        -:  186:
+        -:  187:}
+        -:  188:

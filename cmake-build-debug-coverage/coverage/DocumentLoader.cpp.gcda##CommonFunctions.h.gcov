@@ -1,0 +1,365 @@
+        -:    0:Source:/home/borzor/CLionProjects/docxtotxt/mainDoc/ParserCommons/CommonFunctions.h
+        -:    0:Graph:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/DocumentLoader.cpp.gcno
+        -:    0:Data:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/DocumentLoader.cpp.gcda
+        -:    0:Runs:1
+        -:    1://
+        -:    2:// Created by borzor on 12/16/22.
+        -:    3://
+        -:    4:#include <cmath>
+        -:    5:#include "DocumentCommons.h"
+        -:    6:#include "tinyxml2.h"
+        -:    7:
+        -:    8:#ifndef DOCXTOTXT_COMMONFUNCTIONS_H
+        -:    9:#define DOCXTOTXT_COMMONFUNCTIONS_H
+        -:   10:namespace docxtotxt {
+        -:   11:/*!
+        -:   12: * \brief Функция для извлечения информации координат объекта
+        -:   13: * @param xfrm Элемент, дочерние элементы которого содержат информацию о координатах
+        -:   14: * @return
+        -:   15: */
+function _ZN9docxtotxtL17extractObjectInfoEPN8tinyxml210XMLElementE called 111 returned 100% blocks executed 100%
+      111:   16:    static objectInfo_t extractObjectInfo(tinyxml2::XMLElement *xfrm) {
+      111:   17:        objectInfo_t object = {};
+      111:   18:        if (xfrm != nullptr) {
+      111:   18-block  0
+branch  0 taken 111 (fallthrough)
+branch  1 taken 0
+      111:   19:            auto off = xfrm->FirstChildElement("a:off");
+      111:   19-block  0
+call    0 returned 111
+      111:   20:            auto ext = xfrm->FirstChildElement("a:ext");
+call    0 returned 111
+      111:   21:            if (off != nullptr) {
+branch  0 taken 111 (fallthrough)
+branch  1 taken 0
+      111:   22:                object.offsetX = strtol(off->Attribute("x"), nullptr, 10);
+      111:   22-block  0
+call    0 returned 111
+call    1 returned 111
+      111:   23:                object.offsetY = strtol(off->Attribute("y"), nullptr, 10);
+call    0 returned 111
+call    1 returned 111
+        -:   24:            }
+      111:   25:            if (ext != nullptr) {
+      111:   25-block  0
+branch  0 taken 111 (fallthrough)
+branch  1 taken 0
+      111:   26:                object.objectSizeX = strtol(ext->Attribute("cx"), nullptr, 10);
+      111:   26-block  0
+call    0 returned 111
+call    1 returned 111
+      111:   27:                object.objectSizeY = strtol(ext->Attribute("cy"), nullptr, 10);
+call    0 returned 111
+call    1 returned 111
+        -:   28:            }
+        -:   29:        }
+      111:   30:        return object;
+      111:   30-block  0
+        -:   31:    }
+        -:   32:
+        -:   33:/*!
+        -:   34: * \brief Функция для извлечения picture объекта
+        -:   35: * @param element Элемент, дочерние элементы которого содержат информацию о изображении
+        -:   36: * @param prefixTag Префикс тэга, зависящий от исходного документа
+        -:   37: * @return
+        -:   38: */
+function _ZN9docxtotxtL14extractPictureEPN8tinyxml210XMLElementERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE called 44 returned 100% blocks executed 74%
+       44:   39:    static picture extractPicture(tinyxml2::XMLElement *element, const std::string &prefixTag) {
+       44:   40:        picture object;
+       44:   40-block  0
+call    0 returned 44
+       44:   41:        auto spPr = element->FirstChildElement(std::string(prefixTag + ":spPr").c_str());
+call    0 returned 44
+branch  1 taken 44 (fallthrough)
+branch  2 taken 0 (throw)
+       44:   41-block  0
+call    3 returned 44
+call    4 returned 44
+branch  5 taken 44 (fallthrough)
+branch  6 taken 0 (throw)
+       44:   41-block  1
+call    7 returned 44
+    $$$$$:   41-block  2
+call    8 never executed
+    $$$$$:   41-block  3
+       44:   42:        auto blipFill = element->FirstChildElement(std::string(prefixTag + ":blipFill").c_str());
+call    0 returned 44
+branch  1 taken 44 (fallthrough)
+branch  2 taken 0 (throw)
+       44:   42-block  0
+call    3 returned 44
+call    4 returned 44
+branch  5 taken 44 (fallthrough)
+branch  6 taken 0 (throw)
+       44:   42-block  1
+call    7 returned 44
+    $$$$$:   42-block  2
+call    8 never executed
+    $$$$$:   42-block  3
+       44:   43:        if (blipFill != nullptr) {
+branch  0 taken 44 (fallthrough)
+branch  1 taken 0
+       44:   44:            auto blip = blipFill->FirstChildElement("a:blip");
+       44:   44-block  0
+call    0 returned 44
+branch  1 taken 44 (fallthrough)
+branch  2 taken 0 (throw)
+       44:   45:            if (blip != nullptr) {
+       44:   45-block  0
+branch  0 taken 44 (fallthrough)
+branch  1 taken 0
+       44:   46:                object.rId = blip->Attribute("r:embed");
+       44:   46-block  0
+call    0 returned 44
+branch  1 taken 44 (fallthrough)
+branch  2 taken 0 (throw)
+       44:   46-block  1
+call    3 returned 44
+branch  4 taken 44 (fallthrough)
+branch  5 taken 0 (throw)
+        -:   47:            }
+        -:   48:        }
+       44:   49:        if (spPr != nullptr) {
+       44:   49-block  0
+branch  0 taken 44 (fallthrough)
+branch  1 taken 0
+       44:   50:            auto xfrm = spPr->FirstChildElement("a:xfrm");
+       44:   50-block  0
+call    0 returned 44
+branch  1 taken 44 (fallthrough)
+branch  2 taken 0 (throw)
+       44:   51:            object.objectInfo = extractObjectInfo(xfrm);
+       44:   51-block  0
+call    0 returned 44
+branch  1 taken 44 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   52:        }
+       44:   53:        return object;
+       44:   53-block  0
+       44:   53-block  1
+        -:   54:    }
+        -:   55:/*!
+        -:   56: * Функция для установки настроек выравнивания
+        -:   57: * @param jc Элемент, содержащий настройки выравнивания
+        -:   58: * @param settings Структура настроек
+        -:   59: */
+function _ZN9docxtotxtL10setJustifyEPN8tinyxml210XMLElementERNS_9justify_tE called 250 returned 100% blocks executed 88%
+      250:   60:    static void setJustify(tinyxml2::XMLElement *jc, docxtotxt::justify_t &settings) {
+      250:   61:        if (jc != nullptr) {
+      250:   61-block  0
+branch  0 taken 206 (fallthrough)
+branch  1 taken 44
+      412:   62:            std::string justify = jc->Attribute("w:val");
+      206:   62-block  0
+call    0 returned 206
+call    1 returned 206
+branch  2 taken 206 (fallthrough)
+branch  3 taken 0 (throw)
+      206:   62-block  1
+call    4 returned 206
+branch  5 taken 206 (fallthrough)
+branch  6 taken 0 (throw)
+      206:   62-block  2
+call    7 returned 206
+    $$$$$:   62-block  3
+      206:   63:            if (!strcmp(justify.c_str(), "left") || !strcmp(justify.c_str(), "both"))
+call    0 returned 206
+branch  1 taken 205 (fallthrough)
+branch  2 taken 1
+      205:   63-block  0
+call    3 returned 205
+branch  4 taken 31 (fallthrough)
+branch  5 taken 174
+       32:   63-block  1
+      174:   63-block  2
+      206:   63-block  3
+branch  6 taken 32 (fallthrough)
+branch  7 taken 174
+       32:   64:                settings = docxtotxt::justify_t::left;
+       32:   64-block  0
+      174:   65:            else if (!strcmp(justify.c_str(), "right"))
+      174:   65-block  0
+call    0 returned 174
+branch  1 taken 5 (fallthrough)
+branch  2 taken 169
+        5:   66:                settings = docxtotxt::justify_t::right;
+        5:   66-block  0
+      169:   67:            else if (!strcmp(justify.c_str(), "center"))
+      169:   67-block  0
+call    0 returned 169
+branch  1 taken 144 (fallthrough)
+branch  2 taken 25
+      144:   68:                settings = docxtotxt::justify_t::center;
+      144:   68-block  0
+        -:   69:        }
+      250:   70:    }
+      250:   70-block  0
+        -:   71:
+        -:   72:/*!
+        -:   73: * Функция для установки настроек отступа
+        -:   74: * @param jc Элемент, содержащий настройки отступа
+        -:   75: * @param settings Структура настроек
+        -:   76: */
+function _ZN9docxtotxtL14setIndentationEPN8tinyxml210XMLElementERNS_11indentationE called 148 returned 100% blocks executed 89%
+      148:   77:    static void setIndentation(tinyxml2::XMLElement *ind, docxtotxt::indentation &settings) {
+      148:   78:        if (ind != nullptr) {
+      148:   78-block  0
+branch  0 taken 120 (fallthrough)
+branch  1 taken 28
+      120:   79:            auto left = ind->Attribute("w:left");
+      120:   79-block  0
+call    0 returned 120
+      120:   80:            if (left != nullptr) {
+branch  0 taken 87 (fallthrough)
+branch  1 taken 33
+       87:   81:                settings.left = strtol(left, nullptr, 10) / TWIP_TO_CHARACTER;
+       87:   81-block  0
+call    0 returned 87
+        -:   82:            }
+      120:   83:            auto right = ind->Attribute("w:right");
+      120:   83-block  0
+call    0 returned 120
+      120:   84:            if (right != nullptr) {
+branch  0 taken 0 (fallthrough)
+branch  1 taken 120
+    #####:   85:                settings.right = strtol(right, nullptr, 10) / TWIP_TO_CHARACTER;
+    %%%%%:   85-block  0
+call    0 never executed
+        -:   86:            }
+      120:   87:            auto hanging = ind->Attribute("w:hanging");
+      120:   87-block  0
+call    0 returned 120
+      120:   88:            if (hanging != nullptr) {
+branch  0 taken 3 (fallthrough)
+branch  1 taken 117
+        3:   89:                settings.hanging = strtol(hanging, nullptr, 10) / TWIP_TO_CHARACTER;
+        3:   89-block  0
+call    0 returned 3
+        -:   90:            }
+      120:   91:            auto firstLine = ind->Attribute("w:firstLine");
+      120:   91-block  0
+call    0 returned 120
+      120:   92:            if (firstLine != nullptr) {
+branch  0 taken 40 (fallthrough)
+branch  1 taken 80
+       40:   93:                settings.firstLine = strtol(firstLine, nullptr, 10) / TWIP_TO_CHARACTER;
+       40:   93-block  0
+call    0 returned 40
+        -:   94:            }
+        -:   95:        }
+      148:   96:    }
+        -:   97:
+        -:   98:/*!
+        -:   99: * Функция для установки настроек межстрочного отступа
+        -:  100: * @param jc Элемент, содержащий настройки омежстрочного тступа
+        -:  101: * @param settings Структура настроек
+        -:  102: */
+function _ZN9docxtotxtL10setSpacingEPN8tinyxml210XMLElementERNS_11lineSpacingE called 161 returned 100% blocks executed 100%
+      161:  103:    static void setSpacing(tinyxml2::XMLElement *spacing, docxtotxt::lineSpacing &settings) {
+      161:  104:        if (spacing != nullptr) {
+      161:  104-block  0
+branch  0 taken 143 (fallthrough)
+branch  1 taken 18
+      143:  105:            auto before = spacing->Attribute("w:before");
+      143:  105-block  0
+call    0 returned 143
+      143:  106:            if (before != nullptr) {
+branch  0 taken 97 (fallthrough)
+branch  1 taken 46
+       97:  107:                settings.before = std::lround(strtol(before, nullptr, 10) / TWIP_TO_CHARACTER);
+       97:  107-block  0
+call    0 returned 97
+call    1 returned 97
+        -:  108:            }
+      143:  109:            auto after = spacing->Attribute("w:after");
+      143:  109-block  0
+call    0 returned 143
+      143:  110:            if (after != nullptr) {
+branch  0 taken 96 (fallthrough)
+branch  1 taken 47
+       96:  111:                settings.after = std::lround(strtol(after, nullptr, 10) / TWIP_TO_CHARACTER);
+       96:  111-block  0
+call    0 returned 96
+call    1 returned 96
+        -:  112:            }
+        -:  113:        }
+      161:  114:    }
+        -:  115:
+        -:  116:/*!
+        -:  117: * Функция для установки настроек заполнения
+        -:  118: * @param jc Элемент, содержащий настройки заполнения
+        -:  119: * @param settings Структура настроек
+        -:  120: */
+function _ZN9docxtotxtL13setTabulationEPN8tinyxml210XMLElementERSt6vectorINS_10tabulationESaIS4_EE called 74 returned 100% blocks executed 100%
+       74:  121:    static void setTabulation(tinyxml2::XMLElement *tabs, std::vector<docxtotxt::tabulation> &settings) {
+       74:  122:        if (tabs != nullptr) {
+       74:  122-block  0
+branch  0 taken 37 (fallthrough)
+branch  1 taken 37
+       37:  123:            auto *tab = tabs->FirstChildElement();
+       37:  123-block  0
+call    0 returned 37
+       93:  124:            while (tab != nullptr) {
+       93:  124-block  0
+branch  0 taken 56 (fallthrough)
+branch  1 taken 37
+        -:  125:                docxtotxt::tabulation tmpTab;
+       56:  126:                tmpTab.character = docxtotxt::none;
+       56:  127:                auto leader = tab->Attribute("w:leader");
+       56:  127-block  0
+call    0 returned 56
+branch  1 taken 56 (fallthrough)
+branch  2 taken 0 (throw)
+       56:  128:                if (leader != nullptr) {
+       56:  128-block  0
+branch  0 taken 31 (fallthrough)
+branch  1 taken 25
+       31:  129:                    if (!strcmp(leader, "dot")) {
+       31:  129-block  0
+branch  0 taken 31 (fallthrough)
+branch  1 taken 0
+       31:  130:                        tmpTab.character = docxtotxt::dot;
+       31:  130-block  0
+        -:  131://                } else if (!strcmp(leader, "heavy")) {
+        -:  132://                    tmpTab.character = docxtotxt::heavy;
+        -:  133://                } else if (!strcmp(leader, "hyphen")) {
+        -:  134://                    tmpTab.character = docxtotxt::hyphen;
+        -:  135://                } else if (!strcmp(leader, "middleDot")) {
+        -:  136://                    tmpTab.character = docxtotxt::middleDot;
+        -:  137://                } else if (!strcmp(leader, "none")) {
+        -:  138://                    tmpTab.character = docxtotxt::none;
+        -:  139://                } else if (!strcmp(leader, "underScore")) {
+        -:  140://                    tmpTab.character = docxtotxt::underscore;
+        -:  141:                    }
+        -:  142:                }
+       56:  143:                auto pos = tab->Attribute("w:pos");
+       56:  143-block  0
+call    0 returned 56
+branch  1 taken 56 (fallthrough)
+branch  2 taken 0 (throw)
+       56:  144:                if (pos != nullptr) {
+       56:  144-block  0
+branch  0 taken 56 (fallthrough)
+branch  1 taken 0
+       56:  145:                    tmpTab.pos = strtol(pos, nullptr, 10) / TWIP_TO_CHARACTER;
+       56:  145-block  0
+call    0 returned 56
+        -:  146:                }
+       56:  147:                settings.emplace_back(tmpTab);
+       56:  147-block  0
+call    0 returned 56
+branch  1 taken 56 (fallthrough)
+branch  2 taken 0 (throw)
+       56:  148:                tab = tab->NextSiblingElement();
+       56:  148-block  0
+call    0 returned 56
+branch  1 taken 56 (fallthrough)
+branch  2 taken 0 (throw)
+       56:  148-block  1
+        -:  149:            }
+        -:  150:        }
+       74:  151:    }
+       74:  151-block  0
+        -:  152:
+        -:  153:}
+        -:  154:#endif //DOCXTOTXT_COMMONFUNCTIONS_H

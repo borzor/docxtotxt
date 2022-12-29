@@ -43,13 +43,15 @@ namespace docxtotxt {
         XMLDocument document;
         if (zip_stat(options.input, fileName.c_str(), 0, &file_info) == -1)
             throw runtime_error("Error: Cannot get info about " + fileName + " file");
-        char buffer[file_info.size];
+        char *buff;
+        buff = (char *) malloc(file_info.size);
         auto zip_file = zip_fopen(options.input, fileName.c_str(), 0);
-        if (zip_fread(zip_file, &buffer, file_info.size) == -1)
+        if (zip_fread(zip_file, buff, file_info.size) == -1)
             throw runtime_error("Error: Cannot read " + fileName + " file");
         zip_fclose(zip_file);
-        if (document.Parse(buffer, file_info.size) != tinyxml2::XML_SUCCESS)
+        if (document.Parse(buff, file_info.size) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse " + fileName + " file");
+        ::free(buff);
         (this->*f)(&document);
     }
 
@@ -59,13 +61,15 @@ namespace docxtotxt {
         XMLDocument document;
         if (zip_stat(options.input, fileName.c_str(), 0, &file_info) == -1)
             return; //its normal situation then no relations file
-        char buffer4[file_info.size];
+        char *buff;
+        buff = (char *) malloc(file_info.size);
         auto zip_file = zip_fopen(options.input, fileName.c_str(), 0);
-        if (zip_fread(zip_file, &buffer4, file_info.size) == -1)
+        if (zip_fread(zip_file, buff, file_info.size) == -1)
             throw runtime_error("Error: Cannot read " + fileName + " file");
         zip_fclose(zip_file);
-        if (document.Parse(buffer4, file_info.size) != tinyxml2::XML_SUCCESS)
+        if (document.Parse(buff, file_info.size) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse " + fileName + " file");
+        ::free(buff);
         (this->*f)(&document, relations);
     }
 

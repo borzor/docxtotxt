@@ -1,0 +1,868 @@
+        -:    0:Source:/usr/include/c++/9/bits/locale_classes.h
+        -:    0:Graph:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/main.cpp.gcno
+        -:    0:Data:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/main.cpp.gcda
+        -:    0:Runs:1
+        -:    1:// Locale support -*- C++ -*-
+        -:    2:
+        -:    3:// Copyright (C) 1997-2019 Free Software Foundation, Inc.
+        -:    4://
+        -:    5:// This file is part of the GNU ISO C++ Library.  This library is free
+        -:    6:// software; you can redistribute it and/or modify it under the
+        -:    7:// terms of the GNU General Public License as published by the
+        -:    8:// Free Software Foundation; either version 3, or (at your option)
+        -:    9:// any later version.
+        -:   10:
+        -:   11:// This library is distributed in the hope that it will be useful,
+        -:   12:// but WITHOUT ANY WARRANTY; without even the implied warranty of
+        -:   13:// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        -:   14:// GNU General Public License for more details.
+        -:   15:
+        -:   16:// Under Section 7 of GPL version 3, you are granted additional
+        -:   17:// permissions described in the GCC Runtime Library Exception, version
+        -:   18:// 3.1, as published by the Free Software Foundation.
+        -:   19:
+        -:   20:// You should have received a copy of the GNU General Public License and
+        -:   21:// a copy of the GCC Runtime Library Exception along with this program;
+        -:   22:// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+        -:   23:// <http://www.gnu.org/licenses/>.
+        -:   24:
+        -:   25:/** @file bits/locale_classes.h
+        -:   26: *  This is an internal header file, included by other library headers.
+        -:   27: *  Do not attempt to use it directly. @headername{locale}
+        -:   28: */
+        -:   29:
+        -:   30://
+        -:   31:// ISO C++ 14882: 22.1  Locales
+        -:   32://
+        -:   33:
+        -:   34:#ifndef _LOCALE_CLASSES_H
+        -:   35:#define _LOCALE_CLASSES_H 1
+        -:   36:
+        -:   37:#pragma GCC system_header
+        -:   38:
+        -:   39:#include <bits/localefwd.h>
+        -:   40:#include <string>
+        -:   41:#include <ext/atomicity.h>
+        -:   42:
+        -:   43:namespace std _GLIBCXX_VISIBILITY(default)
+        -:   44:{
+        -:   45:_GLIBCXX_BEGIN_NAMESPACE_VERSION
+        -:   46:
+        -:   47:  // 22.1.1 Class locale
+        -:   48:  /**
+        -:   49:   *  @brief  Container class for localization functionality.
+        -:   50:   *  @ingroup locales
+        -:   51:   *
+        -:   52:   *  The locale class is first a class wrapper for C library locales.  It is
+        -:   53:   *  also an extensible container for user-defined localization.  A locale is
+        -:   54:   *  a collection of facets that implement various localization features such
+        -:   55:   *  as money, time, and number printing.
+        -:   56:   *
+        -:   57:   *  Constructing C++ locales does not change the C library locale.
+        -:   58:   *
+        -:   59:   *  This library supports efficient construction and copying of locales
+        -:   60:   *  through a reference counting implementation of the locale class.
+        -:   61:  */
+        -:   62:  class locale
+        -:   63:  {
+        -:   64:  public:
+        -:   65:    // Types:
+        -:   66:    /// Definition of locale::category.
+        -:   67:    typedef int	category;
+        -:   68:
+        -:   69:    // Forward decls and friends:
+        -:   70:    class facet;
+        -:   71:    class id;
+        -:   72:    class _Impl;
+        -:   73:
+        -:   74:    friend class facet;
+        -:   75:    friend class _Impl;
+        -:   76:
+        -:   77:    template<typename _Facet>
+        -:   78:      friend bool
+        -:   79:      has_facet(const locale&) throw();
+        -:   80:
+        -:   81:    template<typename _Facet>
+        -:   82:      friend const _Facet&
+        -:   83:      use_facet(const locale&);
+        -:   84:
+        -:   85:    template<typename _Cache>
+        -:   86:      friend struct __use_cache;
+        -:   87:
+        -:   88:    ///@{
+        -:   89:    /**
+        -:   90:     *  @brief  Category values.
+        -:   91:     *
+        -:   92:     *  The standard category values are none, ctype, numeric, collate, time,
+        -:   93:     *  monetary, and messages.  They form a bitmask that supports union and
+        -:   94:     *  intersection.  The category all is the union of these values.
+        -:   95:     *
+        -:   96:     *  NB: Order must match _S_facet_categories definition in locale.cc
+        -:   97:    */
+        -:   98:    static const category none		= 0;
+        -:   99:    static const category ctype		= 1L << 0;
+        -:  100:    static const category numeric	= 1L << 1;
+        -:  101:    static const category collate	= 1L << 2;
+        -:  102:    static const category time		= 1L << 3;
+        -:  103:    static const category monetary	= 1L << 4;
+        -:  104:    static const category messages	= 1L << 5;
+        -:  105:    static const category all		= (ctype | numeric | collate |
+        -:  106:					   time  | monetary | messages);
+        -:  107:    ///@}
+        -:  108:
+        -:  109:    // Construct/copy/destroy:
+        -:  110:
+        -:  111:    /**
+        -:  112:     *  @brief  Default constructor.
+        -:  113:     *
+        -:  114:     *  Constructs a copy of the global locale.  If no locale has been
+        -:  115:     *  explicitly set, this is the C locale.
+        -:  116:    */
+        -:  117:    locale() throw();
+        -:  118:
+        -:  119:    /**
+        -:  120:     *  @brief  Copy constructor.
+        -:  121:     *
+        -:  122:     *  Constructs a copy of @a other.
+        -:  123:     *
+        -:  124:     *  @param  __other  The locale to copy.
+        -:  125:    */
+        -:  126:    locale(const locale& __other) throw();
+        -:  127:
+        -:  128:    /**
+        -:  129:     *  @brief  Named locale constructor.
+        -:  130:     *
+        -:  131:     *  Constructs a copy of the named C library locale.
+        -:  132:     *
+        -:  133:     *  @param  __s  Name of the locale to construct.
+        -:  134:     *  @throw  std::runtime_error if __s is null or an undefined locale.
+        -:  135:    */
+        -:  136:    explicit
+        -:  137:    locale(const char* __s);
+        -:  138:
+        -:  139:    /**
+        -:  140:     *  @brief  Construct locale with facets from another locale.
+        -:  141:     *
+        -:  142:     *  Constructs a copy of the locale @a base.  The facets specified by @a
+        -:  143:     *  cat are replaced with those from the locale named by @a s.  If base is
+        -:  144:     *  named, this locale instance will also be named.
+        -:  145:     *
+        -:  146:     *  @param  __base  The locale to copy.
+        -:  147:     *  @param  __s  Name of the locale to use facets from.
+        -:  148:     *  @param  __cat  Set of categories defining the facets to use from __s.
+        -:  149:     *  @throw  std::runtime_error if __s is null or an undefined locale.
+        -:  150:    */
+        -:  151:    locale(const locale& __base, const char* __s, category __cat);
+        -:  152:
+        -:  153:#if __cplusplus >= 201103L
+        -:  154:    /**
+        -:  155:     *  @brief  Named locale constructor.
+        -:  156:     *
+        -:  157:     *  Constructs a copy of the named C library locale.
+        -:  158:     *
+        -:  159:     *  @param  __s  Name of the locale to construct.
+        -:  160:     *  @throw  std::runtime_error if __s is an undefined locale.
+        -:  161:    */
+        -:  162:    explicit
+        -:  163:    locale(const std::string& __s) : locale(__s.c_str()) { }
+        -:  164:
+        -:  165:    /**
+        -:  166:     *  @brief  Construct locale with facets from another locale.
+        -:  167:     *
+        -:  168:     *  Constructs a copy of the locale @a base.  The facets specified by @a
+        -:  169:     *  cat are replaced with those from the locale named by @a s.  If base is
+        -:  170:     *  named, this locale instance will also be named.
+        -:  171:     *
+        -:  172:     *  @param  __base  The locale to copy.
+        -:  173:     *  @param  __s  Name of the locale to use facets from.
+        -:  174:     *  @param  __cat  Set of categories defining the facets to use from __s.
+        -:  175:     *  @throw  std::runtime_error if __s is an undefined locale.
+        -:  176:    */
+        -:  177:    locale(const locale& __base, const std::string& __s, category __cat)
+        -:  178:    : locale(__base, __s.c_str(), __cat) { }
+        -:  179:#endif
+        -:  180:
+        -:  181:    /**
+        -:  182:     *  @brief  Construct locale with facets from another locale.
+        -:  183:     *
+        -:  184:     *  Constructs a copy of the locale @a base.  The facets specified by @a
+        -:  185:     *  cat are replaced with those from the locale @a add.  If @a base and @a
+        -:  186:     *  add are named, this locale instance will also be named.
+        -:  187:     *
+        -:  188:     *  @param  __base  The locale to copy.
+        -:  189:     *  @param  __add  The locale to use facets from.
+        -:  190:     *  @param  __cat  Set of categories defining the facets to use from add.
+        -:  191:    */
+        -:  192:    locale(const locale& __base, const locale& __add, category __cat);
+        -:  193:
+        -:  194:    /**
+        -:  195:     *  @brief  Construct locale with another facet.
+        -:  196:     *
+        -:  197:     *  Constructs a copy of the locale @a __other.  The facet @a __f
+        -:  198:     *  is added to @a __other, replacing an existing facet of type
+        -:  199:     *  Facet if there is one.  If @a __f is null, this locale is a
+        -:  200:     *  copy of @a __other.
+        -:  201:     *
+        -:  202:     *  @param  __other  The locale to copy.
+        -:  203:     *  @param  __f  The facet to add in.
+        -:  204:    */
+        -:  205:    template<typename _Facet>
+        -:  206:      locale(const locale& __other, _Facet* __f);
+        -:  207:
+        -:  208:    /// Locale destructor.
+        -:  209:    ~locale() throw();
+        -:  210:
+        -:  211:    /**
+        -:  212:     *  @brief  Assignment operator.
+        -:  213:     *
+        -:  214:     *  Set this locale to be a copy of @a other.
+        -:  215:     *
+        -:  216:     *  @param  __other  The locale to copy.
+        -:  217:     *  @return  A reference to this locale.
+        -:  218:    */
+        -:  219:    const locale&
+        -:  220:    operator=(const locale& __other) throw();
+        -:  221:
+        -:  222:    /**
+        -:  223:     *  @brief  Construct locale with another facet.
+        -:  224:     *
+        -:  225:     *  Constructs and returns a new copy of this locale.  Adds or replaces an
+        -:  226:     *  existing facet of type Facet from the locale @a other into the new
+        -:  227:     *  locale.
+        -:  228:     *
+        -:  229:     *  @tparam  _Facet  The facet type to copy from other
+        -:  230:     *  @param  __other  The locale to copy from.
+        -:  231:     *  @return  Newly constructed locale.
+        -:  232:     *  @throw  std::runtime_error if __other has no facet of type _Facet.
+        -:  233:    */
+        -:  234:    template<typename _Facet>
+        -:  235:      locale
+        -:  236:      combine(const locale& __other) const;
+        -:  237:
+        -:  238:    // Locale operations:
+        -:  239:    /**
+        -:  240:     *  @brief  Return locale name.
+        -:  241:     *  @return  Locale name or "*" if unnamed.
+        -:  242:    */
+        -:  243:    _GLIBCXX_DEFAULT_ABI_TAG
+        -:  244:    string
+        -:  245:    name() const;
+        -:  246:
+        -:  247:    /**
+        -:  248:     *  @brief  Locale equality.
+        -:  249:     *
+        -:  250:     *  @param  __other  The locale to compare against.
+        -:  251:     *  @return  True if other and this refer to the same locale instance, are
+        -:  252:     *		 copies, or have the same name.  False otherwise.
+        -:  253:    */
+        -:  254:    bool
+        -:  255:    operator==(const locale& __other) const throw();
+        -:  256:
+        -:  257:    /**
+        -:  258:     *  @brief  Locale inequality.
+        -:  259:     *
+        -:  260:     *  @param  __other  The locale to compare against.
+        -:  261:     *  @return  ! (*this == __other)
+        -:  262:    */
+        -:  263:    bool
+        -:  264:    operator!=(const locale& __other) const throw()
+        -:  265:    { return !(this->operator==(__other)); }
+        -:  266:
+        -:  267:    /**
+        -:  268:     *  @brief  Compare two strings according to collate.
+        -:  269:     *
+        -:  270:     *  Template operator to compare two strings using the compare function of
+        -:  271:     *  the collate facet in this locale.  One use is to provide the locale to
+        -:  272:     *  the sort function.  For example, a vector v of strings could be sorted
+        -:  273:     *  according to locale loc by doing:
+        -:  274:     *  @code
+        -:  275:     *  std::sort(v.begin(), v.end(), loc);
+        -:  276:     *  @endcode
+        -:  277:     *
+        -:  278:     *  @param  __s1  First string to compare.
+        -:  279:     *  @param  __s2  Second string to compare.
+        -:  280:     *  @return  True if collate<_Char> facet compares __s1 < __s2, else false.
+        -:  281:    */
+        -:  282:    template<typename _Char, typename _Traits, typename _Alloc>
+        -:  283:      bool
+        -:  284:      operator()(const basic_string<_Char, _Traits, _Alloc>& __s1,
+        -:  285:		 const basic_string<_Char, _Traits, _Alloc>& __s2) const;
+        -:  286:
+        -:  287:    // Global locale objects:
+        -:  288:    /**
+        -:  289:     *  @brief  Set global locale
+        -:  290:     *
+        -:  291:     *  This function sets the global locale to the argument and returns a
+        -:  292:     *  copy of the previous global locale.  If the argument has a name, it
+        -:  293:     *  will also call std::setlocale(LC_ALL, loc.name()).
+        -:  294:     *
+        -:  295:     *  @param  __loc  The new locale to make global.
+        -:  296:     *  @return  Copy of the old global locale.
+        -:  297:    */
+        -:  298:    static locale
+        -:  299:    global(const locale& __loc);
+        -:  300:
+        -:  301:    /**
+        -:  302:     *  @brief  Return reference to the C locale.
+        -:  303:    */
+        -:  304:    static const locale&
+        -:  305:    classic();
+        -:  306:
+        -:  307:  private:
+        -:  308:    // The (shared) implementation
+        -:  309:    _Impl*		_M_impl;
+        -:  310:
+        -:  311:    // The "C" reference locale
+        -:  312:    static _Impl*       _S_classic;
+        -:  313:
+        -:  314:    // Current global locale
+        -:  315:    static _Impl*	_S_global;
+        -:  316:
+        -:  317:    // Names of underlying locale categories.
+        -:  318:    // NB: locale::global() has to know how to modify all the
+        -:  319:    // underlying categories, not just the ones required by the C++
+        -:  320:    // standard.
+        -:  321:    static const char* const* const _S_categories;
+        -:  322:
+        -:  323:    // Number of standard categories. For C++, these categories are
+        -:  324:    // collate, ctype, monetary, numeric, time, and messages. These
+        -:  325:    // directly correspond to ISO C99 macros LC_COLLATE, LC_CTYPE,
+        -:  326:    // LC_MONETARY, LC_NUMERIC, and LC_TIME. In addition, POSIX (IEEE
+        -:  327:    // 1003.1-2001) specifies LC_MESSAGES.
+        -:  328:    // In addition to the standard categories, the underlying
+        -:  329:    // operating system is allowed to define extra LC_*
+        -:  330:    // macros. For GNU systems, the following are also valid:
+        -:  331:    // LC_PAPER, LC_NAME, LC_ADDRESS, LC_TELEPHONE, LC_MEASUREMENT,
+        -:  332:    // and LC_IDENTIFICATION.
+        -:  333:    enum { _S_categories_size = 6 + _GLIBCXX_NUM_CATEGORIES };
+        -:  334:
+        -:  335:#ifdef __GTHREADS
+        -:  336:    static __gthread_once_t _S_once;
+        -:  337:#endif
+        -:  338:
+        -:  339:    explicit
+        -:  340:    locale(_Impl*) throw();
+        -:  341:
+        -:  342:    static void
+        -:  343:    _S_initialize();
+        -:  344:
+        -:  345:    static void
+        -:  346:    _S_initialize_once() throw();
+        -:  347:
+        -:  348:    static category
+        -:  349:    _S_normalize_category(category);
+        -:  350:
+        -:  351:    void
+        -:  352:    _M_coalesce(const locale& __base, const locale& __add, category __cat);
+        -:  353:
+        -:  354:#if _GLIBCXX_USE_CXX11_ABI
+        -:  355:    static const id* const _S_twinned_facets[];
+        -:  356:#endif
+        -:  357:  };
+        -:  358:
+        -:  359:
+        -:  360:  // 22.1.1.1.2  Class locale::facet
+        -:  361:  /**
+        -:  362:   *  @brief  Localization functionality base class.
+        -:  363:   *  @ingroup locales
+        -:  364:   *
+        -:  365:   *  The facet class is the base class for a localization feature, such as
+        -:  366:   *  money, time, and number printing.  It provides common support for facets
+        -:  367:   *  and reference management.
+        -:  368:   *
+        -:  369:   *  Facets may not be copied or assigned.
+        -:  370:  */
+        -:  371:  class locale::facet
+        -:  372:  {
+        -:  373:  private:
+        -:  374:    friend class locale;
+        -:  375:    friend class locale::_Impl;
+        -:  376:
+        -:  377:    mutable _Atomic_word		_M_refcount;
+        -:  378:
+        -:  379:    // Contains data from the underlying "C" library for the classic locale.
+        -:  380:    static __c_locale                   _S_c_locale;
+        -:  381:
+        -:  382:    // String literal for the name of the classic locale.
+        -:  383:    static const char			_S_c_name[2];
+        -:  384:
+        -:  385:#ifdef __GTHREADS
+        -:  386:    static __gthread_once_t		_S_once;
+        -:  387:#endif
+        -:  388:
+        -:  389:    static void
+        -:  390:    _S_initialize_once();
+        -:  391:
+        -:  392:  protected:
+        -:  393:    /**
+        -:  394:     *  @brief  Facet constructor.
+        -:  395:     *
+        -:  396:     *  This is the constructor provided by the standard.  If refs is 0, the
+        -:  397:     *  facet is destroyed when the last referencing locale is destroyed.
+        -:  398:     *  Otherwise the facet will never be destroyed.
+        -:  399:     *
+        -:  400:     *  @param __refs  The initial value for reference count.
+        -:  401:    */
+        -:  402:    explicit
+        -:  403:    facet(size_t __refs = 0) throw() : _M_refcount(__refs ? 1 : 0)
+        -:  404:    { }
+        -:  405:
+        -:  406:    /// Facet destructor.
+        -:  407:    virtual
+        -:  408:    ~facet();
+        -:  409:
+        -:  410:    static void
+        -:  411:    _S_create_c_locale(__c_locale& __cloc, const char* __s,
+        -:  412:		       __c_locale __old = 0);
+        -:  413:
+        -:  414:    static __c_locale
+        -:  415:    _S_clone_c_locale(__c_locale& __cloc) throw();
+        -:  416:
+        -:  417:    static void
+        -:  418:    _S_destroy_c_locale(__c_locale& __cloc);
+        -:  419:
+        -:  420:    static __c_locale
+        -:  421:    _S_lc_ctype_c_locale(__c_locale __cloc, const char* __s);
+        -:  422:
+        -:  423:    // Returns data from the underlying "C" library data for the
+        -:  424:    // classic locale.
+        -:  425:    static __c_locale
+        -:  426:    _S_get_c_locale();
+        -:  427:
+        -:  428:    _GLIBCXX_CONST static const char*
+        -:  429:    _S_get_c_name() throw();
+        -:  430:
+        -:  431:#if __cplusplus < 201103L
+        -:  432:  private:
+        -:  433:    facet(const facet&);  // Not defined.
+        -:  434:
+        -:  435:    facet&
+        -:  436:    operator=(const facet&);  // Not defined.
+        -:  437:#else
+        -:  438:    facet(const facet&) = delete;
+        -:  439:
+        -:  440:    facet&
+        -:  441:    operator=(const facet&) = delete;
+        -:  442:#endif
+        -:  443:
+        -:  444:  private:
+        -:  445:    void
+        -:  446:    _M_add_reference() const throw()
+        -:  447:    { __gnu_cxx::__atomic_add_dispatch(&_M_refcount, 1); }
+        -:  448:
+        -:  449:    void
+        -:  450:    _M_remove_reference() const throw()
+        -:  451:    {
+        -:  452:      // Be race-detector-friendly.  For more info see bits/c++config.
+        -:  453:      _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE(&_M_refcount);
+        -:  454:      if (__gnu_cxx::__exchange_and_add_dispatch(&_M_refcount, -1) == 1)
+        -:  455:	{
+        -:  456:          _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER(&_M_refcount);
+        -:  457:	  __try
+        -:  458:	    { delete this; }
+        -:  459:	  __catch(...)
+        -:  460:	    { }
+        -:  461:	}
+        -:  462:    }
+        -:  463:
+        -:  464:    const facet* _M_sso_shim(const id*) const;
+        -:  465:    const facet* _M_cow_shim(const id*) const;
+        -:  466:
+        -:  467:  protected:
+        -:  468:    class __shim; // For internal use only.
+        -:  469:  };
+        -:  470:
+        -:  471:
+        -:  472:  // 22.1.1.1.3 Class locale::id
+        -:  473:  /**
+        -:  474:   *  @brief  Facet ID class.
+        -:  475:   *  @ingroup locales
+        -:  476:   *
+        -:  477:   *  The ID class provides facets with an index used to identify them.
+        -:  478:   *  Every facet class must define a public static member locale::id, or be
+        -:  479:   *  derived from a facet that provides this member, otherwise the facet
+        -:  480:   *  cannot be used in a locale.  The locale::id ensures that each class
+        -:  481:   *  type gets a unique identifier.
+        -:  482:  */
+        -:  483:  class locale::id
+        -:  484:  {
+        -:  485:  private:
+        -:  486:    friend class locale;
+        -:  487:    friend class locale::_Impl;
+        -:  488:
+        -:  489:    template<typename _Facet>
+        -:  490:      friend const _Facet&
+        -:  491:      use_facet(const locale&);
+        -:  492:
+        -:  493:    template<typename _Facet>
+        -:  494:      friend bool
+        -:  495:      has_facet(const locale&) throw();
+        -:  496:
+        -:  497:    // NB: There is no accessor for _M_index because it may be used
+        -:  498:    // before the constructor is run; the effect of calling a member
+        -:  499:    // function (even an inline) would be undefined.
+        -:  500:    mutable size_t		_M_index;
+        -:  501:
+        -:  502:    // Last id number assigned.
+        -:  503:    static _Atomic_word		_S_refcount;
+        -:  504:
+        -:  505:    void
+        -:  506:    operator=(const id&);  // Not defined.
+        -:  507:
+        -:  508:    id(const id&);  // Not defined.
+        -:  509:
+        -:  510:  public:
+        -:  511:    // NB: This class is always a static data member, and thus can be
+        -:  512:    // counted on to be zero-initialized.
+        -:  513:    /// Constructor.
+        -:  514:    id() { }
+        -:  515:
+        -:  516:    size_t
+        -:  517:    _M_id() const throw();
+        -:  518:  };
+        -:  519:
+        -:  520:
+        -:  521:  // Implementation object for locale.
+        -:  522:  class locale::_Impl
+        -:  523:  {
+        -:  524:  public:
+        -:  525:    // Friends.
+        -:  526:    friend class locale;
+        -:  527:    friend class locale::facet;
+        -:  528:
+        -:  529:    template<typename _Facet>
+        -:  530:      friend bool
+        -:  531:      has_facet(const locale&) throw();
+        -:  532:
+        -:  533:    template<typename _Facet>
+        -:  534:      friend const _Facet&
+        -:  535:      use_facet(const locale&);
+        -:  536:
+        -:  537:    template<typename _Cache>
+        -:  538:      friend struct __use_cache;
+        -:  539:
+        -:  540:  private:
+        -:  541:    // Data Members.
+        -:  542:    _Atomic_word			_M_refcount;
+        -:  543:    const facet**			_M_facets;
+        -:  544:    size_t				_M_facets_size;
+        -:  545:    const facet**			_M_caches;
+        -:  546:    char**				_M_names;
+        -:  547:    static const locale::id* const	_S_id_ctype[];
+        -:  548:    static const locale::id* const	_S_id_numeric[];
+        -:  549:    static const locale::id* const	_S_id_collate[];
+        -:  550:    static const locale::id* const	_S_id_time[];
+        -:  551:    static const locale::id* const	_S_id_monetary[];
+        -:  552:    static const locale::id* const	_S_id_messages[];
+        -:  553:    static const locale::id* const* const _S_facet_categories[];
+        -:  554:
+        -:  555:    void
+        -:  556:    _M_add_reference() throw()
+        -:  557:    { __gnu_cxx::__atomic_add_dispatch(&_M_refcount, 1); }
+        -:  558:
+        -:  559:    void
+function _ZNSt6locale5_Impl19_M_remove_referenceEv called 0 returned 0% blocks executed 0%
+    #####:  560:    _M_remove_reference() throw()
+        -:  561:    {
+        -:  562:      // Be race-detector-friendly.  For more info see bits/c++config.
+        -:  563:      _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE(&_M_refcount);
+    #####:  564:      if (__gnu_cxx::__exchange_and_add_dispatch(&_M_refcount, -1) == 1)
+    %%%%%:  564-block  0
+call    0 never executed
+branch  1 never executed
+branch  2 never executed
+        -:  565:	{
+        -:  566:          _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER(&_M_refcount);
+        -:  567:	  __try
+    #####:  568:	    { delete this; }
+    %%%%%:  568-block  0
+branch  0 never executed
+branch  1 never executed
+    %%%%%:  568-block  1
+call    2 never executed
+call    3 never executed
+        -:  569:	  __catch(...)
+        -:  570:	    { }
+        -:  571:	}
+    #####:  572:    }
+        -:  573:
+        -:  574:    _Impl(const _Impl&, size_t);
+        -:  575:    _Impl(const char*, size_t);
+        -:  576:    _Impl(size_t) throw();
+        -:  577:
+        -:  578:   ~_Impl() throw();
+        -:  579:
+        -:  580:    _Impl(const _Impl&);  // Not defined.
+        -:  581:
+        -:  582:    void
+        -:  583:    operator=(const _Impl&);  // Not defined.
+        -:  584:
+        -:  585:    bool
+        -:  586:    _M_check_same_name()
+        -:  587:    {
+        -:  588:      bool __ret = true;
+        -:  589:      if (_M_names[1])
+        -:  590:	// We must actually compare all the _M_names: can be all equal!
+        -:  591:	for (size_t __i = 0; __ret && __i < _S_categories_size - 1; ++__i)
+        -:  592:	  __ret = __builtin_strcmp(_M_names[__i], _M_names[__i + 1]) == 0;
+        -:  593:      return __ret;
+        -:  594:    }
+        -:  595:
+        -:  596:    void
+        -:  597:    _M_replace_categories(const _Impl*, category);
+        -:  598:
+        -:  599:    void
+        -:  600:    _M_replace_category(const _Impl*, const locale::id* const*);
+        -:  601:
+        -:  602:    void
+        -:  603:    _M_replace_facet(const _Impl*, const locale::id*);
+        -:  604:
+        -:  605:    void
+        -:  606:    _M_install_facet(const locale::id*, const facet*);
+        -:  607:
+        -:  608:    template<typename _Facet>
+        -:  609:      void
+        -:  610:      _M_init_facet(_Facet* __facet)
+        -:  611:      { _M_install_facet(&_Facet::id, __facet); }
+        -:  612:
+        -:  613:    template<typename _Facet>
+        -:  614:      void
+        -:  615:      _M_init_facet_unchecked(_Facet* __facet)
+        -:  616:      {
+        -:  617:	__facet->_M_add_reference();
+        -:  618:	_M_facets[_Facet::id._M_id()] = __facet;
+        -:  619:      }
+        -:  620:
+        -:  621:    void
+        -:  622:    _M_install_cache(const facet*, size_t);
+        -:  623:
+        -:  624:    void _M_init_extra(facet**);
+        -:  625:    void _M_init_extra(void*, void*, const char*, const char*);
+        -:  626:  };
+        -:  627:
+        -:  628:
+        -:  629:  /**
+        -:  630:   *  @brief  Facet for localized string comparison.
+        -:  631:   *
+        -:  632:   *  This facet encapsulates the code to compare strings in a localized
+        -:  633:   *  manner.
+        -:  634:   *
+        -:  635:   *  The collate template uses protected virtual functions to provide
+        -:  636:   *  the actual results.  The public accessors forward the call to
+        -:  637:   *  the virtual functions.  These virtual functions are hooks for
+        -:  638:   *  developers to implement the behavior they require from the
+        -:  639:   *  collate facet.
+        -:  640:  */
+        -:  641:  template<typename _CharT>
+        -:  642:    class _GLIBCXX_NAMESPACE_CXX11 collate : public locale::facet
+        -:  643:    {
+        -:  644:    public:
+        -:  645:      // Types:
+        -:  646:      ///@{
+        -:  647:      /// Public typedefs
+        -:  648:      typedef _CharT			char_type;
+        -:  649:      typedef basic_string<_CharT>	string_type;
+        -:  650:      ///@}
+        -:  651:
+        -:  652:    protected:
+        -:  653:      // Underlying "C" library locale information saved from
+        -:  654:      // initialization, needed by collate_byname as well.
+        -:  655:      __c_locale			_M_c_locale_collate;
+        -:  656:
+        -:  657:    public:
+        -:  658:      /// Numpunct facet id.
+        -:  659:      static locale::id			id;
+        -:  660:
+        -:  661:      /**
+        -:  662:       *  @brief  Constructor performs initialization.
+        -:  663:       *
+        -:  664:       *  This is the constructor provided by the standard.
+        -:  665:       *
+        -:  666:       *  @param __refs  Passed to the base facet class.
+        -:  667:      */
+        -:  668:      explicit
+        -:  669:      collate(size_t __refs = 0)
+        -:  670:      : facet(__refs), _M_c_locale_collate(_S_get_c_locale())
+        -:  671:      { }
+        -:  672:
+        -:  673:      /**
+        -:  674:       *  @brief  Internal constructor. Not for general use.
+        -:  675:       *
+        -:  676:       *  This is a constructor for use by the library itself to set up new
+        -:  677:       *  locales.
+        -:  678:       *
+        -:  679:       *  @param __cloc  The C locale.
+        -:  680:       *  @param __refs  Passed to the base facet class.
+        -:  681:      */
+        -:  682:      explicit
+        -:  683:      collate(__c_locale __cloc, size_t __refs = 0)
+        -:  684:      : facet(__refs), _M_c_locale_collate(_S_clone_c_locale(__cloc))
+        -:  685:      { }
+        -:  686:
+        -:  687:      /**
+        -:  688:       *  @brief  Compare two strings.
+        -:  689:       *
+        -:  690:       *  This function compares two strings and returns the result by calling
+        -:  691:       *  collate::do_compare().
+        -:  692:       *
+        -:  693:       *  @param __lo1  Start of string 1.
+        -:  694:       *  @param __hi1  End of string 1.
+        -:  695:       *  @param __lo2  Start of string 2.
+        -:  696:       *  @param __hi2  End of string 2.
+        -:  697:       *  @return  1 if string1 > string2, -1 if string1 < string2, else 0.
+        -:  698:      */
+        -:  699:      int
+        -:  700:      compare(const _CharT* __lo1, const _CharT* __hi1,
+        -:  701:	      const _CharT* __lo2, const _CharT* __hi2) const
+        -:  702:      { return this->do_compare(__lo1, __hi1, __lo2, __hi2); }
+        -:  703:
+        -:  704:      /**
+        -:  705:       *  @brief  Transform string to comparable form.
+        -:  706:       *
+        -:  707:       *  This function is a wrapper for strxfrm functionality.  It takes the
+        -:  708:       *  input string and returns a modified string that can be directly
+        -:  709:       *  compared to other transformed strings.  In the C locale, this
+        -:  710:       *  function just returns a copy of the input string.  In some other
+        -:  711:       *  locales, it may replace two chars with one, change a char for
+        -:  712:       *  another, etc.  It does so by returning collate::do_transform().
+        -:  713:       *
+        -:  714:       *  @param __lo  Start of string.
+        -:  715:       *  @param __hi  End of string.
+        -:  716:       *  @return  Transformed string_type.
+        -:  717:      */
+        -:  718:      string_type
+        -:  719:      transform(const _CharT* __lo, const _CharT* __hi) const
+        -:  720:      { return this->do_transform(__lo, __hi); }
+        -:  721:
+        -:  722:      /**
+        -:  723:       *  @brief  Return hash of a string.
+        -:  724:       *
+        -:  725:       *  This function computes and returns a hash on the input string.  It
+        -:  726:       *  does so by returning collate::do_hash().
+        -:  727:       *
+        -:  728:       *  @param __lo  Start of string.
+        -:  729:       *  @param __hi  End of string.
+        -:  730:       *  @return  Hash value.
+        -:  731:      */
+        -:  732:      long
+        -:  733:      hash(const _CharT* __lo, const _CharT* __hi) const
+        -:  734:      { return this->do_hash(__lo, __hi); }
+        -:  735:
+        -:  736:      // Used to abstract out _CharT bits in virtual member functions, below.
+        -:  737:      int
+        -:  738:      _M_compare(const _CharT*, const _CharT*) const throw();
+        -:  739:
+        -:  740:      size_t
+        -:  741:      _M_transform(_CharT*, const _CharT*, size_t) const throw();
+        -:  742:
+        -:  743:  protected:
+        -:  744:      /// Destructor.
+        -:  745:      virtual
+        -:  746:      ~collate()
+        -:  747:      { _S_destroy_c_locale(_M_c_locale_collate); }
+        -:  748:
+        -:  749:      /**
+        -:  750:       *  @brief  Compare two strings.
+        -:  751:       *
+        -:  752:       *  This function is a hook for derived classes to change the value
+        -:  753:       *  returned.  @see compare().
+        -:  754:       *
+        -:  755:       *  @param __lo1  Start of string 1.
+        -:  756:       *  @param __hi1  End of string 1.
+        -:  757:       *  @param __lo2  Start of string 2.
+        -:  758:       *  @param __hi2  End of string 2.
+        -:  759:       *  @return  1 if string1 > string2, -1 if string1 < string2, else 0.
+        -:  760:      */
+        -:  761:      virtual int
+        -:  762:      do_compare(const _CharT* __lo1, const _CharT* __hi1,
+        -:  763:		 const _CharT* __lo2, const _CharT* __hi2) const;
+        -:  764:
+        -:  765:      /**
+        -:  766:       *  @brief  Transform string to comparable form.
+        -:  767:       *
+        -:  768:       *  This function is a hook for derived classes to change the value
+        -:  769:       *  returned.
+        -:  770:       *
+        -:  771:       *  @param __lo  Start.
+        -:  772:       *  @param __hi  End.
+        -:  773:       *  @return  transformed string.
+        -:  774:      */
+        -:  775:      virtual string_type
+        -:  776:      do_transform(const _CharT* __lo, const _CharT* __hi) const;
+        -:  777:
+        -:  778:      /**
+        -:  779:       *  @brief  Return hash of a string.
+        -:  780:       *
+        -:  781:       *  This function computes and returns a hash on the input string.  This
+        -:  782:       *  function is a hook for derived classes to change the value returned.
+        -:  783:       *
+        -:  784:       *  @param __lo  Start of string.
+        -:  785:       *  @param __hi  End of string.
+        -:  786:       *  @return  Hash value.
+        -:  787:      */
+        -:  788:      virtual long
+        -:  789:      do_hash(const _CharT* __lo, const _CharT* __hi) const;
+        -:  790:    };
+        -:  791:
+        -:  792:  template<typename _CharT>
+        -:  793:    locale::id collate<_CharT>::id;
+        -:  794:
+        -:  795:  // Specializations.
+        -:  796:  template<>
+        -:  797:    int
+        -:  798:    collate<char>::_M_compare(const char*, const char*) const throw();
+        -:  799:
+        -:  800:  template<>
+        -:  801:    size_t
+        -:  802:    collate<char>::_M_transform(char*, const char*, size_t) const throw();
+        -:  803:
+        -:  804:#ifdef _GLIBCXX_USE_WCHAR_T
+        -:  805:  template<>
+        -:  806:    int
+        -:  807:    collate<wchar_t>::_M_compare(const wchar_t*, const wchar_t*) const throw();
+        -:  808:
+        -:  809:  template<>
+        -:  810:    size_t
+        -:  811:    collate<wchar_t>::_M_transform(wchar_t*, const wchar_t*, size_t) const throw();
+        -:  812:#endif
+        -:  813:
+        -:  814:  /// class collate_byname [22.2.4.2].
+        -:  815:  template<typename _CharT>
+        -:  816:    class _GLIBCXX_NAMESPACE_CXX11 collate_byname : public collate<_CharT>
+        -:  817:    {
+        -:  818:    public:
+        -:  819:      ///@{
+        -:  820:      /// Public typedefs
+        -:  821:      typedef _CharT               char_type;
+        -:  822:      typedef basic_string<_CharT> string_type;
+        -:  823:      ///@}
+        -:  824:
+        -:  825:      explicit
+        -:  826:      collate_byname(const char* __s, size_t __refs = 0)
+        -:  827:      : collate<_CharT>(__refs)
+        -:  828:      {
+        -:  829:	if (__builtin_strcmp(__s, "C") != 0
+        -:  830:	    && __builtin_strcmp(__s, "POSIX") != 0)
+        -:  831:	  {
+        -:  832:	    this->_S_destroy_c_locale(this->_M_c_locale_collate);
+        -:  833:	    this->_S_create_c_locale(this->_M_c_locale_collate, __s);
+        -:  834:	  }
+        -:  835:      }
+        -:  836:
+        -:  837:#if __cplusplus >= 201103L
+        -:  838:      explicit
+        -:  839:      collate_byname(const string& __s, size_t __refs = 0)
+        -:  840:      : collate_byname(__s.c_str(), __refs) { }
+        -:  841:#endif
+        -:  842:
+        -:  843:    protected:
+        -:  844:      virtual
+        -:  845:      ~collate_byname() { }
+        -:  846:    };
+        -:  847:
+        -:  848:_GLIBCXX_END_NAMESPACE_VERSION
+        -:  849:} // namespace
+        -:  850:
+        -:  851:# include <bits/locale_classes.tcc>
+        -:  852:
+        -:  853:#endif

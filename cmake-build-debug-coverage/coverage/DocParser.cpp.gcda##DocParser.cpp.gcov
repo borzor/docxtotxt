@@ -1,0 +1,546 @@
+        -:    0:Source:/home/borzor/CLionProjects/docxtotxt/mainDoc/source/DocParser.cpp
+        -:    0:Graph:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/DocParser.cpp.gcno
+        -:    0:Data:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/DocParser.cpp.gcda
+        -:    0:Runs:1
+        -:    1://
+        -:    2:// Created by borzor on 12/12/22.
+        -:    3://
+        -:    4:
+        -:    5:#include "../headers/DocParser.h"
+        -:    6:
+        -:    7:namespace docxtotxt {
+function _ZN9docxtotxt9DocParserC2ERNS_9docInfo_tERNS_9options_tERNS_12BufferWriterE called 3 returned 100% blocks executed 100%
+        3:    8:    DocParser::DocParser(docInfo_t &docInfo, options_t &options, BufferWriter &writer) : docInfo(docInfo),
+        3:    9:                                                                                         Parser(options, writer) {
+        3:    9-block  0
+call    0 returned 3
+        -:   10:
+        3:   11:    }
+        -:   12:
+function _ZN9docxtotxt9DocParser9parseFileEv called 3 returned 100% blocks executed 81%
+        3:   13:    void DocParser::parseFile() {
+        3:   14:        writer.newLine();
+        3:   14-block  0
+call    0 returned 3
+branch  1 taken 3 (fallthrough)
+branch  2 taken 0 (throw)
+        6:   15:        auto body = docInfo.body;
+        3:   15-block  0
+call    0 returned 3
+branch  1 taken 3 (fallthrough)
+branch  2 taken 0 (throw)
+        3:   15-block  1
+call    3 returned 3
+    $$$$$:   15-block  2
+call    4 never executed
+      334:   16:        for (auto &elem: body) {
+        3:   16-block  0
+call    0 returned 3
+call    1 returned 3
+      334:   16-block  1
+call    2 returned 334
+branch  3 taken 331 (fallthrough)
+branch  4 taken 3
+      331:   16-block  2
+call    5 returned 331
+      331:   16-block  3
+call    6 returned 331
+      331:   17:            switch (elem.type) {
+branch  0 taken 292
+branch  1 taken 9
+branch  2 taken 30
+branch  3 taken 0
+      292:   18:                case par: {
+      292:   19:                    writeParagraph(elem);
+      292:   19-block  0
+call    0 returned 292
+branch  1 taken 292 (fallthrough)
+branch  2 taken 0 (throw)
+      292:   19-block  1
+call    3 returned 292
+branch  4 taken 292 (fallthrough)
+branch  5 taken 0 (throw)
+      292:   19-block  2
+call    6 returned 292
+    $$$$$:   19-block  3
+call    7 never executed
+    $$$$$:   19-block  4
+      292:   20:                    break;
+        -:   21:                }
+        9:   22:                case table:
+        9:   23:                    writeTable(elem);
+        9:   23-block  0
+call    0 returned 9
+branch  1 taken 9 (fallthrough)
+branch  2 taken 0 (throw)
+        9:   24:                    break;
+        9:   24-block  0
+       30:   25:                case image:
+       30:   26:                    writeImage(elem);
+       30:   26-block  0
+call    0 returned 30
+branch  1 taken 30 (fallthrough)
+branch  2 taken 0 (throw)
+       30:   27:                    break;
+       30:   27-block  0
+        -:   28:            }
+        -:   29:        }
+        3:   30:        if ((options.flags >> 3) & 1) {
+        3:   30-block  0
+branch  0 taken 3 (fallthrough)
+branch  1 taken 0
+        5:   31:            for(auto &note:docInfo.notes){
+        3:   31-block  0
+call    0 returned 3
+call    1 returned 3
+        5:   31-block  1
+call    2 returned 5
+branch  3 taken 2 (fallthrough)
+branch  4 taken 3
+        2:   31-block  2
+call    5 returned 2
+        2:   31-block  3
+call    6 returned 2
+        2:   32:                writeNote(note);
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   33:            }
+        -:   34:        }
+        3:   35:    }
+        -:   36:
+function _ZN9docxtotxt9DocParser14writeParagraphENS_9paragraphE called 292 returned 100% blocks executed 81%
+      292:   37:    void DocParser::writeParagraph(paragraph paragraph) {
+      292:   38:        auto justify = paragraph.settings.justify;
+      292:   39:        auto left = paragraph.settings.ind.left;
+      292:   40:        auto right = paragraph.settings.ind.right;
+        -:   41:        size_t firstLineLeft;
+      292:   42:        if (paragraph.settings.ind.hanging == 0) {
+      292:   42-block  0
+branch  0 taken 289 (fallthrough)
+branch  1 taken 3
+      289:   43:            firstLineLeft = left + paragraph.settings.ind.firstLine;
+      289:   43-block  0
+        -:   44:        } else {
+       3*:   45:            firstLineLeft = left == 0 ? 0 : left - paragraph.settings.ind.hanging;
+        3:   45-block  0
+branch  0 taken 3 (fallthrough)
+branch  1 taken 0
+        3:   45-block  1
+    %%%%%:   45-block  2
+        3:   45-block  3
+        -:   46:        }
+      292:   47:        bool isFirstLine = true;
+      292:   48:        auto before = paragraph.settings.spacing.before;
+      292:   49:        auto after = paragraph.settings.spacing.after;
+      575:   50:        for (auto &elem: paragraph.body) {
+      292:   50-block  0
+call    0 returned 292
+call    1 returned 292
+      575:   50-block  1
+call    2 returned 575
+branch  3 taken 283 (fallthrough)
+branch  4 taken 292
+      283:   50-block  2
+call    5 returned 283
+      283:   50-block  3
+call    6 returned 283
+      283:   51:            auto currentSize = elem.length();
+call    0 returned 283
+      283:   52:            if (!elem.empty()) {
+call    0 returned 283
+branch  1 taken 214 (fallthrough)
+branch  2 taken 69
+      287:   53:                for (int i = 0; i < before; i++) {
+      214:   53-block  0
+      287:   53-block  1
+branch  0 taken 73 (fallthrough)
+branch  1 taken 214
+       73:   53-block  2
+       73:   54:                    writer.newLine();
+       73:   54-block  0
+call    0 returned 73
+branch  1 taken 73 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   55:                }
+      527:   56:                while (currentSize != 0) {
+      527:   56-block  0
+branch  0 taken 313 (fallthrough)
+branch  1 taken 214
+      313:   56-block  1
+      313:   57:                    auto availableBufferInLine = docInfo.docWidth - writer.getCurrentLength();
+      313:   57-block  0
+call    0 returned 313
+branch  1 taken 313 (fallthrough)
+branch  2 taken 0 (throw)
+      313:   58:                    if (justify == left){
+      313:   58-block  0
+branch  0 taken 199 (fallthrough)
+branch  1 taken 114
+      199:   59:                        if (isFirstLine) {
+      199:   59-block  0
+branch  0 taken 109 (fallthrough)
+branch  1 taken 90
+      109:   60:                            availableBufferInLine = availableBufferInLine - firstLineLeft - right;
+      109:   60-block  0
+        -:   61:                        } else {
+       90:   62:                            availableBufferInLine = availableBufferInLine - left - right;
+       90:   62-block  0
+        -:   63:                        }
+        -:   64:                    }
+      313:   65:                    size_t ind = 0;
+      313:   66:                    if (currentSize > availableBufferInLine) { // 167
+      313:   66-block  0
+branch  0 taken 99 (fallthrough)
+branch  1 taken 214
+       99:   67:                        auto indexLastElement = elem.find_last_of(L' ', availableBufferInLine);
+       99:   67-block  0
+call    0 returned 99
+        -:   68:                        if (indexLastElement == string::npos) {
+        -:   69://                            writer.newLine();
+        -:   70://                            availableBufferInLine = docInfo.docWidth - writer.getCurrentLength();
+        -:   71://                            indexLastElement = elem.find_last_of(L' ', availableBufferInLine);
+        -:   72:                        }
+       99:   73:                        switch (justify) {
+branch  0 taken 97
+branch  1 taken 1
+branch  2 taken 1
+branch  3 taken 0
+       97:   74:                            case justify_t::left: {
+       97:   75:                                ind = isFirstLine ? firstLineLeft : left;
+       97:   75-block  0
+branch  0 taken 48 (fallthrough)
+branch  1 taken 49
+       48:   75-block  1
+       49:   75-block  2
+       97:   76:                                break;
+       97:   76-block  0
+        -:   77:                            }
+        1:   78:                            case justify_t::right: {
+        1:   79:                                ind = docInfo.docWidth - indexLastElement;
+        1:   80:                                break;
+        1:   80-block  0
+        -:   81:                            }
+        1:   82:                            case justify_t::center: {
+        1:   83:                                ind = (docInfo.docWidth - indexLastElement) / 2;
+        1:   84:                                break;
+        1:   84-block  0
+        -:   85:                            }
+        -:   86:                        }
+       99:   87:                        writer.insertData(std::wstring(ind, L' ').append(elem.substr(0, indexLastElement)));
+       99:   87-block  0
+call    0 returned 99
+call    1 returned 99
+branch  2 taken 99 (fallthrough)
+branch  3 taken 0 (throw)
+       99:   87-block  1
+call    4 returned 99
+branch  5 taken 99 (fallthrough)
+branch  6 taken 0 (throw)
+       99:   87-block  2
+call    7 returned 99
+branch  8 taken 99 (fallthrough)
+branch  9 taken 0 (throw)
+       99:   87-block  3
+call   10 returned 99
+branch 11 taken 99 (fallthrough)
+branch 12 taken 0 (throw)
+       99:   87-block  4
+call   13 returned 99
+call   14 returned 99
+call   15 returned 99
+    $$$$$:   87-block  5
+call   16 never executed
+    $$$$$:   87-block  6
+    $$$$$:   87-block  7
+call   17 never executed
+    $$$$$:   87-block  8
+    $$$$$:   87-block  9
+call   18 never executed
+    $$$$$:   87-block 10
+       99:   88:                        elem = elem.substr(indexLastElement + 1);
+call    0 returned 99
+branch  1 taken 99 (fallthrough)
+branch  2 taken 0 (throw)
+       99:   88-block  0
+call    3 returned 99
+call    4 returned 99
+       99:   89:                        isFirstLine = false;
+       99:   90:                        currentSize -= indexLastElement;
+        -:   91:                    } else {
+      214:   92:                        switch (justify) {
+      214:   92-block  0
+branch  0 taken 156
+branch  1 taken 5
+branch  2 taken 53
+branch  3 taken 0
+      156:   93:                            case justify_t::left: {
+      156:   94:                                ind = isFirstLine ? firstLineLeft : left;
+      156:   94-block  0
+branch  0 taken 108 (fallthrough)
+branch  1 taken 48
+      108:   94-block  1
+       48:   94-block  2
+      156:   95:                                break;
+      156:   95-block  0
+        -:   96:                            }
+        5:   97:                            case justify_t::right: {
+        5:   98:                                ind = docInfo.docWidth - currentSize;
+        5:   99:                                break;
+        5:   99-block  0
+        -:  100:                            }
+       53:  101:                            case justify_t::center: {
+       53:  102:                                ind = (docInfo.docWidth - currentSize) / 2;
+       53:  103:                                break;
+       53:  103-block  0
+        -:  104:                            }
+        -:  105:                        }
+      214:  106:                        writer.insertData(std::wstring(ind, L' ').append(elem), false, false);
+      214:  106-block  0
+call    0 returned 214
+call    1 returned 214
+branch  2 taken 214 (fallthrough)
+branch  3 taken 0 (throw)
+      214:  106-block  1
+call    4 returned 214
+branch  5 taken 214 (fallthrough)
+branch  6 taken 0 (throw)
+      214:  106-block  2
+call    7 returned 214
+branch  8 taken 214 (fallthrough)
+branch  9 taken 0 (throw)
+      214:  106-block  3
+call   10 returned 214
+call   11 returned 214
+    $$$$$:  106-block  4
+call   12 never executed
+    $$$$$:  106-block  5
+    $$$$$:  106-block  6
+call   13 never executed
+    $$$$$:  106-block  7
+      214:  107:                        currentSize = 0;
+        -:  108:                    }
+        -:  109:                }
+      224:  110:                for (int i = 0; i < after; i++) {
+      214:  110-block  0
+      224:  110-block  1
+branch  0 taken 10 (fallthrough)
+branch  1 taken 214
+       10:  110-block  2
+       10:  111:                    writer.newLine();
+       10:  111-block  0
+call    0 returned 10
+branch  1 taken 10 (fallthrough)
+branch  2 taken 0 (throw)
+        -:  112:                }
+        -:  113:            }
+        -:  114:        }
+      292:  115:        writer.newLine();
+      292:  115-block  0
+call    0 returned 292
+      292:  116:    }
+        -:  117:
+function _ZN9docxtotxt9DocParser10writeImageERKNS_9paragraphE called 30 returned 100% blocks executed 69%
+       30:  118:    void DocParser::writeImage(const paragraph& paragraph) {
+      695:  119:        for (auto &line: paragraph.body) {
+       30:  119-block  0
+call    0 returned 30
+call    1 returned 30
+      695:  119-block  1
+call    2 returned 695
+branch  3 taken 665 (fallthrough)
+branch  4 taken 30
+      665:  119-block  2
+call    5 returned 665
+      665:  120:            auto leftBorder = docInfo.docWidth > line.size() ? (docInfo.docWidth - line.size()) / 2 : 0;
+call    0 returned 665
+branch  1 taken 663 (fallthrough)
+branch  2 taken 2
+      663:  120-block  0
+call    3 returned 663
+        2:  120-block  1
+      665:  121:            writer.insertData(std::wstring(leftBorder, L' ') + line);
+      665:  121-block  0
+call    0 returned 665
+call    1 returned 665
+branch  2 taken 665 (fallthrough)
+branch  3 taken 0 (throw)
+      665:  121-block  1
+call    4 returned 665
+branch  5 taken 665 (fallthrough)
+branch  6 taken 0 (throw)
+      665:  121-block  2
+call    7 returned 665
+branch  8 taken 665 (fallthrough)
+branch  9 taken 0 (throw)
+      665:  121-block  3
+call   10 returned 665
+call   11 returned 665
+call   12 returned 665
+call   13 returned 665
+    $$$$$:  121-block  4
+call   14 never executed
+    $$$$$:  121-block  5
+    $$$$$:  121-block  6
+call   15 never executed
+    $$$$$:  121-block  7
+    $$$$$:  121-block  8
+call   16 never executed
+    $$$$$:  121-block  9
+        -:  122:        }
+       30:  123:    }
+       30:  123-block  0
+        -:  124:
+function _ZN9docxtotxt9DocParser10writeTableERKNS_9paragraphE called 9 returned 100% blocks executed 69%
+        9:  125:    void DocParser::writeTable(const docxtotxt::paragraph& paragraph) {
+       85:  126:        for (auto &line: paragraph.body) {
+        9:  126-block  0
+call    0 returned 9
+call    1 returned 9
+       85:  126-block  1
+call    2 returned 85
+branch  3 taken 76 (fallthrough)
+branch  4 taken 9
+       76:  126-block  2
+call    5 returned 76
+       76:  127:            auto leftBorder = docInfo.docWidth > line.size() ? (docInfo.docWidth - line.size()) / 2 : 0;
+call    0 returned 76
+branch  1 taken 71 (fallthrough)
+branch  2 taken 5
+       71:  127-block  0
+call    3 returned 71
+        5:  127-block  1
+       76:  128:            writer.insertData(std::wstring(leftBorder, L' ') + line);
+       76:  128-block  0
+call    0 returned 76
+call    1 returned 76
+branch  2 taken 76 (fallthrough)
+branch  3 taken 0 (throw)
+       76:  128-block  1
+call    4 returned 76
+branch  5 taken 76 (fallthrough)
+branch  6 taken 0 (throw)
+       76:  128-block  2
+call    7 returned 76
+branch  8 taken 76 (fallthrough)
+branch  9 taken 0 (throw)
+       76:  128-block  3
+call   10 returned 76
+call   11 returned 76
+call   12 returned 76
+call   13 returned 76
+    $$$$$:  128-block  4
+call   14 never executed
+    $$$$$:  128-block  5
+    $$$$$:  128-block  6
+call   15 never executed
+    $$$$$:  128-block  7
+    $$$$$:  128-block  8
+call   16 never executed
+    $$$$$:  128-block  9
+        -:  129:        }
+        9:  130:    }
+        9:  130-block  0
+        -:  131:
+function _ZN9docxtotxt9DocParser9writeNoteERKNS_4noteE called 2 returned 100% blocks executed 49%
+        2:  132:    void DocParser::writeNote(const note &note) {
+        2:  133:        writer.insertData(L"Document notes:");
+        2:  133-block  0
+call    0 returned 2
+call    1 returned 2
+branch  2 taken 2 (fallthrough)
+branch  3 taken 0 (throw)
+        2:  133-block  1
+call    4 returned 2
+branch  5 taken 2 (fallthrough)
+branch  6 taken 0 (throw)
+        2:  133-block  2
+call    7 returned 2
+call    8 returned 2
+    $$$$$:  133-block  3
+call    9 never executed
+    $$$$$:  133-block  4
+    $$$$$:  133-block  5
+call   10 never executed
+    $$$$$:  133-block  6
+call   11 never executed
+        2:  134:        if(note.type == noteType::footnote){
+branch  0 taken 1 (fallthrough)
+branch  1 taken 1
+        1:  135:            writer.insertData(std::wstring(L"{footnote" + to_wstring(note.id) + L"} - " ) + note.text);
+        1:  135-block  0
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+        1:  135-block  1
+call    4 returned 1
+branch  5 taken 1 (fallthrough)
+branch  6 taken 0 (throw)
+        1:  135-block  2
+call    7 returned 1
+branch  8 taken 1 (fallthrough)
+branch  9 taken 0 (throw)
+        1:  135-block  3
+call   10 returned 1
+branch 11 taken 1 (fallthrough)
+branch 12 taken 0 (throw)
+        1:  135-block  4
+call   13 returned 1
+call   14 returned 1
+call   15 returned 1
+call   16 returned 1
+    $$$$$:  135-block  5
+call   17 never executed
+    $$$$$:  135-block  6
+    $$$$$:  135-block  7
+call   18 never executed
+    $$$$$:  135-block  8
+    $$$$$:  135-block  9
+call   19 never executed
+    $$$$$:  135-block 10
+    $$$$$:  135-block 11
+call   20 never executed
+    $$$$$:  135-block 12
+call   21 never executed
+        -:  136:        } else {
+        1:  137:            writer.insertData(std::wstring(L"{endnote" + to_wstring(note.id) + L"} - " ) + note.text);
+        1:  137-block  0
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+        1:  137-block  1
+call    4 returned 1
+branch  5 taken 1 (fallthrough)
+branch  6 taken 0 (throw)
+        1:  137-block  2
+call    7 returned 1
+branch  8 taken 1 (fallthrough)
+branch  9 taken 0 (throw)
+        1:  137-block  3
+call   10 returned 1
+branch 11 taken 1 (fallthrough)
+branch 12 taken 0 (throw)
+        1:  137-block  4
+call   13 returned 1
+call   14 returned 1
+call   15 returned 1
+call   16 returned 1
+    $$$$$:  137-block  5
+call   17 never executed
+    $$$$$:  137-block  6
+    $$$$$:  137-block  7
+call   18 never executed
+    $$$$$:  137-block  8
+    $$$$$:  137-block  9
+call   19 never executed
+    $$$$$:  137-block 10
+    $$$$$:  137-block 11
+call   20 never executed
+        -:  138:        }
+        2:  139:    }
+        2:  139-block  0
+        -:  140:
+        -:  141:
+        -:  142:}

@@ -2,10 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 project(docxtotxt)
 
 set(CMAKE_CXX_STANDARD 11)
-
-#set(CMAKE_MODULE_PATH "/usr/share/cmake/modules" ${CMAKE_MODULE_PATH})
-#find_package(TinyXML2 REQUIRED)
-#find_package(LibZip REQUIRED)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(docxtotxt main.cpp mainDoc/source/MainDocParser.cpp mainDoc/headers/MainDocParser.h
         mainDoc/ParserCommons/DocumentCommons.h mainDoc/ParserCommons/DocumentMetaDataCommons.h
@@ -14,6 +11,16 @@ add_executable(docxtotxt main.cpp mainDoc/source/MainDocParser.cpp mainDoc/heade
         mainDoc/ParserCommons/FileSpecificCommons/PptCommons.h mainDoc/ParserCommons/FileSpecificCommons/XlsCommons.h
         mainDoc/ParserCommons/FileSpecificCommons/DocCommons.h mainDoc/ParserCommons/CommonFunctions.h
         mainDoc/source/BufferWriter.cpp mainDoc/ParserCommons/BufferWriter.h mainDoc/headers/Parser.h)
-#target_link_libraries(docxtotxt PUBLIC tinyxml2::tinyxml2 zip)
-message(${CMAKE_SOURCE_DIR})
+
 target_link_libraries(docxtotxt ${CMAKE_SOURCE_DIR}/Libs/libtinyxml2.so ${CMAKE_SOURCE_DIR}/Libs/libzip.so)
+
+#if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+#    add_compile_options(-fprofile-instr-generate -fcoverage-mapping)
+#    add_link_options(-fprofile-instr-generate)
+#    #Uncomment in case of linker errors
+#    link_libraries(clang_rt.profile-x86_64)
+#elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+#    add_compile_options(--coverage)
+#    #Uncomment in case of linker errors
+#    link_libraries(gcov)
+#endif ()

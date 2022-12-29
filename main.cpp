@@ -6,8 +6,8 @@
 #include <iostream>
 #include <fstream>
 
-#define OPTSTR "i:d:o:lmhn"
-
+#define OPTSTR "i:d:o:lmhnr"
+using namespace std;
 
 void coverageTest(docxtotxt::options_t options) {
     auto start = std::chrono::steady_clock::now();
@@ -21,7 +21,7 @@ void coverageTest(docxtotxt::options_t options) {
 
 docxtotxt::options_t
 prepareOptions(const char *fileName, const char *output = nullptr, const char *imageDir = nullptr) {
-    docxtotxt::options_t options =  {&std::wcout};
+    docxtotxt::options_t options = {&std::wcout};
     if (docxtotxt::ends_with(fileName, ".docx")) {
         options.docType = docxtotxt::docx;
     } else if (docxtotxt::ends_with(fileName, ".pptx")) {
@@ -49,37 +49,50 @@ prepareOptions(const char *fileName, const char *output = nullptr, const char *i
 }
 
 void parseFullPresentation() {
-    auto options = prepareOptions("/home/borzor/Documents/pptx/presentation_2.pptx",  "/home/borzor/Documents/pptx/presentation_2/pptx.txt","/home/borzor/Documents/pptx/presentation_2");
+    auto options = prepareOptions("/home/borzor/Documents/pptx/presentation_2.pptx",
+                                  "/home/borzor/Documents/pptx/presentation_2/pptx.txt",
+                                  "/home/borzor/Documents/pptx/presentation_2");
     coverageTest(options);
 }
 
 void parseFullPresentation2() {
-    auto options = prepareOptions("/home/borzor/Documents/pptx/presentation_1.pptx",  "/home/borzor/Documents/pptx/presentation_1/pptx.txt","/home/borzor/Documents/pptx/presentation_1");
+    auto options = prepareOptions("/home/borzor/Documents/pptx/presentation_1.pptx",
+                                  "/home/borzor/Documents/pptx/presentation_1/pptx.txt",
+                                  "/home/borzor/Documents/pptx/presentation_1");
     coverageTest(options);
 }
 
 void parseFullDocx() {
-    auto options = prepareOptions("/home/borzor/Documents/docx/docx_1.docx",  "/home/borzor/Documents/docx/docx_1/docx.txt","/home/borzor/Documents/docx/docx_1");
+    auto options = prepareOptions("/home/borzor/Documents/docx/docx_1.docx",
+                                  "/home/borzor/Documents/docx/docx_1/docx.txt", "/home/borzor/Documents/docx/docx_1");
     options.flags ^= 1UL << 5;
     coverageTest(options);
 }
 
 void parseFullDocx2() {
-    auto options = prepareOptions("/home/borzor/Documents/docx/docx_2.docx",  "/home/borzor/Documents/docx/docx_2/docx.txt","/home/borzor/Documents/docx/docx_2");
+    auto options = prepareOptions("/home/borzor/Documents/docx/docx_2.docx",
+                                  "/home/borzor/Documents/docx/docx_2/docx.txt", "/home/borzor/Documents/docx/docx_2");
     coverageTest(options);
 }
+
 void parseFullDocx3() {
-    auto options = prepareOptions("/home/borzor/Documents/docx/docx_3.docx",  "/home/borzor/Documents/docx/docx_3/docx.txt","/home/borzor/Documents/docx/docx_3");
+    auto options = prepareOptions("/home/borzor/Documents/docx/docx_3.docx",
+                                  "/home/borzor/Documents/docx/docx_3/docx.txt", "/home/borzor/Documents/docx/docx_3");
     options.flags ^= 1UL << 5;
     coverageTest(options);
 }
+
 void parseFullXlsx() {
-    auto options = prepareOptions("/home/borzor/Documents/xlsx/excel_4.xlsx",  "/home/borzor/Documents/xlsx/excel_4/excel.txt","/home/borzor/Documents/xlsx/excel_4");
+    auto options = prepareOptions("/home/borzor/Documents/xlsx/excel_4.xlsx",
+                                  "/home/borzor/Documents/xlsx/excel_4/excel.txt",
+                                  "/home/borzor/Documents/xlsx/excel_4");
     coverageTest(options);
 }
 
 void parseFullXlsx2() {
-    auto options = prepareOptions("/home/borzor/Documents/xlsx/excel_1.xlsx",  "/home/borzor/Documents/xlsx/excel_1/excel.txt","/home/borzor/Documents/xlsx/excel_1");
+    auto options = prepareOptions("/home/borzor/Documents/xlsx/excel_1.xlsx",
+                                  "/home/borzor/Documents/xlsx/excel_1/excel.txt",
+                                  "/home/borzor/Documents/xlsx/excel_1");
     options.flags ^= 1UL << 5;
     coverageTest(options);
 }
@@ -100,7 +113,6 @@ int main() {
 //    auto start = std::chrono::steady_clock::now();
 //    int opt;
 //    docxtotxt::options_t options = {&std::wcout};
-//        options.flags |= 0 << 4;
 //    while ((opt = getopt(argc, argv, OPTSTR)) != EOF)
 //        switch (opt) {
 //            case 'i': {//input file
@@ -148,14 +160,13 @@ int main() {
 //            }
 //            case 'h': {
 //                std::string usage = "usage: docxtotxt ";
-//                std::cout << usage << "[-lmn] [-d image_dir] [-h help] [-i input_file]" << std::endl
+//                std::cout << usage << "[-lhmnr] [-d image_dir] [-i input_file]" << std::endl
 //                          << std::string(usage.length(), ' ') << "[-o output_file]" << std::endl;
-//                free(options.output);
 //                return 0;
+////                if (options.output != nullptr)
 //            }
 //            default:
 //                std::cerr << "Invalid parameters" << std::endl;
-//
 //        }
 //    try {
 //        if (options.filePath == nullptr) {

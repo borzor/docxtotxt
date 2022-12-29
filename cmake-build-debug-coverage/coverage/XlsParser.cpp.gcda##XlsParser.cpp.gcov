@@ -1,0 +1,825 @@
+        -:    0:Source:/home/borzor/CLionProjects/docxtotxt/mainDoc/source/XlsParser.cpp
+        -:    0:Graph:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/XlsParser.cpp.gcno
+        -:    0:Data:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/XlsParser.cpp.gcda
+        -:    0:Runs:1
+        -:    1://
+        -:    2:// Created by borzor on 11/27/22.
+        -:    3://
+        -:    4:
+        -:    5:#include "../headers/XlsParser.h"
+        -:    6:
+        -:    7:namespace docxtotxt {
+function _ZN9docxtotxt9XlsParserC2ERNS_9xlsInfo_tERNS_9options_tERNS_12BufferWriterE called 2 returned 100% blocks executed 100%
+        2:    8:    XlsParser::XlsParser(xlsInfo_t &xlsInfo, options_t &options, BufferWriter &writer) : xlsInfo(xlsInfo),
+        2:    9:                                                                                         Parser(options, writer) {
+        2:    9-block  0
+call    0 returned 2
+        -:   10:
+        2:   11:    }
+        -:   12:
+function _ZN9docxtotxt9XlsParser14getColumnWidthERKSt6vectorINS_14columnSettingsESaIS2_EEm called 78 returned 100% blocks executed 92%
+       78:   13:    size_t XlsParser::getColumnWidth(const std::vector<columnSettings> &settings, size_t index) {
+function _ZZN9docxtotxt9XlsParser14getColumnWidthERKSt6vectorINS_14columnSettingsESaIS2_EEmENKUlS2_E_clES2_ called 1247 returned 100% blocks executed 100%
+     2494:   14:        auto it = std::find_if(settings.begin(), settings.end(), [index](columnSettings setting) {
+     1247:   15:            return setting.startInd <= index && setting.endIndInd >= index;
+     1247:   15-block  0
+branch  0 taken 1247 (fallthrough)
+branch  1 taken 0
+     1247:   15-block  1
+branch  2 taken 78 (fallthrough)
+branch  3 taken 1169
+       78:   15-block  2
+     1169:   15-block  3
+     1247:   15-block  4
+       78:   16:        });
+       78:   16-block  0
+call    0 returned 78
+call    1 returned 78
+call    2 returned 78
+branch  3 taken 78 (fallthrough)
+branch  4 taken 0 (throw)
+       78:   17:        if (it != settings.end()) {
+       78:   17-block  0
+call    0 returned 78
+call    1 returned 78
+branch  2 taken 78 (fallthrough)
+branch  3 taken 0
+       78:   18:            return it->width;
+       78:   18-block  0
+call    0 returned 78
+        -:   19:        } else {
+    #####:   20:            return 0;
+    %%%%%:   20-block  0
+        -:   21:        }
+        -:   22:    }
+        -:   23:
+function _ZN9docxtotxt9XlsParser19insertSheetMetadataERKNS_5sheetE called 6 returned 100% blocks executed 57%
+        6:   24:    void XlsParser::insertSheetMetadata(const sheet &sheet) {
+        6:   25:        writer.insertData(L"Sheet info: ", true);
+        6:   25-block  0
+call    0 returned 6
+call    1 returned 6
+branch  2 taken 6 (fallthrough)
+branch  3 taken 0 (throw)
+        6:   25-block  1
+call    4 returned 6
+branch  5 taken 6 (fallthrough)
+branch  6 taken 0 (throw)
+        6:   25-block  2
+call    7 returned 6
+call    8 returned 6
+    $$$$$:   25-block  3
+call    9 never executed
+    $$$$$:   25-block  4
+    $$$$$:   25-block  5
+call   10 never executed
+    $$$$$:   25-block  6
+call   11 never executed
+        6:   26:        writer.insertData(
+        6:   26-block  0
+call    0 returned 6
+branch  1 taken 6 (fallthrough)
+branch  2 taken 0 (throw)
+       12:   27:                L"SheetName - " + sheet.sheetName + (sheet.state.empty() ? L"" : L" , State - " + sheet.state));
+call    0 returned 6
+branch  1 taken 4 (fallthrough)
+branch  2 taken 2
+        4:   27-block  0
+call    3 returned 4
+call    4 returned 4
+branch  5 taken 4 (fallthrough)
+branch  6 taken 0 (throw)
+        2:   27-block  1
+call    7 returned 2
+branch  8 taken 2 (fallthrough)
+branch  9 taken 0 (throw)
+        6:   27-block  2
+call   10 returned 6
+branch 11 taken 6 (fallthrough)
+branch 12 taken 0 (throw)
+        6:   27-block  3
+call   13 returned 6
+branch 14 taken 6 (fallthrough)
+branch 15 taken 0 (throw)
+        6:   27-block  4
+call   16 returned 6
+call   17 returned 6
+call   18 returned 6
+branch 19 taken 4 (fallthrough)
+branch 20 taken 2
+        4:   27-block  5
+call   21 returned 4
+    $$$$$:   27-block  6
+call   22 never executed
+    $$$$$:   27-block  7
+    $$$$$:   27-block  8
+call   23 never executed
+    $$$$$:   27-block  9
+    $$$$$:   27-block 10
+call   24 never executed
+    $$$$$:   27-block 11
+    $$$$$:   27-block 12
+branch 25 never executed
+branch 26 never executed
+    $$$$$:   27-block 13
+call   27 never executed
+    $$$$$:   27-block 14
+call   28 never executed
+        8:   28:        for (const auto &kv: sheet.relations.drawing) {
+        6:   28-block  0
+call    0 returned 6
+call    1 returned 6
+        8:   28-block  1
+call    2 returned 8
+branch  3 taken 2 (fallthrough)
+branch  4 taken 6
+        2:   28-block  2
+call    5 returned 2
+        2:   28-block  3
+call    6 returned 2
+        2:   29:            auto draw = std::find(xlsInfo.draws.begin(), xlsInfo.draws.end(), kv.second);
+call    0 returned 2
+call    1 returned 2
+call    2 returned 2
+branch  3 taken 2 (fallthrough)
+branch  4 taken 0 (throw)
+        2:   30:            writer.insertData(L"Sheet image info: ", false, false);
+        2:   30-block  0
+call    0 returned 2
+call    1 returned 2
+branch  2 taken 2 (fallthrough)
+branch  3 taken 0 (throw)
+        2:   30-block  1
+call    4 returned 2
+branch  5 taken 2 (fallthrough)
+branch  6 taken 0 (throw)
+        2:   30-block  2
+call    7 returned 2
+call    8 returned 2
+    $$$$$:   30-block  3
+call    9 never executed
+    $$$$$:   30-block  4
+    $$$$$:   30-block  5
+call   10 never executed
+    $$$$$:   30-block  6
+        4:   31:            for (const auto &qw: draw->relations.imageRelationship) {
+call    0 returned 2
+call    1 returned 2
+call    2 returned 2
+        4:   31-block  0
+call    3 returned 4
+branch  4 taken 2 (fallthrough)
+branch  5 taken 2
+        2:   31-block  1
+call    6 returned 2
+        2:   31-block  2
+call    7 returned 2
+        2:   32:                writer.insertData(writer.convertString(qw.second), false, false);
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0 (throw)
+        2:   32-block  0
+call    3 returned 2
+branch  4 taken 2 (fallthrough)
+branch  5 taken 0 (throw)
+        2:   32-block  1
+call    6 returned 2
+    $$$$$:   32-block  2
+call    7 never executed
+    $$$$$:   32-block  3
+        2:   33:                if ((options.flags >> 1) & 1) {
+branch  0 taken 2 (fallthrough)
+branch  1 taken 0
+        4:   34:                    string image = ", saved to path: " + options.pathToDraws + '/' + qw.second;
+        2:   34-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0 (throw)
+        2:   34-block  1
+call    3 returned 2
+branch  4 taken 2 (fallthrough)
+branch  5 taken 0 (throw)
+        2:   34-block  2
+call    6 returned 2
+branch  7 taken 2 (fallthrough)
+branch  8 taken 0 (throw)
+call    9 returned 2
+    $$$$$:   34-block  3
+    $$$$$:   34-block  4
+    $$$$$:   34-block  5
+call   10 never executed
+        2:   35:                    writer.insertData(writer.convertString(image));
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0 (throw)
+        2:   35-block  0
+call    3 returned 2
+branch  4 taken 2 (fallthrough)
+branch  5 taken 0 (throw)
+        2:   35-block  1
+call    6 returned 2
+call    7 returned 2
+    $$$$$:   35-block  2
+call    8 never executed
+    $$$$$:   35-block  3
+        -:   36:                }
+        -:   37:            }
+        -:   38:        }
+        6:   39:    }
+        6:   39-block  0
+        -:   40:
+function _ZN9docxtotxt9XlsParser9parseFileEv called 2 returned 100% blocks executed 74%
+        2:   41:    void XlsParser::parseFile() {
+        8:   42:        for (auto &sh: xlsInfo.worksheets) {
+        2:   42-block  0
+call    0 returned 2
+call    1 returned 2
+        8:   42-block  1
+call    2 returned 8
+branch  3 taken 6 (fallthrough)
+branch  4 taken 2
+        6:   42-block  2
+call    5 returned 6
+        6:   42-block  3
+call    6 returned 6
+        6:   43:            insertSheetMetadata(sh);
+call    0 returned 6
+branch  1 taken 6 (fallthrough)
+branch  2 taken 0 (throw)
+        6:   44:            auto array = sh.sheetArray;
+        6:   44-block  0
+call    0 returned 6
+branch  1 taken 6 (fallthrough)
+branch  2 taken 0 (throw)
+    $$$$$:   44-block  1
+call    3 never executed
+        6:   45:            auto col = sh.col;
+        6:   45-block  0
+call    0 returned 6
+branch  1 taken 6 (fallthrough)
+branch  2 taken 0 (throw)
+    $$$$$:   45-block  1
+call    3 never executed
+       6*:   46:            if (array.empty())continue;
+        6:   46-block  0
+call    0 returned 6
+branch  1 taken 0 (fallthrough)
+branch  2 taken 6
+    %%%%%:   46-block  1
+        6:   47:            if ((options.flags >> 5) & 1) {
+        6:   47-block  0
+branch  0 taken 2 (fallthrough)
+branch  1 taken 4
+        2:   48:                insertSheetRaw(array);
+        2:   48-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   49:            } else {
+        4:   50:                insertSheet(array, col);
+        4:   50-block  0
+call    0 returned 4
+branch  1 taken 4 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   51:            }
+        -:   52:        }
+        2:   53:    }
+        2:   53-block  0
+        -:   54:
+function _ZN9docxtotxt9XlsParser14insertSheetRawERSt6vectorIS1_INS_9sheetCellESaIS2_EESaIS4_EE called 2 returned 100% blocks executed 78%
+        2:   55:    void XlsParser::insertSheetRaw(vector<std::vector<sheetCell>> &array) {
+        2:   56:        size_t numberOfColumn = 0;
+       68:   57:        for (auto &i: array) {
+        2:   57-block  0
+call    0 returned 2
+call    1 returned 2
+       68:   57-block  1
+call    2 returned 68
+branch  3 taken 66 (fallthrough)
+branch  4 taken 2
+       66:   57-block  2
+call    5 returned 66
+       66:   58:            numberOfColumn = std::max(numberOfColumn, i.back().cellNumber + 1);
+call    0 returned 66
+call    1 returned 66
+call    2 returned 66
+        -:   59:        }
+        4:   60:        std::vector<size_t> columnSize(numberOfColumn, 0);
+        2:   60-block  0
+call    0 returned 2
+call    1 returned 2
+branch  2 taken 2 (fallthrough)
+branch  3 taken 0 (throw)
+        2:   60-block  1
+call    4 returned 2
+        2:   60-block  2
+call    5 returned 2
+    $$$$$:   60-block  3
+    $$$$$:   60-block  4
+    $$$$$:   60-block  5
+call    6 never executed
+       68:   61:        for (auto &row: array) {
+call    0 returned 2
+call    1 returned 2
+       68:   61-block  0
+call    2 returned 68
+branch  3 taken 66 (fallthrough)
+branch  4 taken 2
+       66:   61-block  1
+call    5 returned 66
+       66:   61-block  2
+call    6 returned 66
+      196:   62:            for (int cell = 0; cell < row.size(); cell++) {
+      196:   62-block  0
+call    0 returned 196
+branch  1 taken 130 (fallthrough)
+branch  2 taken 66
+      130:   63:                columnSize[cell] = std::max(columnSize[cell], row[cell].text.size());
+      130:   63-block  0
+call    0 returned 130
+call    1 returned 130
+call    2 returned 130
+call    3 returned 130
+call    4 returned 130
+        -:   64:            }
+        -:   65:        }
+       68:   66:        for (auto &row: array) {
+        2:   66-block  0
+call    0 returned 2
+call    1 returned 2
+       68:   66-block  1
+call    2 returned 68
+branch  3 taken 66 (fallthrough)
+branch  4 taken 2
+       66:   66-block  2
+call    5 returned 66
+       66:   66-block  3
+call    6 returned 66
+      196:   67:            for (int cell = 0; cell < row.size(); cell++) {
+      196:   67-block  0
+call    0 returned 196
+branch  1 taken 130 (fallthrough)
+branch  2 taken 66
+      130:   68:                writer.insertData(row[cell].text, false, false);
+      130:   68-block  0
+call    0 returned 130
+call    1 returned 130
+branch  2 taken 130 (fallthrough)
+branch  3 taken 0 (throw)
+      130:   69:                writer.insertData(std::wstring(columnSize[cell] - row[cell].text.size() + 1, L' '), false, false);
+      130:   69-block  0
+call    0 returned 130
+call    1 returned 130
+call    2 returned 130
+call    3 returned 130
+call    4 returned 130
+branch  5 taken 130 (fallthrough)
+branch  6 taken 0 (throw)
+      130:   69-block  1
+call    7 returned 130
+branch  8 taken 130 (fallthrough)
+branch  9 taken 0 (throw)
+      130:   69-block  2
+call   10 returned 130
+call   11 returned 130
+    $$$$$:   69-block  3
+call   12 never executed
+    $$$$$:   69-block  4
+    $$$$$:   69-block  5
+call   13 never executed
+    $$$$$:   69-block  6
+        -:   70:            }
+       66:   71:            writer.newLine();
+       66:   71-block  0
+call    0 returned 66
+branch  1 taken 66 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   72:        }
+        2:   73:        writer.newLine();
+        2:   73-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0 (throw)
+        2:   74:    }
+        -:   75:
+function _ZN9docxtotxt9XlsParser11insertSheetERSt6vectorIS1_INS_9sheetCellESaIS2_EESaIS4_EERKS1_INS_14columnSettingsESaIS8_EE called 4 returned 100% blocks executed 67%
+        4:   76:    void XlsParser::insertSheet(std::vector<std::vector<sheetCell>> &array, const std::vector<columnSettings> &col) {
+        4:   77:        size_t numberOfColumn = 0;
+      169:   78:        for (auto &i: array) {
+        4:   78-block  0
+call    0 returned 4
+call    1 returned 4
+      169:   78-block  1
+call    2 returned 169
+branch  3 taken 165 (fallthrough)
+branch  4 taken 4
+      165:   78-block  2
+call    5 returned 165
+      165:   79:            numberOfColumn = std::max(numberOfColumn, i.back().cellNumber + 1);
+call    0 returned 165
+call    1 returned 165
+call    2 returned 165
+        -:   80:        }
+        8:   81:        std::vector<size_t> columnSize(numberOfColumn, 0);
+        4:   81-block  0
+call    0 returned 4
+call    1 returned 4
+branch  2 taken 4 (fallthrough)
+branch  3 taken 0 (throw)
+        4:   81-block  1
+call    4 returned 4
+        4:   81-block  2
+call    5 returned 4
+    $$$$$:   81-block  3
+    $$$$$:   81-block  4
+    $$$$$:   81-block  5
+call    6 never executed
+        4:   82:        size_t tableWidth = numberOfColumn - 1;
+       82:   83:        for (int column = 0; column < columnSize.size(); column++) {
+       82:   83-block  0
+call    0 returned 82
+branch  1 taken 78 (fallthrough)
+branch  2 taken 4
+       78:   84:            auto width = getColumnWidth(col, column);
+       78:   84-block  0
+call    0 returned 78
+branch  1 taken 78 (fallthrough)
+branch  2 taken 0 (throw)
+       78:   85:            if (width < 10)
+       78:   85-block  0
+branch  0 taken 19 (fallthrough)
+branch  1 taken 59
+       19:   86:                width = 10;
+       19:   86-block  0
+       78:   87:            columnSize[column] = width;
+       78:   87-block  0
+call    0 returned 78
+       78:   88:            tableWidth += width;
+        -:   89:        }
+        4:   90:        writer.insertData(std::wstring(L"+").append(tableWidth, L'-').append(L"+"), false, false);
+        4:   90-block  0
+call    0 returned 4
+call    1 returned 4
+branch  2 taken 4 (fallthrough)
+branch  3 taken 0 (throw)
+        4:   90-block  1
+call    4 returned 4
+branch  5 taken 4 (fallthrough)
+branch  6 taken 0 (throw)
+        4:   90-block  2
+call    7 returned 4
+branch  8 taken 4 (fallthrough)
+branch  9 taken 0 (throw)
+        4:   90-block  3
+call   10 returned 4
+branch 11 taken 4 (fallthrough)
+branch 12 taken 0 (throw)
+        4:   90-block  4
+call   13 returned 4
+call   14 returned 4
+    $$$$$:   90-block  5
+call   15 never executed
+    $$$$$:   90-block  6
+    $$$$$:   90-block  7
+call   16 never executed
+    $$$$$:   90-block  8
+        4:   91:        size_t line = 0;
+     1569:   92:        while (line < array.size()) {
+     1569:   92-block  0
+call    0 returned 1569
+branch  1 taken 1565 (fallthrough)
+branch  2 taken 4
+     1565:   92-block  1
+     1565:   93:            bool lineDone = true;
+     1565:   94:            auto currentIndex = 0;
+    16560:   95:            for (int column = 0; column < numberOfColumn; column++) {
+     1565:   95-block  0
+    16560:   95-block  1
+branch  0 taken 14995 (fallthrough)
+branch  1 taken 1565
+    14995:   95-block  2
+    14995:   96:                if (array[line].size() > currentIndex && array[line][currentIndex].cellNumber == currentIndex) {
+    14995:   96-block  0
+call    0 returned 14995
+call    1 returned 14995
+branch  2 taken 14961 (fallthrough)
+branch  3 taken 34
+    14961:   96-block  1
+call    4 returned 14961
+call    5 returned 14961
+branch  6 taken 14785 (fallthrough)
+branch  7 taken 176
+    14785:   96-block  2
+      210:   96-block  3
+    14995:   96-block  4
+branch  8 taken 14785 (fallthrough)
+branch  9 taken 210
+    14785:   97:                    currentIndex++;
+    14785:   97-block  0
+        -:   98:                } else {
+      210:   99:                    sheetCell tmpCell;
+      210:   99-block  0
+call    0 returned 210
+    $$$$$:   99-block  1
+call    1 never executed
+      210:  100:                    tmpCell.cellNumber = currentIndex;
+      210:  101:                    tmpCell.text = L"";
+call    0 returned 210
+branch  1 taken 210 (fallthrough)
+branch  2 taken 0 (throw)
+      210:  102:                    array[line].insert(array[line].begin() + currentIndex, tmpCell);
+      210:  102-block  0
+call    0 returned 210
+call    1 returned 210
+call    2 returned 210
+call    3 returned 210
+call    4 returned 210
+call    5 returned 210
+branch  6 taken 210 (fallthrough)
+branch  7 taken 0 (throw)
+      210:  102-block  1
+call    8 returned 210
+    $$$$$:  102-block  2
+    $$$$$:  102-block  3
+    $$$$$:  102-block  4
+        -:  103:                }
+    14995:  104:                if (column > array[line].size() - 1) {
+    14995:  104-block  0
+call    0 returned 14995
+call    1 returned 14995
+branch  2 taken 57 (fallthrough)
+branch  3 taken 14938
+      114:  105:                    sheetCell tmpCell;
+       57:  105-block  0
+call    0 returned 57
+       57:  105-block  1
+call    1 returned 57
+    $$$$$:  105-block  2
+call    2 never executed
+       57:  106:                    tmpCell.text = L"";
+call    0 returned 57
+branch  1 taken 57 (fallthrough)
+branch  2 taken 0 (throw)
+       57:  107:                    tmpCell.cellNumber = column;
+       57:  108:                    array[line].emplace_back(tmpCell);
+       57:  108-block  0
+call    0 returned 57
+call    1 returned 57
+branch  2 taken 57 (fallthrough)
+branch  3 taken 0 (throw)
+        -:  109:                }
+        -:  110:            }
+     1565:  111:            currentIndex = 0;
+     1565:  112:            writer.insertData(L"|", true, false);
+     1565:  112-block  0
+call    0 returned 1565
+call    1 returned 1565
+branch  2 taken 1565 (fallthrough)
+branch  3 taken 0 (throw)
+     1565:  112-block  1
+call    4 returned 1565
+branch  5 taken 1565 (fallthrough)
+branch  6 taken 0 (throw)
+     1565:  112-block  2
+call    7 returned 1565
+call    8 returned 1565
+    $$$$$:  112-block  3
+call    9 never executed
+    $$$$$:  112-block  4
+    $$$$$:  112-block  5
+call   10 never executed
+    $$$$$:  112-block  6
+    16560:  113:            while (currentIndex < numberOfColumn) {
+    16560:  113-block  0
+branch  0 taken 14995 (fallthrough)
+branch  1 taken 1565
+    14995:  114:                auto charInCell = columnSize[currentIndex];
+    14995:  114-block  0
+call    0 returned 14995
+    14995:  115:                auto cell = array[line][currentIndex];
+call    0 returned 14995
+call    1 returned 14995
+call    2 returned 14995
+branch  3 taken 14995 (fallthrough)
+branch  4 taken 0 (throw)
+    $$$$$:  115-block  0
+call    5 never executed
+    14995:  116:                if (!cell.text.empty()) {
+    14995:  116-block  0
+call    0 returned 14995
+branch  1 taken 3485 (fallthrough)
+branch  2 taken 11510
+     6970:  117:                    auto text = cell.text;
+     3485:  117-block  0
+call    0 returned 3485
+branch  1 taken 3485 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 3485
+    $$$$$:  117-block  1
+call    4 never executed
+     3485:  118:                    std::wstring resultText;
+     3485:  118-block  0
+call    0 returned 3485
+    $$$$$:  118-block  1
+call    1 never executed
+     3485:  119:                    auto indexLastElement = text.find_last_of(L' ', charInCell);
+call    0 returned 3485
+     3485:  120:                    if (charInCell < text.size()) {
+call    0 returned 3485
+branch  1 taken 2006 (fallthrough)
+branch  2 taken 1479
+     2006:  121:                        lineDone = false;
+     2006:  122:                        if (indexLastElement == string::npos) {
+     2006:  122-block  0
+branch  0 taken 181 (fallthrough)
+branch  1 taken 1825
+      181:  123:                            resultText = text.substr(0, charInCell);
+      181:  123-block  0
+call    0 returned 181
+branch  1 taken 181 (fallthrough)
+branch  2 taken 0 (throw)
+      181:  123-block  1
+call    3 returned 181
+call    4 returned 181
+        -:  124:                        } else {
+     1825:  125:                            resultText = text.substr(0, indexLastElement);
+     1825:  125-block  0
+call    0 returned 1825
+branch  1 taken 1825 (fallthrough)
+branch  2 taken 0 (throw)
+     1825:  125-block  1
+call    3 returned 1825
+call    4 returned 1825
+        -:  126:                        }
+     2006:  127:                        writer.insertData(resultText, false, false);
+     2006:  127-block  0
+call    0 returned 2006
+branch  1 taken 2006 (fallthrough)
+branch  2 taken 0 (throw)
+     2006:  128:                        writer.insertData(
+     2006:  128-block  0
+call    0 returned 2006
+branch  1 taken 2006 (fallthrough)
+branch  2 taken 0 (throw)
+     4012:  129:                                std::wstring(indexLastElement == string::npos ? 0 : charInCell - indexLastElement,
+     2006:  129-block  0
+call    0 returned 2006
+branch  1 taken 1825 (fallthrough)
+branch  2 taken 181
+     1825:  129-block  1
+      181:  129-block  2
+     2006:  129-block  3
+call    3 returned 2006
+branch  4 taken 2006 (fallthrough)
+branch  5 taken 0 (throw)
+     2006:  129-block  4
+call    6 returned 2006
+call    7 returned 2006
+    $$$$$:  129-block  5
+call    8 never executed
+    $$$$$:  129-block  6
+    $$$$$:  129-block  7
+call    9 never executed
+    $$$$$:  129-block  8
+        -:  130:                                             L' '), false, false);
+        -:  131:                    } else {
+     1479:  132:                        resultText = text;
+     1479:  132-block  0
+call    0 returned 1479
+branch  1 taken 1479 (fallthrough)
+branch  2 taken 0 (throw)
+     1479:  133:                        writer.insertData(resultText, false, false);
+     1479:  133-block  0
+call    0 returned 1479
+branch  1 taken 1479 (fallthrough)
+branch  2 taken 0 (throw)
+     1479:  134:                        writer.insertData(std::wstring(charInCell - text.size(), L' '), false, false);
+     1479:  134-block  0
+call    0 returned 1479
+call    1 returned 1479
+call    2 returned 1479
+branch  3 taken 1479 (fallthrough)
+branch  4 taken 0 (throw)
+     1479:  134-block  1
+call    5 returned 1479
+branch  6 taken 1479 (fallthrough)
+branch  7 taken 0 (throw)
+     1479:  134-block  2
+call    8 returned 1479
+call    9 returned 1479
+    $$$$$:  134-block  3
+call   10 never executed
+    $$$$$:  134-block  4
+    $$$$$:  134-block  5
+call   11 never executed
+    $$$$$:  134-block  6
+        -:  135:                    }
+     3485:  136:                    array[line][currentIndex].text.erase(0, resultText.size() + 1);
+     3485:  136-block  0
+call    0 returned 3485
+call    1 returned 3485
+call    2 returned 3485
+call    3 returned 3485
+branch  4 taken 3485 (fallthrough)
+branch  5 taken 0 (throw)
+     3485:  137:                    writer.insertData(L"|", false, false);
+     3485:  137-block  0
+call    0 returned 3485
+call    1 returned 3485
+branch  2 taken 3485 (fallthrough)
+branch  3 taken 0 (throw)
+     3485:  137-block  1
+call    4 returned 3485
+branch  5 taken 3485 (fallthrough)
+branch  6 taken 0 (throw)
+     3485:  137-block  2
+call    7 returned 3485
+call    8 returned 3485
+call    9 returned 3485
+    $$$$$:  137-block  3
+call   10 never executed
+    $$$$$:  137-block  4
+    $$$$$:  137-block  5
+call   11 never executed
+    $$$$$:  137-block  6
+        -:  138:                } else {
+   11510*:  139:                    writer.insertData(std::wstring(charInCell == 1 ? 0 : charInCell, L' ') + L"|", false, false);
+    11510:  139-block  0
+call    0 returned 11510
+branch  1 taken 11510 (fallthrough)
+branch  2 taken 0
+    11510:  139-block  1
+    %%%%%:  139-block  2
+    11510:  139-block  3
+call    3 returned 11510
+branch  4 taken 11510 (fallthrough)
+branch  5 taken 0 (throw)
+    11510:  139-block  4
+call    6 returned 11510
+branch  7 taken 11510 (fallthrough)
+branch  8 taken 0 (throw)
+    11510:  139-block  5
+call    9 returned 11510
+branch 10 taken 11510 (fallthrough)
+branch 11 taken 0 (throw)
+    11510:  139-block  6
+call   12 returned 11510
+call   13 returned 11510
+call   14 returned 11510
+    $$$$$:  139-block  7
+call   15 never executed
+    $$$$$:  139-block  8
+    $$$$$:  139-block  9
+call   16 never executed
+    $$$$$:  139-block 10
+    $$$$$:  139-block 11
+call   17 never executed
+    $$$$$:  139-block 12
+        -:  140:                }
+    14995:  141:                currentIndex++;
+    14995:  141-block  0
+call    0 returned 14995
+        -:  142:            }
+     1565:  143:            if (lineDone) {
+     1565:  143-block  0
+branch  0 taken 165 (fallthrough)
+branch  1 taken 1400
+      165:  144:                line++;
+      165:  145:                writer.insertData(std::wstring(L"+").append(tableWidth, L'-').append(L"+"), true, false);
+      165:  145-block  0
+call    0 returned 165
+call    1 returned 165
+branch  2 taken 165 (fallthrough)
+branch  3 taken 0 (throw)
+      165:  145-block  1
+call    4 returned 165
+branch  5 taken 165 (fallthrough)
+branch  6 taken 0 (throw)
+      165:  145-block  2
+call    7 returned 165
+branch  8 taken 165 (fallthrough)
+branch  9 taken 0 (throw)
+      165:  145-block  3
+call   10 returned 165
+branch 11 taken 165 (fallthrough)
+branch 12 taken 0 (throw)
+      165:  145-block  4
+call   13 returned 165
+call   14 returned 165
+    $$$$$:  145-block  5
+call   15 never executed
+    $$$$$:  145-block  6
+    $$$$$:  145-block  7
+call   16 never executed
+    $$$$$:  145-block  8
+        -:  146:            }
+        -:  147:        }
+        4:  148:        writer.newLine();
+        4:  148-block  0
+call    0 returned 4
+branch  1 taken 4 (fallthrough)
+branch  2 taken 0 (throw)
+        4:  149:    }
+        -:  150:
+        -:  151:
+        -:  152:}

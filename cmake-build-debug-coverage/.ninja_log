@@ -1,0 +1,17 @@
+# ninja log v5
+2	857	1672145194008426585	CMakeFiles/docxtotxt.dir/mainDoc/source/PptParser.cpp.o	6d194e0819fdedac
+0	16	1672146008217965261	build.ninja	1443b80d8348473a
+2	407	1672145193556349670	CMakeFiles/docxtotxt.dir/mainDoc/source/BufferWriter.cpp.o	3a6fafc6575847f0
+1	164	1672145701819721505	docxtotxt	e683b7c8b9b463e7
+1	2204	1672145195352653000	CMakeFiles/docxtotxt.dir/mainDoc/source/DocumentLoader.cpp.o	a5a943e343b788d6
+1	546	1672145193696373496	CMakeFiles/docxtotxt.dir/mainDoc/source/XlsParser.cpp.o	dda372052177e4a
+1	843	1672145193992423873	CMakeFiles/docxtotxt.dir/mainDoc/source/MainDocParser.cpp.o	3df369122e4cd0b2
+2	480	1672145193632362604	CMakeFiles/docxtotxt.dir/mainDoc/source/DocParser.cpp.o	df5663582a9130f6
+1	553	1672145193704374858	CMakeFiles/docxtotxt.dir/main.cpp.o	9047d19e596bb1d9
+1	531	1672152723386221984	CMakeFiles/docxtotxt.dir/main.cpp.o	9047d19e596bb1d9
+5	2371	1672152725222284122	CMakeFiles/docxtotxt.dir/mainDoc/source/DocumentLoader.cpp.o	a5a943e343b788d6
+2371	2568	1672152725422290892	docxtotxt	e683b7c8b9b463e7
+1	2818	1672152773707926825	CMakeFiles/docxtotxt.dir/mainDoc/source/DocumentLoader.cpp.o	a5a943e343b788d6
+2818	3043	1672152773939934693	docxtotxt	e683b7c8b9b463e7
+1	2849	1672152830825866101	CMakeFiles/docxtotxt.dir/mainDoc/source/DocumentLoader.cpp.o	a5a943e343b788d6
+2850	3066	1672152831049873714	docxtotxt	e683b7c8b9b463e7

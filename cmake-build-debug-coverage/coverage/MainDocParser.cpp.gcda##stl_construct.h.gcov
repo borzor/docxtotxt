@@ -1,0 +1,1202 @@
+        -:    0:Source:/usr/include/c++/9/bits/stl_construct.h
+        -:    0:Graph:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/MainDocParser.cpp.gcno
+        -:    0:Data:/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir/mainDoc/source/MainDocParser.cpp.gcda
+        -:    0:Runs:1
+        -:    1:// nonstandard construct and destroy functions -*- C++ -*-
+        -:    2:
+        -:    3:// Copyright (C) 2001-2019 Free Software Foundation, Inc.
+        -:    4://
+        -:    5:// This file is part of the GNU ISO C++ Library.  This library is free
+        -:    6:// software; you can redistribute it and/or modify it under the
+        -:    7:// terms of the GNU General Public License as published by the
+        -:    8:// Free Software Foundation; either version 3, or (at your option)
+        -:    9:// any later version.
+        -:   10:
+        -:   11:// This library is distributed in the hope that it will be useful,
+        -:   12:// but WITHOUT ANY WARRANTY; without even the implied warranty of
+        -:   13:// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        -:   14:// GNU General Public License for more details.
+        -:   15:
+        -:   16:// Under Section 7 of GPL version 3, you are granted additional
+        -:   17:// permissions described in the GCC Runtime Library Exception, version
+        -:   18:// 3.1, as published by the Free Software Foundation.
+        -:   19:
+        -:   20:// You should have received a copy of the GNU General Public License and
+        -:   21:// a copy of the GCC Runtime Library Exception along with this program;
+        -:   22:// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+        -:   23:// <http://www.gnu.org/licenses/>.
+        -:   24:
+        -:   25:/*
+        -:   26: *
+        -:   27: * Copyright (c) 1994
+        -:   28: * Hewlett-Packard Company
+        -:   29: *
+        -:   30: * Permission to use, copy, modify, distribute and sell this software
+        -:   31: * and its documentation for any purpose is hereby granted without fee,
+        -:   32: * provided that the above copyright notice appear in all copies and
+        -:   33: * that both that copyright notice and this permission notice appear
+        -:   34: * in supporting documentation.  Hewlett-Packard Company makes no
+        -:   35: * representations about the suitability of this software for any
+        -:   36: * purpose.  It is provided "as is" without express or implied warranty.
+        -:   37: *
+        -:   38: *
+        -:   39: * Copyright (c) 1996,1997
+        -:   40: * Silicon Graphics Computer Systems, Inc.
+        -:   41: *
+        -:   42: * Permission to use, copy, modify, distribute and sell this software
+        -:   43: * and its documentation for any purpose is hereby granted without fee,
+        -:   44: * provided that the above copyright notice appear in all copies and
+        -:   45: * that both that copyright notice and this permission notice appear
+        -:   46: * in supporting documentation.  Silicon Graphics makes no
+        -:   47: * representations about the suitability of this software for any
+        -:   48: * purpose.  It is provided "as is" without express or implied warranty.
+        -:   49: */
+        -:   50:
+        -:   51:/** @file bits/stl_construct.h
+        -:   52: *  This is an internal header file, included by other library headers.
+        -:   53: *  Do not attempt to use it directly. @headername{memory}
+        -:   54: */
+        -:   55:
+        -:   56:#ifndef _STL_CONSTRUCT_H
+        -:   57:#define _STL_CONSTRUCT_H 1
+        -:   58:
+        -:   59:#include <new>
+        -:   60:#include <bits/move.h>
+        -:   61:#include <ext/alloc_traits.h>
+        -:   62:
+        -:   63:namespace std _GLIBCXX_VISIBILITY(default)
+        -:   64:{
+        -:   65:_GLIBCXX_BEGIN_NAMESPACE_VERSION
+        -:   66:
+        -:   67:  /**
+        -:   68:   * Constructs an object in existing memory by invoking an allocated
+        -:   69:   * object's constructor with an initializer.
+        -:   70:   */
+        -:   71:#if __cplusplus >= 201103L
+        -:   72:  template<typename _T1, typename... _Args>
+        -:   73:    inline void
+        -:   74:    _Construct(_T1* __p, _Args&&... __args)
+        -:   75:    { ::new(static_cast<void*>(__p)) _T1(std::forward<_Args>(__args)...); }
+        -:   76:#else
+        -:   77:  template<typename _T1, typename _T2>
+        -:   78:    inline void
+        -:   79:    _Construct(_T1* __p, const _T2& __value)
+        -:   80:    {
+        -:   81:      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -:   82:      // 402. wrong new expression in [some_]allocator::construct
+        -:   83:      ::new(static_cast<void*>(__p)) _T1(__value);
+        -:   84:    }
+        -:   85:#endif
+        -:   86:
+        -:   87:  template<typename _T1>
+        -:   88:    inline void
+        -:   89:    _Construct_novalue(_T1* __p)
+        -:   90:    { ::new(static_cast<void*>(__p)) _T1; }
+        -:   91:
+        -:   92:  /**
+        -:   93:   * Destroy the object pointed to by a pointer type.
+        -:   94:   */
+        -:   95:  template<typename _Tp>
+        -:   96:    inline void
+    22189:   97:    _Destroy(_Tp* __pointer)
+    22189:   98:    { __pointer->~_Tp(); }
+------------------
+_ZSt8_DestroyIN9docxtotxt16presentationTextEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt16presentationTextEEvPT_ called 198 returned 100% blocks executed 100%
+      198:   97:    _Destroy(_Tp* __pointer)
+      198:   98:    { __pointer->~_Tp(); }
+      198:   98-block  0
+call    0 returned 198
+------------------
+_ZSt8_DestroyINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEvPT_:
+function _ZSt8_DestroyINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEvPT_ called 9654 returned 100% blocks executed 100%
+     9654:   97:    _Destroy(_Tp* __pointer)
+     9654:   98:    { __pointer->~_Tp(); }
+     9654:   98-block  0
+call    0 returned 9654
+------------------
+_ZSt8_DestroyIN9docxtotxt9paragraphEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt9paragraphEEvPT_ called 993 returned 100% blocks executed 100%
+      993:   97:    _Destroy(_Tp* __pointer)
+      993:   98:    { __pointer->~_Tp(); }
+      993:   98-block  0
+call    0 returned 993
+------------------
+_ZSt8_DestroyIN9docxtotxt4noteEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt4noteEEvPT_ called 4 returned 100% blocks executed 100%
+        4:   97:    _Destroy(_Tp* __pointer)
+        4:   98:    { __pointer->~_Tp(); }
+        4:   98-block  0
+call    0 returned 4
+------------------
+_ZSt8_DestroyIN9docxtotxt9slideInfoEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt9slideInfoEEvPT_ called 30 returned 100% blocks executed 100%
+       30:   97:    _Destroy(_Tp* __pointer)
+       30:   98:    { __pointer->~_Tp(); }
+       30:   98-block  0
+call    0 returned 30
+------------------
+_ZSt8_DestroyIN9docxtotxt10noteInfo_tEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt10noteInfo_tEEvPT_ called 6 returned 100% blocks executed 100%
+        6:   97:    _Destroy(_Tp* __pointer)
+        6:   98:    { __pointer->~_Tp(); }
+        6:   98-block  0
+call    0 returned 6
+------------------
+_ZSt8_DestroyIN9docxtotxt4drawEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt4drawEEvPT_ called 4 returned 100% blocks executed 100%
+        4:   97:    _Destroy(_Tp* __pointer)
+        4:   98:    { __pointer->~_Tp(); }
+        4:   98-block  0
+call    0 returned 4
+------------------
+_ZSt8_DestroyIN9docxtotxt5sheetEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt5sheetEEvPT_ called 12 returned 100% blocks executed 100%
+       12:   97:    _Destroy(_Tp* __pointer)
+       12:   98:    { __pointer->~_Tp(); }
+       12:   98-block  0
+call    0 returned 12
+------------------
+_ZSt8_DestroyIN9docxtotxt15slideInsertInfoEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt15slideInsertInfoEEvPT_ called 15 returned 100% blocks executed 100%
+       15:   97:    _Destroy(_Tp* __pointer)
+       15:   98:    { __pointer->~_Tp(); }
+       15:   98-block  0
+call    0 returned 15
+------------------
+_ZSt8_DestroyISt6vectorIN9docxtotxt8textBodyESaIS2_EEEvPT_:
+function _ZSt8_DestroyISt6vectorIN9docxtotxt8textBodyESaIS2_EEEvPT_ called 144 returned 100% blocks executed 100%
+      144:   97:    _Destroy(_Tp* __pointer)
+      144:   98:    { __pointer->~_Tp(); }
+      144:   98-block  0
+call    0 returned 144
+------------------
+_ZSt8_DestroyIN9docxtotxt17presentationTableEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt17presentationTableEEvPT_ called 3 returned 100% blocks executed 100%
+        3:   97:    _Destroy(_Tp* __pointer)
+        3:   98:    { __pointer->~_Tp(); }
+        3:   98-block  0
+call    0 returned 3
+------------------
+_ZSt8_DestroyIN9docxtotxt7pictureEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt7pictureEEvPT_ called 30 returned 100% blocks executed 100%
+       30:   97:    _Destroy(_Tp* __pointer)
+       30:   98:    { __pointer->~_Tp(); }
+       30:   98-block  0
+call    0 returned 30
+------------------
+_ZSt8_DestroyIN9docxtotxt8textBodyEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt8textBodyEEvPT_ called 633 returned 100% blocks executed 100%
+      633:   97:    _Destroy(_Tp* __pointer)
+      633:   98:    { __pointer->~_Tp(); }
+      633:   98-block  0
+call    0 returned 633
+------------------
+_ZSt8_DestroyISt6vectorIN9docxtotxt9sheetCellESaIS2_EEEvPT_:
+function _ZSt8_DestroyISt6vectorIN9docxtotxt9sheetCellESaIS2_EEEvPT_ called 924 returned 100% blocks executed 100%
+      924:   97:    _Destroy(_Tp* __pointer)
+      924:   98:    { __pointer->~_Tp(); }
+      924:   98-block  0
+call    0 returned 924
+------------------
+_ZSt8_DestroyIN9docxtotxt12insertObjectEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt12insertObjectEEvPT_ called 205 returned 100% blocks executed 100%
+      205:   97:    _Destroy(_Tp* __pointer)
+      205:   98:    { __pointer->~_Tp(); }
+      205:   98-block  0
+call    0 returned 205
+------------------
+_ZSt8_DestroyIN9docxtotxt11insertImageEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt11insertImageEEvPT_ called 40 returned 100% blocks executed 100%
+       40:   97:    _Destroy(_Tp* __pointer)
+       40:   98:    { __pointer->~_Tp(); }
+       40:   98-block  0
+call    0 returned 40
+------------------
+_ZSt8_DestroyISt6vectorIS0_IN9docxtotxt8textBodyESaIS2_EESaIS4_EEEvPT_:
+function _ZSt8_DestroyISt6vectorIS0_IN9docxtotxt8textBodyESaIS2_EESaIS4_EEEvPT_ called 32 returned 100% blocks executed 100%
+       32:   97:    _Destroy(_Tp* __pointer)
+       32:   98:    { __pointer->~_Tp(); }
+       32:   98-block  0
+call    0 returned 32
+------------------
+_ZSt8_DestroyIN9docxtotxt9sheetCellEEvPT_:
+function _ZSt8_DestroyIN9docxtotxt9sheetCellEEvPT_ called 9262 returned 100% blocks executed 100%
+     9262:   97:    _Destroy(_Tp* __pointer)
+     9262:   98:    { __pointer->~_Tp(); }
+     9262:   98-block  0
+call    0 returned 9262
+------------------
+        -:   99:
+        -:  100:  template<bool>
+        -:  101:    struct _Destroy_aux
+        -:  102:    {
+        -:  103:      template<typename _ForwardIterator>
+        -:  104:        static void
+    27872:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+    27872:  107:	  for (; __first != __last; ++__first)
+    22189:  108:	    std::_Destroy(std::__addressof(*__first));
+     5683:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt16presentationTextEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt16presentationTextEEEvT_S5_ called 62 returned 100% blocks executed 100%
+      260:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+      260:  107:	  for (; __first != __last; ++__first)
+      260:  107-block  0
+branch  0 taken 198 (fallthrough)
+branch  1 taken 62
+      198:  108:	    std::_Destroy(std::__addressof(*__first));
+      198:  108-block  0
+call    0 returned 198
+call    1 returned 198
+       62:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEEvT_S9_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEEvT_S9_ called 2468 returned 100% blocks executed 100%
+    12122:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+    12122:  107:	  for (; __first != __last; ++__first)
+    12122:  107-block  0
+branch  0 taken 9654 (fallthrough)
+branch  1 taken 2468
+     9654:  108:	    std::_Destroy(std::__addressof(*__first));
+     9654:  108-block  0
+call    0 returned 9654
+call    1 returned 9654
+     2468:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt9paragraphEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt9paragraphEEEvT_S5_ called 27 returned 100% blocks executed 100%
+     1020:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+     1020:  107:	  for (; __first != __last; ++__first)
+     1020:  107-block  0
+branch  0 taken 993 (fallthrough)
+branch  1 taken 27
+      993:  108:	    std::_Destroy(std::__addressof(*__first));
+      993:  108-block  0
+call    0 returned 993
+call    1 returned 993
+       27:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt4noteEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt4noteEEEvT_S5_ called 24 returned 100% blocks executed 100%
+       28:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+       28:  107:	  for (; __first != __last; ++__first)
+       28:  107-block  0
+branch  0 taken 4 (fallthrough)
+branch  1 taken 24
+        4:  108:	    std::_Destroy(std::__addressof(*__first));
+        4:  108-block  0
+call    0 returned 4
+call    1 returned 4
+       24:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt9slideInfoEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt9slideInfoEEEvT_S5_ called 23 returned 100% blocks executed 100%
+       53:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+       53:  107:	  for (; __first != __last; ++__first)
+       53:  107-block  0
+branch  0 taken 30 (fallthrough)
+branch  1 taken 23
+       30:  108:	    std::_Destroy(std::__addressof(*__first));
+       30:  108-block  0
+call    0 returned 30
+call    1 returned 30
+       23:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt10noteInfo_tEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt10noteInfo_tEEEvT_S5_ called 23 returned 100% blocks executed 100%
+       29:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+       29:  107:	  for (; __first != __last; ++__first)
+       29:  107-block  0
+branch  0 taken 6 (fallthrough)
+branch  1 taken 23
+        6:  108:	    std::_Destroy(std::__addressof(*__first));
+        6:  108-block  0
+call    0 returned 6
+call    1 returned 6
+       23:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt4drawEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt4drawEEEvT_S5_ called 23 returned 100% blocks executed 100%
+       27:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+       27:  107:	  for (; __first != __last; ++__first)
+       27:  107-block  0
+branch  0 taken 4 (fallthrough)
+branch  1 taken 23
+        4:  108:	    std::_Destroy(std::__addressof(*__first));
+        4:  108-block  0
+call    0 returned 4
+call    1 returned 4
+       23:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt5sheetEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt5sheetEEEvT_S5_ called 23 returned 100% blocks executed 100%
+       35:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+       35:  107:	  for (; __first != __last; ++__first)
+       35:  107-block  0
+branch  0 taken 12 (fallthrough)
+branch  1 taken 23
+       12:  108:	    std::_Destroy(std::__addressof(*__first));
+       12:  108-block  0
+call    0 returned 12
+call    1 returned 12
+       23:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt15slideInsertInfoEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt15slideInsertInfoEEEvT_S5_ called 2 returned 100% blocks executed 100%
+       17:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+       17:  107:	  for (; __first != __last; ++__first)
+       17:  107-block  0
+branch  0 taken 15 (fallthrough)
+branch  1 taken 2
+       15:  108:	    std::_Destroy(std::__addressof(*__first));
+       15:  108-block  0
+call    0 returned 15
+call    1 returned 15
+        2:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPSt6vectorIN9docxtotxt8textBodyESaIS4_EEEEvT_S8_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPSt6vectorIN9docxtotxt8textBodyESaIS4_EEEEvT_S8_ called 55 returned 100% blocks executed 100%
+      199:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+      199:  107:	  for (; __first != __last; ++__first)
+      199:  107-block  0
+branch  0 taken 144 (fallthrough)
+branch  1 taken 55
+      144:  108:	    std::_Destroy(std::__addressof(*__first));
+      144:  108-block  0
+call    0 returned 144
+call    1 returned 144
+       55:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt17presentationTableEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt17presentationTableEEEvT_S5_ called 62 returned 100% blocks executed 100%
+       65:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+       65:  107:	  for (; __first != __last; ++__first)
+       65:  107-block  0
+branch  0 taken 3 (fallthrough)
+branch  1 taken 62
+        3:  108:	    std::_Destroy(std::__addressof(*__first));
+        3:  108-block  0
+call    0 returned 3
+call    1 returned 3
+       62:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt7pictureEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt7pictureEEEvT_S5_ called 62 returned 100% blocks executed 100%
+       92:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+       92:  107:	  for (; __first != __last; ++__first)
+       92:  107-block  0
+branch  0 taken 30 (fallthrough)
+branch  1 taken 62
+       30:  108:	    std::_Destroy(std::__addressof(*__first));
+       30:  108-block  0
+call    0 returned 30
+call    1 returned 30
+       62:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt8textBodyEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt8textBodyEEEvT_S5_ called 1064 returned 100% blocks executed 100%
+     1697:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+     1697:  107:	  for (; __first != __last; ++__first)
+     1697:  107-block  0
+branch  0 taken 633 (fallthrough)
+branch  1 taken 1064
+      633:  108:	    std::_Destroy(std::__addressof(*__first));
+      633:  108-block  0
+call    0 returned 633
+call    1 returned 633
+     1064:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPSt6vectorIN9docxtotxt9sheetCellESaIS4_EEEEvT_S8_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPSt6vectorIN9docxtotxt9sheetCellESaIS4_EEEEvT_S8_ called 40 returned 100% blocks executed 100%
+      964:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+      964:  107:	  for (; __first != __last; ++__first)
+      964:  107-block  0
+branch  0 taken 924 (fallthrough)
+branch  1 taken 40
+      924:  108:	    std::_Destroy(std::__addressof(*__first));
+      924:  108-block  0
+call    0 returned 924
+call    1 returned 924
+       40:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt12insertObjectEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt12insertObjectEEEvT_S5_ called 104 returned 100% blocks executed 100%
+      309:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+      309:  107:	  for (; __first != __last; ++__first)
+      309:  107-block  0
+branch  0 taken 205 (fallthrough)
+branch  1 taken 104
+      205:  108:	    std::_Destroy(std::__addressof(*__first));
+      205:  108-block  0
+call    0 returned 205
+call    1 returned 205
+      104:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt11insertImageEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt11insertImageEEEvT_S5_ called 82 returned 100% blocks executed 100%
+      122:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+      122:  107:	  for (; __first != __last; ++__first)
+      122:  107-block  0
+branch  0 taken 40 (fallthrough)
+branch  1 taken 82
+       40:  108:	    std::_Destroy(std::__addressof(*__first));
+       40:  108-block  0
+call    0 returned 40
+call    1 returned 40
+       82:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPSt6vectorIS2_IN9docxtotxt8textBodyESaIS4_EESaIS6_EEEEvT_SA_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPSt6vectorIS2_IN9docxtotxt8textBodyESaIS4_EESaIS6_EEEEvT_SA_ called 4 returned 100% blocks executed 100%
+       36:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+       36:  107:	  for (; __first != __last; ++__first)
+       36:  107-block  0
+branch  0 taken 32 (fallthrough)
+branch  1 taken 4
+       32:  108:	    std::_Destroy(std::__addressof(*__first));
+       32:  108-block  0
+call    0 returned 32
+call    1 returned 32
+        4:  109:	}
+------------------
+_ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt9sheetCellEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb0EE9__destroyIPN9docxtotxt9sheetCellEEEvT_S5_ called 1535 returned 100% blocks executed 100%
+    10797:  105:        __destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  106:	{
+    10797:  107:	  for (; __first != __last; ++__first)
+    10797:  107-block  0
+branch  0 taken 9262 (fallthrough)
+branch  1 taken 1535
+     9262:  108:	    std::_Destroy(std::__addressof(*__first));
+     9262:  108-block  0
+call    0 returned 9262
+call    1 returned 9262
+     1535:  109:	}
+------------------
+        -:  110:    };
+        -:  111:
+        -:  112:  template<>
+        -:  113:    struct _Destroy_aux<true>
+        -:  114:    {
+        -:  115:      template<typename _ForwardIterator>
+        -:  116:        static void
+      65*:  117:        __destroy(_ForwardIterator, _ForwardIterator) { }
+------------------
+_ZNSt12_Destroy_auxILb1EE9__destroyIPmEEvT_S3_:
+function _ZNSt12_Destroy_auxILb1EE9__destroyIPmEEvT_S3_ called 25 returned 100% blocks executed 100%
+       25:  117:        __destroy(_ForwardIterator, _ForwardIterator) { }
+------------------
+_ZNSt12_Destroy_auxILb1EE9__destroyIPN9docxtotxt14columnSettingsEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb1EE9__destroyIPN9docxtotxt14columnSettingsEEEvT_S5_ called 40 returned 100% blocks executed 100%
+       40:  117:        __destroy(_ForwardIterator, _ForwardIterator) { }
+------------------
+_ZNSt12_Destroy_auxILb1EE9__destroyIPN9docxtotxt10tabulationEEEvT_S5_:
+function _ZNSt12_Destroy_auxILb1EE9__destroyIPN9docxtotxt10tabulationEEEvT_S5_ called 0 returned 0% blocks executed 0%
+    #####:  117:        __destroy(_ForwardIterator, _ForwardIterator) { }
+------------------
+        -:  118:    };
+        -:  119:
+        -:  120:  /**
+        -:  121:   * Destroy a range of objects.  If the value_type of the object has
+        -:  122:   * a trivial destructor, the compiler should optimize all of this
+        -:  123:   * away, otherwise the objects' destructors must be invoked.
+        -:  124:   */
+        -:  125:  template<typename _ForwardIterator>
+        -:  126:    inline void
+    5748*:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+    5748*:  137:	__destroy(__first, __last);
+    5748*:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt17presentationTableEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt17presentationTableEEvT_S3_ called 62 returned 100% blocks executed 100%
+       62:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       62:  137:	__destroy(__first, __last);
+       62:  137-block  0
+call    0 returned 62
+       62:  138:    }
+------------------
+_ZSt8_DestroyIPNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEvT_S7_:
+function _ZSt8_DestroyIPNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEvT_S7_ called 2468 returned 100% blocks executed 100%
+     2468:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+     2468:  137:	__destroy(__first, __last);
+     2468:  137-block  0
+call    0 returned 2468
+     2468:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt10tabulationEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt10tabulationEEvT_S3_ called 0 returned 0% blocks executed 0%
+    #####:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+    #####:  137:	__destroy(__first, __last);
+    %%%%%:  137-block  0
+call    0 never executed
+    #####:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt9paragraphEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt9paragraphEEvT_S3_ called 27 returned 100% blocks executed 100%
+       27:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       27:  137:	__destroy(__first, __last);
+       27:  137-block  0
+call    0 returned 27
+       27:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt4noteEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt4noteEEvT_S3_ called 24 returned 100% blocks executed 100%
+       24:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       24:  137:	__destroy(__first, __last);
+       24:  137-block  0
+call    0 returned 24
+       24:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt9slideInfoEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt9slideInfoEEvT_S3_ called 23 returned 100% blocks executed 100%
+       23:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       23:  137:	__destroy(__first, __last);
+       23:  137-block  0
+call    0 returned 23
+       23:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt10noteInfo_tEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt10noteInfo_tEEvT_S3_ called 23 returned 100% blocks executed 100%
+       23:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       23:  137:	__destroy(__first, __last);
+       23:  137-block  0
+call    0 returned 23
+       23:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt4drawEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt4drawEEvT_S3_ called 23 returned 100% blocks executed 100%
+       23:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       23:  137:	__destroy(__first, __last);
+       23:  137-block  0
+call    0 returned 23
+       23:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt5sheetEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt5sheetEEvT_S3_ called 23 returned 100% blocks executed 100%
+       23:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       23:  137:	__destroy(__first, __last);
+       23:  137-block  0
+call    0 returned 23
+       23:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt15slideInsertInfoEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt15slideInsertInfoEEvT_S3_ called 2 returned 100% blocks executed 100%
+        2:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+        2:  137:	__destroy(__first, __last);
+        2:  137-block  0
+call    0 returned 2
+        2:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt16presentationTextEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt16presentationTextEEvT_S3_ called 62 returned 100% blocks executed 100%
+       62:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       62:  137:	__destroy(__first, __last);
+       62:  137-block  0
+call    0 returned 62
+       62:  138:    }
+------------------
+_ZSt8_DestroyIPSt6vectorIN9docxtotxt8textBodyESaIS2_EEEvT_S6_:
+function _ZSt8_DestroyIPSt6vectorIN9docxtotxt8textBodyESaIS2_EEEvT_S6_ called 55 returned 100% blocks executed 100%
+       55:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       55:  137:	__destroy(__first, __last);
+       55:  137-block  0
+call    0 returned 55
+       55:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt7pictureEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt7pictureEEvT_S3_ called 62 returned 100% blocks executed 100%
+       62:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       62:  137:	__destroy(__first, __last);
+       62:  137-block  0
+call    0 returned 62
+       62:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt8textBodyEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt8textBodyEEvT_S3_ called 1064 returned 100% blocks executed 100%
+     1064:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+     1064:  137:	__destroy(__first, __last);
+     1064:  137-block  0
+call    0 returned 1064
+     1064:  138:    }
+------------------
+_ZSt8_DestroyIPSt6vectorIN9docxtotxt9sheetCellESaIS2_EEEvT_S6_:
+function _ZSt8_DestroyIPSt6vectorIN9docxtotxt9sheetCellESaIS2_EEEvT_S6_ called 40 returned 100% blocks executed 100%
+       40:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       40:  137:	__destroy(__first, __last);
+       40:  137-block  0
+call    0 returned 40
+       40:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt14columnSettingsEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt14columnSettingsEEvT_S3_ called 40 returned 100% blocks executed 100%
+       40:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       40:  137:	__destroy(__first, __last);
+       40:  137-block  0
+call    0 returned 40
+       40:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt12insertObjectEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt12insertObjectEEvT_S3_ called 104 returned 100% blocks executed 100%
+      104:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+      104:  137:	__destroy(__first, __last);
+      104:  137-block  0
+call    0 returned 104
+      104:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt11insertImageEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt11insertImageEEvT_S3_ called 82 returned 100% blocks executed 100%
+       82:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       82:  137:	__destroy(__first, __last);
+       82:  137-block  0
+call    0 returned 82
+       82:  138:    }
+------------------
+_ZSt8_DestroyIPmEvT_S1_:
+function _ZSt8_DestroyIPmEvT_S1_ called 25 returned 100% blocks executed 100%
+       25:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+       25:  137:	__destroy(__first, __last);
+       25:  137-block  0
+call    0 returned 25
+       25:  138:    }
+------------------
+_ZSt8_DestroyIPSt6vectorIS0_IN9docxtotxt8textBodyESaIS2_EESaIS4_EEEvT_S8_:
+function _ZSt8_DestroyIPSt6vectorIS0_IN9docxtotxt8textBodyESaIS2_EESaIS4_EEEvT_S8_ called 4 returned 100% blocks executed 100%
+        4:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+        4:  137:	__destroy(__first, __last);
+        4:  137-block  0
+call    0 returned 4
+        4:  138:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt9sheetCellEEvT_S3_:
+function _ZSt8_DestroyIPN9docxtotxt9sheetCellEEvT_S3_ called 1535 returned 100% blocks executed 100%
+     1535:  127:    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  128:    {
+        -:  129:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  130:                       _Value_type;
+        -:  131:#if __cplusplus >= 201103L
+        -:  132:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  133:      static_assert(is_destructible<_Value_type>::value,
+        -:  134:		    "value type is destructible");
+        -:  135:#endif
+        -:  136:      std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+     1535:  137:	__destroy(__first, __last);
+     1535:  137-block  0
+call    0 returned 1535
+     1535:  138:    }
+------------------
+        -:  139:
+        -:  140:  template<bool>
+        -:  141:    struct _Destroy_n_aux
+        -:  142:    {
+        -:  143:      template<typename _ForwardIterator, typename _Size>
+        -:  144:        static _ForwardIterator
+        -:  145:        __destroy_n(_ForwardIterator __first, _Size __count)
+        -:  146:	{
+        -:  147:	  for (; __count > 0; (void)++__first, --__count)
+        -:  148:	    std::_Destroy(std::__addressof(*__first));
+        -:  149:	  return __first;
+        -:  150:	}
+        -:  151:    };
+        -:  152:
+        -:  153:  template<>
+        -:  154:    struct _Destroy_n_aux<true>
+        -:  155:    {
+        -:  156:      template<typename _ForwardIterator, typename _Size>
+        -:  157:        static _ForwardIterator
+        -:  158:        __destroy_n(_ForwardIterator __first, _Size __count)
+        -:  159:	{
+        -:  160:	  std::advance(__first, __count);
+        -:  161:	  return __first;
+        -:  162:	}
+        -:  163:    };
+        -:  164:
+        -:  165:  /**
+        -:  166:   * Destroy a range of objects.  If the value_type of the object has
+        -:  167:   * a trivial destructor, the compiler should optimize all of this
+        -:  168:   * away, otherwise the objects' destructors must be invoked.
+        -:  169:   */
+        -:  170:  template<typename _ForwardIterator, typename _Size>
+        -:  171:    inline _ForwardIterator
+        -:  172:    _Destroy_n(_ForwardIterator __first, _Size __count)
+        -:  173:    {
+        -:  174:      typedef typename iterator_traits<_ForwardIterator>::value_type
+        -:  175:                       _Value_type;
+        -:  176:#if __cplusplus >= 201103L
+        -:  177:      // A deleted destructor is trivial, this ensures we reject such types:
+        -:  178:      static_assert(is_destructible<_Value_type>::value,
+        -:  179:		    "value type is destructible");
+        -:  180:#endif
+        -:  181:      return std::_Destroy_n_aux<__has_trivial_destructor(_Value_type)>::
+        -:  182:	__destroy_n(__first, __count);
+        -:  183:    }
+        -:  184:
+        -:  185:  /**
+        -:  186:   * Destroy a range of objects using the supplied allocator.  For
+        -:  187:   * nondefault allocators we do not optimize away invocation of 
+        -:  188:   * destroy() even if _Tp has a trivial destructor.
+        -:  189:   */
+        -:  190:
+        -:  191:  template<typename _ForwardIterator, typename _Allocator>
+        -:  192:    void
+        -:  193:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  194:	     _Allocator& __alloc)
+        -:  195:    {
+        -:  196:      typedef __gnu_cxx::__alloc_traits<_Allocator> __traits;
+        -:  197:      for (; __first != __last; ++__first)
+        -:  198:	__traits::destroy(__alloc, std::__addressof(*__first));
+        -:  199:    }
+        -:  200:
+        -:  201:  template<typename _ForwardIterator, typename _Tp>
+        -:  202:    inline void
+    5748*:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+    5748*:  206:      _Destroy(__first, __last);
+    5748*:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt17presentationTableES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt17presentationTableES1_EvT_S3_RSaIT0_E called 62 returned 100% blocks executed 100%
+       62:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       62:  206:      _Destroy(__first, __last);
+       62:  206-block  0
+call    0 returned 62
+       62:  207:    }
+------------------
+_ZSt8_DestroyIPNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEES5_EvT_S7_RSaIT0_E:
+function _ZSt8_DestroyIPNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEES5_EvT_S7_RSaIT0_E called 2468 returned 100% blocks executed 100%
+     2468:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+     2468:  206:      _Destroy(__first, __last);
+     2468:  206-block  0
+call    0 returned 2468
+     2468:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt10tabulationES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt10tabulationES1_EvT_S3_RSaIT0_E called 0 returned 0% blocks executed 0%
+    #####:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+    #####:  206:      _Destroy(__first, __last);
+    %%%%%:  206-block  0
+call    0 never executed
+    #####:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt9paragraphES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt9paragraphES1_EvT_S3_RSaIT0_E called 27 returned 100% blocks executed 100%
+       27:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       27:  206:      _Destroy(__first, __last);
+       27:  206-block  0
+call    0 returned 27
+       27:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt4noteES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt4noteES1_EvT_S3_RSaIT0_E called 24 returned 100% blocks executed 100%
+       24:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       24:  206:      _Destroy(__first, __last);
+       24:  206-block  0
+call    0 returned 24
+       24:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt9slideInfoES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt9slideInfoES1_EvT_S3_RSaIT0_E called 23 returned 100% blocks executed 100%
+       23:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       23:  206:      _Destroy(__first, __last);
+       23:  206-block  0
+call    0 returned 23
+       23:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt10noteInfo_tES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt10noteInfo_tES1_EvT_S3_RSaIT0_E called 23 returned 100% blocks executed 100%
+       23:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       23:  206:      _Destroy(__first, __last);
+       23:  206-block  0
+call    0 returned 23
+       23:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt4drawES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt4drawES1_EvT_S3_RSaIT0_E called 23 returned 100% blocks executed 100%
+       23:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       23:  206:      _Destroy(__first, __last);
+       23:  206-block  0
+call    0 returned 23
+       23:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt5sheetES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt5sheetES1_EvT_S3_RSaIT0_E called 23 returned 100% blocks executed 100%
+       23:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       23:  206:      _Destroy(__first, __last);
+       23:  206-block  0
+call    0 returned 23
+       23:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt15slideInsertInfoES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt15slideInsertInfoES1_EvT_S3_RSaIT0_E called 2 returned 100% blocks executed 100%
+        2:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+        2:  206:      _Destroy(__first, __last);
+        2:  206-block  0
+call    0 returned 2
+        2:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt16presentationTextES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt16presentationTextES1_EvT_S3_RSaIT0_E called 62 returned 100% blocks executed 100%
+       62:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       62:  206:      _Destroy(__first, __last);
+       62:  206-block  0
+call    0 returned 62
+       62:  207:    }
+------------------
+_ZSt8_DestroyIPSt6vectorIN9docxtotxt8textBodyESaIS2_EES4_EvT_S6_RSaIT0_E:
+function _ZSt8_DestroyIPSt6vectorIN9docxtotxt8textBodyESaIS2_EES4_EvT_S6_RSaIT0_E called 55 returned 100% blocks executed 100%
+       55:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       55:  206:      _Destroy(__first, __last);
+       55:  206-block  0
+call    0 returned 55
+       55:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt7pictureES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt7pictureES1_EvT_S3_RSaIT0_E called 62 returned 100% blocks executed 100%
+       62:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       62:  206:      _Destroy(__first, __last);
+       62:  206-block  0
+call    0 returned 62
+       62:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt8textBodyES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt8textBodyES1_EvT_S3_RSaIT0_E called 1064 returned 100% blocks executed 100%
+     1064:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+     1064:  206:      _Destroy(__first, __last);
+     1064:  206-block  0
+call    0 returned 1064
+     1064:  207:    }
+------------------
+_ZSt8_DestroyIPSt6vectorIN9docxtotxt9sheetCellESaIS2_EES4_EvT_S6_RSaIT0_E:
+function _ZSt8_DestroyIPSt6vectorIN9docxtotxt9sheetCellESaIS2_EES4_EvT_S6_RSaIT0_E called 40 returned 100% blocks executed 100%
+       40:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       40:  206:      _Destroy(__first, __last);
+       40:  206-block  0
+call    0 returned 40
+       40:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt14columnSettingsES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt14columnSettingsES1_EvT_S3_RSaIT0_E called 40 returned 100% blocks executed 100%
+       40:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       40:  206:      _Destroy(__first, __last);
+       40:  206-block  0
+call    0 returned 40
+       40:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt12insertObjectES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt12insertObjectES1_EvT_S3_RSaIT0_E called 104 returned 100% blocks executed 100%
+      104:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+      104:  206:      _Destroy(__first, __last);
+      104:  206-block  0
+call    0 returned 104
+      104:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt11insertImageES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt11insertImageES1_EvT_S3_RSaIT0_E called 82 returned 100% blocks executed 100%
+       82:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       82:  206:      _Destroy(__first, __last);
+       82:  206-block  0
+call    0 returned 82
+       82:  207:    }
+------------------
+_ZSt8_DestroyIPmmEvT_S1_RSaIT0_E:
+function _ZSt8_DestroyIPmmEvT_S1_RSaIT0_E called 25 returned 100% blocks executed 100%
+       25:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+       25:  206:      _Destroy(__first, __last);
+       25:  206-block  0
+call    0 returned 25
+       25:  207:    }
+------------------
+_ZSt8_DestroyIPSt6vectorIS0_IN9docxtotxt8textBodyESaIS2_EESaIS4_EES6_EvT_S8_RSaIT0_E:
+function _ZSt8_DestroyIPSt6vectorIS0_IN9docxtotxt8textBodyESaIS2_EESaIS4_EES6_EvT_S8_RSaIT0_E called 4 returned 100% blocks executed 100%
+        4:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+        4:  206:      _Destroy(__first, __last);
+        4:  206-block  0
+call    0 returned 4
+        4:  207:    }
+------------------
+_ZSt8_DestroyIPN9docxtotxt9sheetCellES1_EvT_S3_RSaIT0_E:
+function _ZSt8_DestroyIPN9docxtotxt9sheetCellES1_EvT_S3_RSaIT0_E called 1535 returned 100% blocks executed 100%
+     1535:  203:    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+        -:  204:	     allocator<_Tp>&)
+        -:  205:    {
+     1535:  206:      _Destroy(__first, __last);
+     1535:  206-block  0
+call    0 returned 1535
+     1535:  207:    }
+------------------
+        -:  208:
+        -:  209:#if __cplusplus > 201402L
+        -:  210:  template <typename _Tp>
+        -:  211:    inline void
+        -:  212:    destroy_at(_Tp* __location)
+        -:  213:    {
+        -:  214:      std::_Destroy(__location);
+        -:  215:    }
+        -:  216:
+        -:  217:  template <typename _ForwardIterator>
+        -:  218:    inline void
+        -:  219:    destroy(_ForwardIterator __first, _ForwardIterator __last)
+        -:  220:    {
+        -:  221:      std::_Destroy(__first, __last);
+        -:  222:    }
+        -:  223:
+        -:  224:  template <typename _ForwardIterator, typename _Size>
+        -:  225:    inline _ForwardIterator
+        -:  226:    destroy_n(_ForwardIterator __first, _Size __count)
+        -:  227:    {
+        -:  228:      return std::_Destroy_n(__first, __count);
+        -:  229:    }
+        -:  230:#endif
+        -:  231:
+        -:  232:_GLIBCXX_END_NAMESPACE_VERSION
+        -:  233:} // namespace std
+        -:  234:
+        -:  235:#endif /* _STL_CONSTRUCT_H */
+        -:  236:

@@ -15,3 +15,7 @@
 2818	3043	1672152773939934693	docxtotxt	e683b7c8b9b463e7
 1	2849	1672152830825866101	CMakeFiles/docxtotxt.dir/mainDoc/source/DocumentLoader.cpp.o	a5a943e343b788d6
 2850	3066	1672152831049873714	docxtotxt	e683b7c8b9b463e7
+1	865	1672318417687661671	CMakeFiles/docxtotxt.dir/mainDoc/source/MainDocParser.cpp.o	3df369122e4cd0b2
+865	1095	1672318417919668017	docxtotxt	e683b7c8b9b463e7
+1	700	1672319118026567243	CMakeFiles/docxtotxt.dir/mainDoc/source/MainDocParser.cpp.o	3df369122e4cd0b2
+700	862	1672319118190572241	docxtotxt	e683b7c8b9b463e7

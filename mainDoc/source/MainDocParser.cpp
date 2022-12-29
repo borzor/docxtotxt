@@ -65,7 +65,7 @@ namespace docxtotxt {
     }
 
     void MainDocParser::insertHyperlinks(std::map<std::string, std::string> hyperlinkRelationship) {
-        *options.output << L"Document hyperlinks:" <<'\n';
+        *options.output << L"Document hyperlinks:" << '\n';
         for (const auto &kv: hyperlinkRelationship) {
             auto number = distance(hyperlinkRelationship.begin(), hyperlinkRelationship.find(kv.first));
             auto result = wstring(L"{h").append(
@@ -84,17 +84,12 @@ namespace docxtotxt {
             char *buff;
             buff = (char *) malloc(file_info.size);
             auto currentImage = zip_fopen(options.input, kv.second.c_str(), ZIP_FL_NODIR);
-            if (zip_fread(currentImage, &buff, file_info.size) == -1)
-                throw runtime_error("Error: Cannot read " + kv.second + " file");
+            if (zip_fread(currentImage, buff, file_info.size) == -1)throw runtime_error("Error: Cannot read " + kv.second + " file");
             zip_fclose(currentImage);
-            if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second)
-                    .write(buff, (long) file_info.size))throw runtime_error("Error writing file" + kv.second);
+            if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second) .write(buff, (long) file_info.size))throw runtime_error("Error writing file" + kv.second);
             ::free(buff);
+        }
     }
-
-
-
-
 }
 
 

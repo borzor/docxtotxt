@@ -1,3 +1,0 @@
-/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/docxtotxt.dir
-/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/edit_cache.dir
-/home/borzor/CLionProjects/docxtotxt/cmake-build-debug-coverage/CMakeFiles/rebuild_cache.dir

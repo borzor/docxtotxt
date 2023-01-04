@@ -3,6 +3,8 @@ project(docxtotxt)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_DEBUG  "-O3")
 
 add_executable(docxtotxt main.cpp mainDoc/source/MainDocParser.cpp mainDoc/headers/MainDocParser.h
         mainDoc/ParserCommons/DocumentCommons.h mainDoc/ParserCommons/DocumentMetaDataCommons.h
@@ -10,17 +12,7 @@ add_executable(docxtotxt main.cpp mainDoc/source/MainDocParser.cpp mainDoc/heade
         mainDoc/source/PptParser.cpp mainDoc/headers/PptParser.h mainDoc/source/DocParser.cpp mainDoc/headers/DocParser.h
         mainDoc/ParserCommons/FileSpecificCommons/PptCommons.h mainDoc/ParserCommons/FileSpecificCommons/XlsCommons.h
         mainDoc/ParserCommons/FileSpecificCommons/DocCommons.h mainDoc/ParserCommons/CommonFunctions.h
-        mainDoc/source/BufferWriter.cpp mainDoc/ParserCommons/BufferWriter.h mainDoc/headers/Parser.h)
+        mainDoc/source/BufferWriter.cpp mainDoc/ParserCommons/BufferWriter.h mainDoc/headers/Parser.h )#Libs/tinyxml2.h Libs/tinyxml2.cpp
 
-target_link_libraries(docxtotxt ${CMAKE_SOURCE_DIR}/Libs/libtinyxml2.so ${CMAKE_SOURCE_DIR}/Libs/libzip.so)
+target_link_libraries(docxtotxt ${CMAKE_SOURCE_DIR}/Libs/libtinyxml2.so  ${CMAKE_SOURCE_DIR}/Libs/libzip.so)
 
-#if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-#    add_compile_options(-fprofile-instr-generate -fcoverage-mapping)
-#    add_link_options(-fprofile-instr-generate)
-#    #Uncomment in case of linker errors
-#    link_libraries(clang_rt.profile-x86_64)
-#elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-#    add_compile_options(--coverage)
-#    #Uncomment in case of linker errors
-#    link_libraries(gcov)
-#endif ()

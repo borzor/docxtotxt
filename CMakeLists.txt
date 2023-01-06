@@ -16,7 +16,7 @@ add_executable(docxtotxt main.cpp mainDoc/source/MainDocParser.cpp mainDoc/heade
         mainDoc/source/BufferWriter.cpp mainDoc/ParserCommons/BufferWriter.h mainDoc/headers/Parser.h)
 
 #target_link_libraries(docxtotxt PUBLIC libzip tinyxml2)
-target_link_libraries(docxtotxt ${CMAKE_SOURCE_DIR}/Libs/libzip.so ${CMAKE_SOURCE_DIR}/Libs/libtinyxml2.a )
+target_link_libraries(docxtotxt ${CMAKE_SOURCE_DIR}/Libs/libzip.so.5 ${CMAKE_SOURCE_DIR}/Libs/libtinyxml2.a )
 
 #target_link_libraries(docxtotxt PUBLIC tinyxml2)
 #target_link_libraries(docxtotxt PUBLIC libzip)

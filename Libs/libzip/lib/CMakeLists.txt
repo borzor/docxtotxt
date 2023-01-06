@@ -113,7 +113,7 @@ add_library(zip
   zip_unchange_data.c
   zip_utf-8.c
   ${CMAKE_CURRENT_BINARY_DIR}/zip_err_str.c
-  )
+        zipconf.h)
 add_library(libzip::zip ALIAS zip)
 
 if(WIN32)

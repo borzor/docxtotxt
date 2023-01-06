@@ -7,7 +7,7 @@
 #include "../ParserCommons/FileSpecificCommons/XlsCommons.h"
 #include "../ParserCommons/FileSpecificCommons/DocCommons.h"
 #include "../ParserCommons/CommonFunctions.h"
-#include <zip.h>
+#include "../../Libs/libzip/lib/zip.h"
 
 #ifndef DOCXTOTXT_DOCUMENTLOADER_H
 #define DOCXTOTXT_DOCUMENTLOADER_H

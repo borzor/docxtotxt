@@ -1,0 +1,32 @@
+<problems>
+    <problem>
+        <file>file://$PROJECT_DIR$/mainDoc/source/DocumentLoader.cpp</file>
+        <line>56</line>
+        <module>docxtotxt</module>
+        <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/mainDoc/source/DocumentLoader.cpp"/>
+        <problem_class id="Cppcheck" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Cppcheck Inspections
+        </problem_class>
+        <description>Cppcheck: (style) constParameter: Parameter 'relations' can be declared with const</description>
+        <highlighted_element>void DocumentLoader::openFileAndParse(const string &amp;fileName, relations_t &amp;relations,</highlighted_element>
+        <language>ObjectiveC</language>
+        <offset>4</offset>
+        <length>85</length>
+    </problem>
+    <problem>
+        <file>file://$PROJECT_DIR$/mainDoc/source/DocumentLoader.cpp</file>
+        <line>419</line>
+        <module>docxtotxt</module>
+        <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/mainDoc/source/DocumentLoader.cpp"/>
+        <problem_class id="Cppcheck" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Cppcheck Inspections
+        </problem_class>
+        <description>Cppcheck: (style) unreadVariable: Variable 'resultSheet.sheetName' is assigned a value that is
+            never used.
+        </description>
+        <highlighted_element>resultSheet.sheetName =
+            writer.convertString(element-&gt;Attribute(&quot;codeName&quot;));
+        </highlighted_element>
+        <language>ObjectiveC</language>
+        <offset>16</offset>
+        <length>77</length>
+    </problem>
+</problems>

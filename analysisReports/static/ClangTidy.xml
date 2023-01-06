@@ -1,0 +1,26 @@
+<problems>
+    <problem>
+        <file>file://$PROJECT_DIR$/mainDoc/source/DocumentLoader.cpp</file>
+        <line>174</line>
+        <module>docxtotxt</module>
+        <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/mainDoc/source/DocumentLoader.cpp"/>
+        <problem_class id="ClangTidy" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Clang-Tidy</problem_class>
+        <description>Method 'parseRelationShip' can be made static</description>
+        <highlighted_element>parseRelationShip</highlighted_element>
+        <language>ObjectiveC</language>
+        <offset>25</offset>
+        <length>17</length>
+    </problem>
+    <problem>
+        <file>file://$PROJECT_DIR$/mainDoc/source/DocumentLoader.cpp</file>
+        <line>982</line>
+        <module>docxtotxt</module>
+        <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/mainDoc/source/DocumentLoader.cpp"/>
+        <problem_class id="ClangTidy" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Clang-Tidy</problem_class>
+        <description>Function 'addSdtContent' is within a recursive call chain</description>
+        <highlighted_element>addSdtContent</highlighted_element>
+        <language>ObjectiveC</language>
+        <offset>25</offset>
+        <length>13</length>
+    </problem>
+</problems>

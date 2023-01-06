@@ -3,10 +3,9 @@
 //
 #include <locale>
 #include <codecvt>
-//#include <zip.h>
 #include "../../Libs/libzip/lib/zip.h"
 #include <map>
-#include <tinyxml2.h>
+#include "../../Libs/tinyxml2.h"
 #include "DocumentMetaDataCommons.h"
 #include <algorithm>
 #include <vector>

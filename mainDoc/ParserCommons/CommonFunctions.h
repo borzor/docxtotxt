@@ -3,7 +3,7 @@
 //
 #include <cmath>
 #include "DocumentCommons.h"
-#include "tinyxml2.h"
+#include "../../Libs/tinyxml2.h"
 
 #ifndef DOCXTOTXT_COMMONFUNCTIONS_H
 #define DOCXTOTXT_COMMONFUNCTIONS_H

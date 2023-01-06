@@ -5,7 +5,7 @@
 #include <codecvt>
 #include "../../Libs/libzip/lib/zip.h"
 #include <map>
-#include "../../Libs/tinyxml2.h"
+#include "../../Libs/tinyxml2/tinyxml2.h"
 #include "DocumentMetaDataCommons.h"
 #include <algorithm>
 #include <vector>

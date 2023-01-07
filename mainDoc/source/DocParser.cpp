@@ -14,21 +14,25 @@ namespace docxtotxt {
         writer.newLine();
         auto body = docInfo.body;
         for (auto &elem: body) {
-            switch (elem.type) {
-                case par: {
-                    writeParagraph(elem);
-                    break;
+            try {
+                switch (elem.type) {
+                    case par: {
+                        writeParagraph(elem);
+                        break;
+                    }
+                    case table:
+                        writeTable(elem);
+                        break;
+                    case image:
+                        writeImage(elem);
+                        break;
                 }
-                case table:
-                    writeTable(elem);
-                    break;
-                case image:
-                    writeImage(elem);
-                    break;
+            } catch (exception &ignore) {
+                writer.insertData(L"Произошла неожиданная ошибка, элемент проигнорирован", true, true);
             }
         }
         if ((options.flags >> 3) & 1) {
-            for(auto &note:docInfo.notes){
+            for (auto &note: docInfo.notes) {
                 writeNote(note);
             }
         }
@@ -55,7 +59,7 @@ namespace docxtotxt {
                 }
                 while (currentSize != 0) {
                     auto availableBufferInLine = docInfo.docWidth - writer.getCurrentLength();
-                    if (justify == left){
+                    if (justify == left) {
                         if (isFirstLine) {
                             availableBufferInLine = availableBufferInLine - firstLineLeft - right;
                         } else {
@@ -115,14 +119,14 @@ namespace docxtotxt {
         writer.newLine();
     }
 
-    void DocParser::writeImage(const paragraph& paragraph) {
+    void DocParser::writeImage(const paragraph &paragraph) {
         for (auto &line: paragraph.body) {
             auto leftBorder = docInfo.docWidth > line.size() ? (docInfo.docWidth - line.size()) / 2 : 0;
             writer.insertData(std::wstring(leftBorder, L' ') + line);
         }
     }
 
-    void DocParser::writeTable(const docxtotxt::paragraph& paragraph) {
+    void DocParser::writeTable(const docxtotxt::paragraph &paragraph) {
         for (auto &line: paragraph.body) {
             auto leftBorder = docInfo.docWidth > line.size() ? (docInfo.docWidth - line.size()) / 2 : 0;
             writer.insertData(std::wstring(leftBorder, L' ') + line);
@@ -131,10 +135,10 @@ namespace docxtotxt {
 
     void DocParser::writeNote(const note &note) {
         writer.insertData(L"Document notes:");
-        if(note.type == noteType::footnote){
-            writer.insertData(std::wstring(L"{footnote" + to_wstring(note.id) + L"} - " ) + note.text);
+        if (note.type == noteType::footnote) {
+            writer.insertData(std::wstring(L"{footnote" + to_wstring(note.id) + L"} - ") + note.text);
         } else {
-            writer.insertData(std::wstring(L"{endnote" + to_wstring(note.id) + L"} - " ) + note.text);
+            writer.insertData(std::wstring(L"{endnote" + to_wstring(note.id) + L"} - ") + note.text);
         }
     }
 

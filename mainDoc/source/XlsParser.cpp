@@ -40,14 +40,18 @@ namespace docxtotxt {
 
     void XlsParser::parseFile() {
         for (auto &sh: xlsInfo.worksheets) {
-            insertSheetMetadata(sh);
-            auto array = sh.sheetArray;
-            auto col = sh.col;
-            if (array.empty())continue;
-            if ((options.flags >> 5) & 1) {
-                insertSheetRaw(array);
-            } else {
-                insertSheet(array, col);
+            try {
+                insertSheetMetadata(sh);
+                auto array = sh.sheetArray;
+                auto col = sh.col;
+                if (array.empty())continue;
+                if ((options.flags >> 5) & 1) {
+                    insertSheetRaw(array);
+                } else {
+                    insertSheet(array, col);
+                }
+            } catch (exception &ignore) {
+                writer.insertData(L"Произошла неожиданная ошибка, лист проигнорирован", true, true);
             }
         }
     }

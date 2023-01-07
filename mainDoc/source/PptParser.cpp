@@ -14,8 +14,12 @@ namespace docxtotxt {
         prepareSlides();
         writer.newLine();
         for (auto &obj: slideInsertData) {
-            insertSlideMetadata(obj);
-            insertSlide(obj.insertObjects);
+            try {
+                insertSlideMetadata(obj);
+                insertSlide(obj.insertObjects);
+            } catch (exception &ignore){
+                writer.insertData(L"Произошла неожиданная ошибка, слайд проигнорирован", true, true);
+            }
         }
     }
 
@@ -176,7 +180,8 @@ namespace docxtotxt {
             }
         for (const auto &kv: slideInfo.relations.imageRelationship) {
             auto tmpImage = std::find(slideInfo.insertImages.begin(), slideInfo.insertImages.end(), kv.first);
-            writer.insertData(L"Slide image info: " + tmpImage->toString(), false, false);
+            if(tmpImage != slideInfo.insertImages.end())
+                writer.insertData(L"Slide image info: " + tmpImage->toString(), false, false);
             if ((options.flags >> 1) & 1) {
                 string image = ", saved to path: " + options.pathToDraws + '/' + kv.second;
                 writer.insertData(writer.convertString(image));

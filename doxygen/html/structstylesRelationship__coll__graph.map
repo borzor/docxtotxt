@@ -1,0 +1,10 @@
+<map id="stylesRelationship" name="stylesRelationship">
+<area shape="rect" id="node1" title=" " alt="" coords="172,273,315,300"/>
+<area shape="rect" id="node2" href="$structdefaultDocStyles.html" title=" " alt="" coords="177,184,310,211"/>
+<area shape="rect" id="node3" href="$structparagraphSettings.html" title=" " alt="" coords="95,95,237,121"/>
+<area shape="rect" id="node4" href="$structlineSpacing.html" title=" " alt="" coords="5,5,103,32"/>
+<area shape="rect" id="node5" href="$structindentation.html" title=" " alt="" coords="127,5,223,32"/>
+<area shape="rect" id="node6" href="$structtableProperties.html" title=" " alt="" coords="261,95,383,121"/>
+<area shape="rect" id="node7" href="$structtableIndent.html" title=" " alt="" coords="265,5,361,32"/>
+<area shape="rect" id="node8" href="$structfloatingSettings.html" title=" " alt="" coords="385,5,509,32"/>
+</map>

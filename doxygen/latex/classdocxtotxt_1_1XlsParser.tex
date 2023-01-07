@@ -1,0 +1,128 @@
+\hypertarget{classdocxtotxt_1_1XlsParser}{}\doxysection{docxtotxt\+::Xls\+Parser Class Reference}
+\label{classdocxtotxt_1_1XlsParser}\index{docxtotxt::XlsParser@{docxtotxt::XlsParser}}
+
+
+Реализация парсера, обрабатывающая Spreadsheet\+ML формат  
+
+
+
+
+{\ttfamily \#include $<$Xls\+Parser.\+h$>$}
+
+
+
+Inheritance diagram for docxtotxt\+::Xls\+Parser\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=194pt]{classdocxtotxt_1_1XlsParser__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for docxtotxt\+::Xls\+Parser\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=208pt]{classdocxtotxt_1_1XlsParser__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1XlsParser_a01dc2be24412ac992969528e8aecf729}{parse\+File}} () override
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1XlsParser_a3cb4789098e48045af36251d05bd8a04}{insert\+Sheet\+Metadata}} (const sheet \&sheet)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1XlsParser_a69e8e19809ce0e7a101566ce4731eb54}{insert\+Sheet}} (std\+::vector$<$ std\+::vector$<$ sheet\+Cell $>$$>$ \&sheet, const std\+::vector$<$ column\+Settings $>$ \&col)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1XlsParser_aebfd7990c7e622619928ef7410c470f3}{insert\+Sheet\+Raw}} (std\+::vector$<$ std\+::vector$<$ sheet\+Cell $>$$>$ \&sheet)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static size\+\_\+t \mbox{\hyperlink{classdocxtotxt_1_1XlsParser_a2f5493e2ecb18193fb694cb758efc9fe}{get\+Column\+Width}} (const std\+::vector$<$ column\+Settings $>$ \&settings, size\+\_\+t index)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classdocxtotxt_1_1XlsParser_a7cd4743f06c6d92afbcea5c2891c3ea5}\label{classdocxtotxt_1_1XlsParser_a7cd4743f06c6d92afbcea5c2891c3ea5}} 
+xls\+Info\+\_\+t \& \mbox{\hyperlink{classdocxtotxt_1_1XlsParser_a7cd4743f06c6d92afbcea5c2891c3ea5}{xls\+Info}}
+\begin{DoxyCompactList}\small\item\em Настройки специфичные для файла Spreadsheet\+ML формата \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+Реализация парсера, обрабатывающая Spreadsheet\+ML формат 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classdocxtotxt_1_1XlsParser_a2f5493e2ecb18193fb694cb758efc9fe}\label{classdocxtotxt_1_1XlsParser_a2f5493e2ecb18193fb694cb758efc9fe}} 
+\index{docxtotxt::XlsParser@{docxtotxt::XlsParser}!getColumnWidth@{getColumnWidth}}
+\index{getColumnWidth@{getColumnWidth}!docxtotxt::XlsParser@{docxtotxt::XlsParser}}
+\doxysubsubsection{\texorpdfstring{getColumnWidth()}{getColumnWidth()}}
+{\footnotesize\ttfamily size\+\_\+t docxtotxt\+::\+Xls\+Parser\+::get\+Column\+Width (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ column\+Settings $>$ \&}]{settings,  }\item[{size\+\_\+t}]{index }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [private]}}
+
+Вычисляет размер колонны в таблице 
+\begin{DoxyParams}{Parameters}
+{\em settings} & Массив структур настроек таблицы \\
+\hline
+{\em index} & Индекс колонны \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classdocxtotxt_1_1XlsParser_a69e8e19809ce0e7a101566ce4731eb54}\label{classdocxtotxt_1_1XlsParser_a69e8e19809ce0e7a101566ce4731eb54}} 
+\index{docxtotxt::XlsParser@{docxtotxt::XlsParser}!insertSheet@{insertSheet}}
+\index{insertSheet@{insertSheet}!docxtotxt::XlsParser@{docxtotxt::XlsParser}}
+\doxysubsubsection{\texorpdfstring{insertSheet()}{insertSheet()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Xls\+Parser\+::insert\+Sheet (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ sheet\+Cell $>$$>$ \&}]{sheet,  }\item[{const std\+::vector$<$ column\+Settings $>$ \&}]{col }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Функция для записи рабочего листа в результирующий буфер с форматированием 
+\begin{DoxyParams}{Parameters}
+{\em sheet} & Структура таблицы \\
+\hline
+{\em col} & Массив структур настроек столбцов \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1XlsParser_a3cb4789098e48045af36251d05bd8a04}\label{classdocxtotxt_1_1XlsParser_a3cb4789098e48045af36251d05bd8a04}} 
+\index{docxtotxt::XlsParser@{docxtotxt::XlsParser}!insertSheetMetadata@{insertSheetMetadata}}
+\index{insertSheetMetadata@{insertSheetMetadata}!docxtotxt::XlsParser@{docxtotxt::XlsParser}}
+\doxysubsubsection{\texorpdfstring{insertSheetMetadata()}{insertSheetMetadata()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Xls\+Parser\+::insert\+Sheet\+Metadata (\begin{DoxyParamCaption}\item[{const sheet \&}]{sheet }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Записывает таблицу в результирующий буфер 
+\begin{DoxyParams}{Parameters}
+{\em sheet} & Структура таблицы \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1XlsParser_aebfd7990c7e622619928ef7410c470f3}\label{classdocxtotxt_1_1XlsParser_aebfd7990c7e622619928ef7410c470f3}} 
+\index{docxtotxt::XlsParser@{docxtotxt::XlsParser}!insertSheetRaw@{insertSheetRaw}}
+\index{insertSheetRaw@{insertSheetRaw}!docxtotxt::XlsParser@{docxtotxt::XlsParser}}
+\doxysubsubsection{\texorpdfstring{insertSheetRaw()}{insertSheetRaw()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Xls\+Parser\+::insert\+Sheet\+Raw (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ sheet\+Cell $>$$>$ \&}]{sheet }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em sheet} & Структура таблицы \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1XlsParser_a01dc2be24412ac992969528e8aecf729}\label{classdocxtotxt_1_1XlsParser_a01dc2be24412ac992969528e8aecf729}} 
+\index{docxtotxt::XlsParser@{docxtotxt::XlsParser}!parseFile@{parseFile}}
+\index{parseFile@{parseFile}!docxtotxt::XlsParser@{docxtotxt::XlsParser}}
+\doxysubsubsection{\texorpdfstring{parseFile()}{parseFile()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Xls\+Parser\+::parse\+File (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Функия для обработки входного файла на основе предоставленных опций 
+
+Implements \mbox{\hyperlink{classdocxtotxt_1_1Parser_a2b892f0b50956849094c1b798a47169a}{docxtotxt\+::\+Parser}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/headers/Xls\+Parser.\+h\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/source/Xls\+Parser.\+cpp\end{DoxyCompactItemize}

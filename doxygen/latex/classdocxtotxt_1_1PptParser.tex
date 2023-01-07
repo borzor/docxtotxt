@@ -1,0 +1,115 @@
+\hypertarget{classdocxtotxt_1_1PptParser}{}\doxysection{docxtotxt\+::Ppt\+Parser Class Reference}
+\label{classdocxtotxt_1_1PptParser}\index{docxtotxt::PptParser@{docxtotxt::PptParser}}
+
+
+Реализация парсера, обрабатывающая Presentation\+ML формат  
+
+
+
+
+{\ttfamily \#include $<$Ppt\+Parser.\+h$>$}
+
+
+
+Inheritance diagram for docxtotxt\+::Ppt\+Parser\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=195pt]{classdocxtotxt_1_1PptParser__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for docxtotxt\+::Ppt\+Parser\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=208pt]{classdocxtotxt_1_1PptParser__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1PptParser_a0fa9e101466306384aea0eedb4ce0cd2}{parse\+File}} () override
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1PptParser_ac420f62c52f2a50d033cdde0450909ac}{prepare\+Slides}} ()
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1PptParser_a5f63c2abf1d5cbc4f510a30e909c0a13}{insert\+Slide}} (std\+::vector$<$ insert\+Object $>$ insert\+Objects)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1PptParser_aaec084a4d6832fb50131eecb04270b5e}{insert\+Line\+Buffer}} (insert\+Object \&obj, size\+\_\+t $\ast$current\+Index)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1PptParser_a5afb7a946b71c5f10905573006c2f5a5}{insert\+Slide\+Metadata}} (slide\+Insert\+Info relations)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classdocxtotxt_1_1PptParser_a37f7d7681af201f9f102027c09e0d054}\label{classdocxtotxt_1_1PptParser_a37f7d7681af201f9f102027c09e0d054}} 
+ppt\+Info\+\_\+t \& \mbox{\hyperlink{classdocxtotxt_1_1PptParser_a37f7d7681af201f9f102027c09e0d054}{ppt\+Info}}
+\begin{DoxyCompactList}\small\item\em Настройки специфичные для файла Presentation\+ML формата \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+Реализация парсера, обрабатывающая Presentation\+ML формат 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classdocxtotxt_1_1PptParser_aaec084a4d6832fb50131eecb04270b5e}\label{classdocxtotxt_1_1PptParser_aaec084a4d6832fb50131eecb04270b5e}} 
+\index{docxtotxt::PptParser@{docxtotxt::PptParser}!insertLineBuffer@{insertLineBuffer}}
+\index{insertLineBuffer@{insertLineBuffer}!docxtotxt::PptParser@{docxtotxt::PptParser}}
+\doxysubsubsection{\texorpdfstring{insertLineBuffer()}{insertLineBuffer()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Ppt\+Parser\+::insert\+Line\+Buffer (\begin{DoxyParamCaption}\item[{insert\+Object \&}]{obj,  }\item[{size\+\_\+t $\ast$}]{current\+Index }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Записывает часть обрабатываемого объекта в результируюий буфер 
+\begin{DoxyParams}{Parameters}
+{\em obj} & Структура записываемого объекта \\
+\hline
+{\em current\+Index} & Текущий индекс, необходимый для установки размера вставки \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1PptParser_a5f63c2abf1d5cbc4f510a30e909c0a13}\label{classdocxtotxt_1_1PptParser_a5f63c2abf1d5cbc4f510a30e909c0a13}} 
+\index{docxtotxt::PptParser@{docxtotxt::PptParser}!insertSlide@{insertSlide}}
+\index{insertSlide@{insertSlide}!docxtotxt::PptParser@{docxtotxt::PptParser}}
+\doxysubsubsection{\texorpdfstring{insertSlide()}{insertSlide()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Ppt\+Parser\+::insert\+Slide (\begin{DoxyParamCaption}\item[{std\+::vector$<$ insert\+Object $>$}]{insert\+Objects }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Записывает объекты слайда 
+\begin{DoxyParams}{Parameters}
+{\em insert\+Objects} & Массив вставляемых объектов \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1PptParser_a5afb7a946b71c5f10905573006c2f5a5}\label{classdocxtotxt_1_1PptParser_a5afb7a946b71c5f10905573006c2f5a5}} 
+\index{docxtotxt::PptParser@{docxtotxt::PptParser}!insertSlideMetadata@{insertSlideMetadata}}
+\index{insertSlideMetadata@{insertSlideMetadata}!docxtotxt::PptParser@{docxtotxt::PptParser}}
+\doxysubsubsection{\texorpdfstring{insertSlideMetadata()}{insertSlideMetadata()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Ppt\+Parser\+::insert\+Slide\+Metadata (\begin{DoxyParamCaption}\item[{slide\+Insert\+Info}]{relations }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Зписывает мета информацию о слайде в результирующий буфер 
+\begin{DoxyParams}{Parameters}
+{\em relations} & Структура метаданных \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1PptParser_a0fa9e101466306384aea0eedb4ce0cd2}\label{classdocxtotxt_1_1PptParser_a0fa9e101466306384aea0eedb4ce0cd2}} 
+\index{docxtotxt::PptParser@{docxtotxt::PptParser}!parseFile@{parseFile}}
+\index{parseFile@{parseFile}!docxtotxt::PptParser@{docxtotxt::PptParser}}
+\doxysubsubsection{\texorpdfstring{parseFile()}{parseFile()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Ppt\+Parser\+::parse\+File (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Функия для обработки входного файла на основе предоставленных опций 
+
+Implements \mbox{\hyperlink{classdocxtotxt_1_1Parser_a2b892f0b50956849094c1b798a47169a}{docxtotxt\+::\+Parser}}.
+
+\mbox{\Hypertarget{classdocxtotxt_1_1PptParser_ac420f62c52f2a50d033cdde0450909ac}\label{classdocxtotxt_1_1PptParser_ac420f62c52f2a50d033cdde0450909ac}} 
+\index{docxtotxt::PptParser@{docxtotxt::PptParser}!prepareSlides@{prepareSlides}}
+\index{prepareSlides@{prepareSlides}!docxtotxt::PptParser@{docxtotxt::PptParser}}
+\doxysubsubsection{\texorpdfstring{prepareSlides()}{prepareSlides()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Ppt\+Parser\+::prepare\+Slides (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Преобразовывает входные структуры в структуру для вставки 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/headers/Ppt\+Parser.\+h\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/source/Ppt\+Parser.\+cpp\end{DoxyCompactItemize}

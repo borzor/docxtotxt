@@ -1,0 +1,118 @@
+\hypertarget{classdocxtotxt_1_1DocParser}{}\doxysection{docxtotxt\+::Doc\+Parser Class Reference}
+\label{classdocxtotxt_1_1DocParser}\index{docxtotxt::DocParser@{docxtotxt::DocParser}}
+
+
+Реализация парсера, обрабатывающая Wordprocessing\+ML формат  
+
+
+
+
+{\ttfamily \#include $<$Doc\+Parser.\+h$>$}
+
+
+
+Inheritance diagram for docxtotxt\+::Doc\+Parser\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=198pt]{classdocxtotxt_1_1DocParser__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for docxtotxt\+::Doc\+Parser\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=208pt]{classdocxtotxt_1_1DocParser__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocParser_a53e5d2e08a7bf3d3911f53d7540fa856}{parse\+File}} () override
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocParser_a63c33981ff8dd2001f425d8edf9cc7f1}{write\+Paragraph}} (paragraph paragraph)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocParser_aef03184b736a0da7425b2c5618d66e9c}{write\+Image}} (const paragraph \&paragraph)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocParser_a9e537777da6b88fb652e3872e0755936}{write\+Table}} (const paragraph \&paragraph)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocParser_a9c476d6cbb48501959838b050525243d}{write\+Note}} (const note \&note)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classdocxtotxt_1_1DocParser_ad0c718882ab8f542f8b269a857dcebb9}\label{classdocxtotxt_1_1DocParser_ad0c718882ab8f542f8b269a857dcebb9}} 
+doc\+Info\+\_\+t \& \mbox{\hyperlink{classdocxtotxt_1_1DocParser_ad0c718882ab8f542f8b269a857dcebb9}{doc\+Info}}
+\begin{DoxyCompactList}\small\item\em Настройки специфичные для файла Wordprocessing\+ML формата \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+Реализация парсера, обрабатывающая Wordprocessing\+ML формат 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocParser_a53e5d2e08a7bf3d3911f53d7540fa856}\label{classdocxtotxt_1_1DocParser_a53e5d2e08a7bf3d3911f53d7540fa856}} 
+\index{docxtotxt::DocParser@{docxtotxt::DocParser}!parseFile@{parseFile}}
+\index{parseFile@{parseFile}!docxtotxt::DocParser@{docxtotxt::DocParser}}
+\doxysubsubsection{\texorpdfstring{parseFile()}{parseFile()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Doc\+Parser\+::parse\+File (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Функия для обработки входного файла на основе предоставленных опций 
+
+Implements \mbox{\hyperlink{classdocxtotxt_1_1Parser_a2b892f0b50956849094c1b798a47169a}{docxtotxt\+::\+Parser}}.
+
+\mbox{\Hypertarget{classdocxtotxt_1_1DocParser_aef03184b736a0da7425b2c5618d66e9c}\label{classdocxtotxt_1_1DocParser_aef03184b736a0da7425b2c5618d66e9c}} 
+\index{docxtotxt::DocParser@{docxtotxt::DocParser}!writeImage@{writeImage}}
+\index{writeImage@{writeImage}!docxtotxt::DocParser@{docxtotxt::DocParser}}
+\doxysubsubsection{\texorpdfstring{writeImage()}{writeImage()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Doc\+Parser\+::write\+Image (\begin{DoxyParamCaption}\item[{const paragraph \&}]{paragraph }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Записывает параграф содержащий изображение в результирующий буфер с учетом форматирования 
+\begin{DoxyParams}{Parameters}
+{\em paragraph} & Структура параграфа \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocParser_a9c476d6cbb48501959838b050525243d}\label{classdocxtotxt_1_1DocParser_a9c476d6cbb48501959838b050525243d}} 
+\index{docxtotxt::DocParser@{docxtotxt::DocParser}!writeNote@{writeNote}}
+\index{writeNote@{writeNote}!docxtotxt::DocParser@{docxtotxt::DocParser}}
+\doxysubsubsection{\texorpdfstring{writeNote()}{writeNote()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Doc\+Parser\+::write\+Note (\begin{DoxyParamCaption}\item[{const note \&}]{note }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Записывает заметку(сноску) в результирующий буфер 
+\begin{DoxyParams}{Parameters}
+{\em note} & Структура заметки \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocParser_a63c33981ff8dd2001f425d8edf9cc7f1}\label{classdocxtotxt_1_1DocParser_a63c33981ff8dd2001f425d8edf9cc7f1}} 
+\index{docxtotxt::DocParser@{docxtotxt::DocParser}!writeParagraph@{writeParagraph}}
+\index{writeParagraph@{writeParagraph}!docxtotxt::DocParser@{docxtotxt::DocParser}}
+\doxysubsubsection{\texorpdfstring{writeParagraph()}{writeParagraph()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Doc\+Parser\+::write\+Paragraph (\begin{DoxyParamCaption}\item[{paragraph}]{paragraph }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Записывает параграф в результирующий буфер с учетом форматирования 
+\begin{DoxyParams}{Parameters}
+{\em paragraph} & Структура параграфа \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocParser_a9e537777da6b88fb652e3872e0755936}\label{classdocxtotxt_1_1DocParser_a9e537777da6b88fb652e3872e0755936}} 
+\index{docxtotxt::DocParser@{docxtotxt::DocParser}!writeTable@{writeTable}}
+\index{writeTable@{writeTable}!docxtotxt::DocParser@{docxtotxt::DocParser}}
+\doxysubsubsection{\texorpdfstring{writeTable()}{writeTable()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Doc\+Parser\+::write\+Table (\begin{DoxyParamCaption}\item[{const paragraph \&}]{paragraph }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Записывает параграф содержащий таблицу в результирующий буфер с учетом форматирования 
+\begin{DoxyParams}{Parameters}
+{\em paragraph} & Структура параграфа \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/headers/Doc\+Parser.\+h\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/source/Doc\+Parser.\+cpp\end{DoxyCompactItemize}

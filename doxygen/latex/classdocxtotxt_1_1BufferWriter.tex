@@ -1,0 +1,111 @@
+\hypertarget{classdocxtotxt_1_1BufferWriter}{}\doxysection{docxtotxt\+::Buffer\+Writer Class Reference}
+\label{classdocxtotxt_1_1BufferWriter}\index{docxtotxt::BufferWriter@{docxtotxt::BufferWriter}}
+
+
+Класс для изменения внутреннего буфера и записи результата в поток вывода  
+
+
+
+
+{\ttfamily \#include $<$Buffer\+Writer.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::wstring \mbox{\hyperlink{classdocxtotxt_1_1BufferWriter_a685a2b38d4a0aae8fcafa9995b404bdd}{convert\+String}} (const std\+::string \&str)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1BufferWriter_ac30427bfa3bf8758d2aa1c2fe3d22e1b}{new\+Line}} ()
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1BufferWriter_adb276a03e832ddb1a98b3c10dd8cb673}{insert\+Data}} (const std\+::wstring \&data, bool add\+Line\+Before=false, bool add\+Line\+After=true)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1BufferWriter_a1844104ce97bcfeb770e711641645578}{insert\+Metadata}} ()
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1BufferWriter_ac7997b3f36bc0d88e1206977eaf1996a}{write\+Result}} ()
+\item 
+file\+Metadata\+\_\+t $\ast$ \mbox{\hyperlink{classdocxtotxt_1_1BufferWriter_ac9bd8fbb35ddc8cb017f3686962daac5}{get\+Metadata}} ()
+\item 
+size\+\_\+t \mbox{\hyperlink{classdocxtotxt_1_1BufferWriter_aa9aed4d3a5d023313fe6a178bfc6d971}{get\+Current\+Length}} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classdocxtotxt_1_1BufferWriter_ad70d95ef40d2bf678b6eaf30cbede240}\label{classdocxtotxt_1_1BufferWriter_ad70d95ef40d2bf678b6eaf30cbede240}} 
+wstring\+Convert \mbox{\hyperlink{classdocxtotxt_1_1BufferWriter_ad70d95ef40d2bf678b6eaf30cbede240}{convertor}}
+\begin{DoxyCompactList}\small\item\em Конвертор string в wstring. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Класс для изменения внутреннего буфера и записи результата в поток вывода 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classdocxtotxt_1_1BufferWriter_a685a2b38d4a0aae8fcafa9995b404bdd}\label{classdocxtotxt_1_1BufferWriter_a685a2b38d4a0aae8fcafa9995b404bdd}} 
+\index{docxtotxt::BufferWriter@{docxtotxt::BufferWriter}!convertString@{convertString}}
+\index{convertString@{convertString}!docxtotxt::BufferWriter@{docxtotxt::BufferWriter}}
+\doxysubsubsection{\texorpdfstring{convertString()}{convertString()}}
+{\footnotesize\ttfamily std\+::wstring docxtotxt\+::\+Buffer\+Writer\+::convert\+String (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{str }\end{DoxyParamCaption})}
+
+Преобразовывает входную строку string и возвращает wstring 
+\begin{DoxyParams}{Parameters}
+{\em str} & Входная строка \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Результат 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classdocxtotxt_1_1BufferWriter_aa9aed4d3a5d023313fe6a178bfc6d971}\label{classdocxtotxt_1_1BufferWriter_aa9aed4d3a5d023313fe6a178bfc6d971}} 
+\index{docxtotxt::BufferWriter@{docxtotxt::BufferWriter}!getCurrentLength@{getCurrentLength}}
+\index{getCurrentLength@{getCurrentLength}!docxtotxt::BufferWriter@{docxtotxt::BufferWriter}}
+\doxysubsubsection{\texorpdfstring{getCurrentLength()}{getCurrentLength()}}
+{\footnotesize\ttfamily size\+\_\+t docxtotxt\+::\+Buffer\+Writer\+::get\+Current\+Length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Возвращает длину текущей строки буфера \begin{DoxyReturn}{Returns}
+Длина текущей строки буфера 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classdocxtotxt_1_1BufferWriter_ac9bd8fbb35ddc8cb017f3686962daac5}\label{classdocxtotxt_1_1BufferWriter_ac9bd8fbb35ddc8cb017f3686962daac5}} 
+\index{docxtotxt::BufferWriter@{docxtotxt::BufferWriter}!getMetadata@{getMetadata}}
+\index{getMetadata@{getMetadata}!docxtotxt::BufferWriter@{docxtotxt::BufferWriter}}
+\doxysubsubsection{\texorpdfstring{getMetadata()}{getMetadata()}}
+{\footnotesize\ttfamily file\+Metadata\+\_\+t $\ast$ docxtotxt\+::\+Buffer\+Writer\+::get\+Metadata (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Возвращает указатель на структуру метаданных документа \begin{DoxyReturn}{Returns}
+Указатель на структуру метаданных документа 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classdocxtotxt_1_1BufferWriter_adb276a03e832ddb1a98b3c10dd8cb673}\label{classdocxtotxt_1_1BufferWriter_adb276a03e832ddb1a98b3c10dd8cb673}} 
+\index{docxtotxt::BufferWriter@{docxtotxt::BufferWriter}!insertData@{insertData}}
+\index{insertData@{insertData}!docxtotxt::BufferWriter@{docxtotxt::BufferWriter}}
+\doxysubsubsection{\texorpdfstring{insertData()}{insertData()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Buffer\+Writer\+::insert\+Data (\begin{DoxyParamCaption}\item[{const std\+::wstring \&}]{data,  }\item[{bool}]{add\+Line\+Before = {\ttfamily false},  }\item[{bool}]{add\+Line\+After = {\ttfamily true} }\end{DoxyParamCaption})}
+
+Добавляет текст к результирующему буферу 
+\begin{DoxyParams}{Parameters}
+{\em data} & Текст которую необходимо добавить \\
+\hline
+{\em add\+Line\+Before} & Флаг для обозначения необходимости вставить новую строку перед вставкой текста \\
+\hline
+{\em add\+Line\+After} & Флаг для обозначения необходимости вставить новую строку после вставки текста \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1BufferWriter_a1844104ce97bcfeb770e711641645578}\label{classdocxtotxt_1_1BufferWriter_a1844104ce97bcfeb770e711641645578}} 
+\index{docxtotxt::BufferWriter@{docxtotxt::BufferWriter}!insertMetadata@{insertMetadata}}
+\index{insertMetadata@{insertMetadata}!docxtotxt::BufferWriter@{docxtotxt::BufferWriter}}
+\doxysubsubsection{\texorpdfstring{insertMetadata()}{insertMetadata()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Buffer\+Writer\+::insert\+Metadata (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Вставляет метаданные документа \mbox{\Hypertarget{classdocxtotxt_1_1BufferWriter_ac30427bfa3bf8758d2aa1c2fe3d22e1b}\label{classdocxtotxt_1_1BufferWriter_ac30427bfa3bf8758d2aa1c2fe3d22e1b}} 
+\index{docxtotxt::BufferWriter@{docxtotxt::BufferWriter}!newLine@{newLine}}
+\index{newLine@{newLine}!docxtotxt::BufferWriter@{docxtotxt::BufferWriter}}
+\doxysubsubsection{\texorpdfstring{newLine()}{newLine()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Buffer\+Writer\+::new\+Line (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Добавляет новую строку в результирующий буфер \mbox{\Hypertarget{classdocxtotxt_1_1BufferWriter_ac7997b3f36bc0d88e1206977eaf1996a}\label{classdocxtotxt_1_1BufferWriter_ac7997b3f36bc0d88e1206977eaf1996a}} 
+\index{docxtotxt::BufferWriter@{docxtotxt::BufferWriter}!writeResult@{writeResult}}
+\index{writeResult@{writeResult}!docxtotxt::BufferWriter@{docxtotxt::BufferWriter}}
+\doxysubsubsection{\texorpdfstring{writeResult()}{writeResult()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Buffer\+Writer\+::write\+Result (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Записывает результат в поток вывода 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/\+Parser\+Commons/Buffer\+Writer.\+h\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/source/Buffer\+Writer.\+cpp\end{DoxyCompactItemize}

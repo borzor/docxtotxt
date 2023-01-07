@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classdocxtotxt_1_1Parser.html" title="Интерфейс парсера" alt="" coords="5,56,137,83"/>
+<area shape="rect" id="node2" href="$classdocxtotxt_1_1DocParser.html" title="Реализация парсера, обрабатывающая WordprocessingML формат" alt="" coords="185,5,343,32"/>
+<area shape="rect" id="node3" href="$classdocxtotxt_1_1PptParser.html" title="Реализация парсера, обрабатывающая PresentationML формат" alt="" coords="187,56,341,83"/>
+<area shape="rect" id="node4" href="$classdocxtotxt_1_1XlsParser.html" title="Реализация парсера, обрабатывающая SpreadsheetML формат" alt="" coords="188,107,340,133"/>
+</map>

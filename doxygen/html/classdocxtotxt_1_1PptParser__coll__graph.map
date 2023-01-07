@@ -1,0 +1,5 @@
+<map id="docxtotxt::PptParser" name="docxtotxt::PptParser">
+<area shape="rect" id="node1" title="Реализация парсера, обрабатывающая PresentationML формат" alt="" coords="14,171,167,197"/>
+<area shape="rect" id="node2" href="$classdocxtotxt_1_1Parser.html" title="Интерфейс парсера" alt="" coords="25,95,157,121"/>
+<area shape="rect" id="node3" href="$classdocxtotxt_1_1BufferWriter.html" title="Класс для изменения внутреннего буфера и записи результата в поток вывода" alt="" coords="5,5,176,32"/>
+</map>

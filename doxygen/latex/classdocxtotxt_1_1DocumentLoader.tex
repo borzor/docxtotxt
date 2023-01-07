@@ -1,0 +1,462 @@
+\hypertarget{classdocxtotxt_1_1DocumentLoader}{}\doxysection{docxtotxt\+::Document\+Loader Class Reference}
+\label{classdocxtotxt_1_1DocumentLoader}\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+
+
+Класс для загрузки и извлечения ключевой информации из файлов  
+
+
+
+
+{\ttfamily \#include $<$Document\+Loader.\+h$>$}
+
+
+
+Collaboration diagram for docxtotxt\+::Document\+Loader\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=232pt]{classdocxtotxt_1_1DocumentLoader__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a6d74d4389433d0fff0947e3ae5d9422e}{load\+Data}} ()
+\item 
+doc\+Info\+\_\+t \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a34ae03dee18a18f60d82e364ec986e22}{get\+Docx\+Data}} () const
+\item 
+xls\+Info\+\_\+t \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_acfdcedb117389f9ecdf2b3630bdde137}{get\+Xlsx\+Data}} () const
+\item 
+ppt\+Info\+\_\+t \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a55de604bdeb018fb8a311ee377cc652b}{get\+Pptx\+Data}} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_acba6e379c6154c2ed7b35cc615b02e94}{load\+Docx\+Data}} ()
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a16eb7438c27066336d9d3e25457bd23b}{load\+Xlsx\+Data}} ()
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a0508167b3a8367bf79a47deab32b3939}{load\+Pptx\+Data}} ()
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a47ba5f04f361460a404beab8733ac5a8}{open\+File\+And\+Parse}} (const string \&file\+Name, void(Document\+Loader\+::$\ast$f)(X\+M\+L\+Document $\ast$))
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a8223b9b7eece33468c00dfafbc9654f3}{open\+File\+And\+Parse}} (const string \&file\+Name, relations\+\_\+t \&relations, void(Document\+Loader\+::$\ast$f)(X\+M\+L\+Document $\ast$, relations\+\_\+t \&))
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a56d7f0d9500f81e5b51c6f8d7d77345a}{parse\+Relation\+Ship}} (X\+M\+L\+Document $\ast$doc, relations\+\_\+t \&relations)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a73cdf4a4ca1f70a2fd30a5cb7f4cc41d}{parse\+Presentation\+Settings}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a177894c79932fc88a907a14e9bab4fff}{parse\+Presentation\+Slide}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_ab57f6e66da52dcfa1ff8d206bfb0846c}{parse\+Slide\+Note}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_aaa9aec0c23a817fd8f1a752a4f1364cc}{parse\+Slide\+Text}} (X\+M\+L\+Element $\ast$element, presentation\+Text \&object)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_aed636eb15394d4dde0c0f5cebc8b1488}{parse\+Slide\+Table}} (X\+M\+L\+Element $\ast$element, presentation\+Table \&object)
+\item 
+std\+::vector$<$ text\+Body $>$ \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_ab5dd8067f2aab5f78b49e89606e4ed41}{extract\+Text\+Body}} (X\+M\+L\+Element $\ast$element)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a76737c07531328887f34d3362cfce6fc}{parse\+Shared\+Strings}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a48629b81376a8486bf7c7f0867680d9c}{parse\+Worksheet}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_ab779ef7b11c2d5c025431f2a82c8a9af}{parse\+Workbook}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a71189206e24cc726ce6379105e883171}{parse\+Draw}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a0109b2ad2a8515d9686aa6730ccef248}{parse\+Content\+Types}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a7a6edbd940471ae62aab86e12dd9145d}{parse\+Styles}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a90b7ae8c147d8ec4d760059d925a8951}{add\+Style}} (X\+M\+L\+Element $\ast$element)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_afcc1f24e9241ecd377c94943a60a2355}{set\+Default\+Settings}} (X\+M\+L\+Element $\ast$element)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a8e497e8bcf34c3e922d8c74ffeac523b}{parse\+App\+File}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a4ea72dec3b4606497b47275bc28bcb40}{parse\+Core\+File}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a880662d1760cd137ab0ff40f7b984fee}{parse\+Doc\+File}} (X\+M\+L\+Document $\ast$doc)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_ab76d58cf5d7440b5d1c921bcae3ccb8e}{parse\+Paragraph}} (X\+M\+L\+Element $\ast$paragraph, \+::docxtotxt\+::paragraph \&par)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_abd37bb1b65a485cccf82a02802fcbe95}{parse\+Text\+Properties}} (X\+M\+L\+Element $\ast$properties, paragraph \&paragraph)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_a69092dbea1a6b079439c8890e1367b36}{parse\+Table}} (X\+M\+L\+Element $\ast$paragraph, \+::docxtotxt\+::paragraph \&par, bool row)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_abf03902984415249fc7f1cede0e27b15}{parse\+Section}} (X\+M\+L\+Element $\ast$section)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_aa7c800911faecaee3158e89cc78a1eaa}{add\+Sdt\+Content}} (X\+M\+L\+Element $\ast$element, std\+::vector$<$ paragraph $>$ \&body)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1DocumentLoader_aa9d936682a6136cd236bebc709aaa534}{parse\+Doc\+Notes}} (X\+M\+L\+Document $\ast$doc)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Класс для загрузки и извлечения ключевой информации из файлов 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_aa7c800911faecaee3158e89cc78a1eaa}\label{classdocxtotxt_1_1DocumentLoader_aa7c800911faecaee3158e89cc78a1eaa}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!addSdtContent@{addSdtContent}}
+\index{addSdtContent@{addSdtContent}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{addSdtContent()}{addSdtContent()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::add\+Sdt\+Content (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{element,  }\item[{std\+::vector$<$ paragraph $>$ \&}]{body }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент sdt и извлекает содержимое в переданный массив 
+\begin{DoxyParams}{Parameters}
+{\em element} & Элемент sdt \\
+\hline
+{\em body} & массив параграфов \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a90b7ae8c147d8ec4d760059d925a8951}\label{classdocxtotxt_1_1DocumentLoader_a90b7ae8c147d8ec4d760059d925a8951}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!addStyle@{addStyle}}
+\index{addStyle@{addStyle}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{addStyle()}{addStyle()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::add\+Style (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{element }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Добавляет элемент содержащий описание стиля в списое стилей 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_ab5dd8067f2aab5f78b49e89606e4ed41}\label{classdocxtotxt_1_1DocumentLoader_ab5dd8067f2aab5f78b49e89606e4ed41}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!extractTextBody@{extractTextBody}}
+\index{extractTextBody@{extractTextBody}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{extractTextBody()}{extractTextBody()}}
+{\footnotesize\ttfamily std\+::vector$<$ text\+Body $>$ docxtotxt\+::\+Document\+Loader\+::extract\+Text\+Body (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{element }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Извлекает структуру текста из элемента 
+\begin{DoxyParams}{Parameters}
+{\em element} & Элемент объекта \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Массив структур текста 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a34ae03dee18a18f60d82e364ec986e22}\label{classdocxtotxt_1_1DocumentLoader_a34ae03dee18a18f60d82e364ec986e22}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!getDocxData@{getDocxData}}
+\index{getDocxData@{getDocxData}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{getDocxData()}{getDocxData()}}
+{\footnotesize\ttfamily doc\+Info\+\_\+t docxtotxt\+::\+Document\+Loader\+::get\+Docx\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Возвращает структуру Wordprocessing\+ML документа \begin{DoxyReturn}{Returns}
+Структура Wordprocessing\+ML документа 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a55de604bdeb018fb8a311ee377cc652b}\label{classdocxtotxt_1_1DocumentLoader_a55de604bdeb018fb8a311ee377cc652b}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!getPptxData@{getPptxData}}
+\index{getPptxData@{getPptxData}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{getPptxData()}{getPptxData()}}
+{\footnotesize\ttfamily ppt\+Info\+\_\+t docxtotxt\+::\+Document\+Loader\+::get\+Pptx\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Возвращает структуру Presentation\+ML документа \begin{DoxyReturn}{Returns}
+Структура Presentation\+ML документа 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_acfdcedb117389f9ecdf2b3630bdde137}\label{classdocxtotxt_1_1DocumentLoader_acfdcedb117389f9ecdf2b3630bdde137}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!getXlsxData@{getXlsxData}}
+\index{getXlsxData@{getXlsxData}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{getXlsxData()}{getXlsxData()}}
+{\footnotesize\ttfamily xls\+Info\+\_\+t docxtotxt\+::\+Document\+Loader\+::get\+Xlsx\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Возвращает структуру Spreadsheet\+ML документа \begin{DoxyReturn}{Returns}
+Структура Spreadsheet\+ML документа 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a6d74d4389433d0fff0947e3ae5d9422e}\label{classdocxtotxt_1_1DocumentLoader_a6d74d4389433d0fff0947e3ae5d9422e}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!loadData@{loadData}}
+\index{loadData@{loadData}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{loadData()}{loadData()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::load\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Разархивирует входные данные и извлекает ключевую информацию на основе предоставленных параметров \mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_acba6e379c6154c2ed7b35cc615b02e94}\label{classdocxtotxt_1_1DocumentLoader_acba6e379c6154c2ed7b35cc615b02e94}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!loadDocxData@{loadDocxData}}
+\index{loadDocxData@{loadDocxData}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{loadDocxData()}{loadDocxData()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::load\+Docx\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Загружает данные специфичные для Wordprocessing\+ML формата \mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a0508167b3a8367bf79a47deab32b3939}\label{classdocxtotxt_1_1DocumentLoader_a0508167b3a8367bf79a47deab32b3939}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!loadPptxData@{loadPptxData}}
+\index{loadPptxData@{loadPptxData}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{loadPptxData()}{loadPptxData()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::load\+Pptx\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Загружает данные специфичные для Presentation\+ML формата \mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a16eb7438c27066336d9d3e25457bd23b}\label{classdocxtotxt_1_1DocumentLoader_a16eb7438c27066336d9d3e25457bd23b}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!loadXlsxData@{loadXlsxData}}
+\index{loadXlsxData@{loadXlsxData}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{loadXlsxData()}{loadXlsxData()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::load\+Xlsx\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Загружает данные специфичные для Spreadsheet\+ML формата \mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a8223b9b7eece33468c00dfafbc9654f3}\label{classdocxtotxt_1_1DocumentLoader_a8223b9b7eece33468c00dfafbc9654f3}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!openFileAndParse@{openFileAndParse}}
+\index{openFileAndParse@{openFileAndParse}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{openFileAndParse()}{openFileAndParse()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::open\+File\+And\+Parse (\begin{DoxyParamCaption}\item[{const string \&}]{file\+Name,  }\item[{relations\+\_\+t \&}]{relations,  }\item[{void(Document\+Loader\+::$\ast$)(X\+M\+L\+Document $\ast$, relations\+\_\+t \&)}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Открывает файл и передает в указанную функцию указатель на корневой элемент и структуру взаимотношений 
+\begin{DoxyParams}{Parameters}
+{\em file\+Name} & Имя файла \\
+\hline
+{\em relations} & Структура взаимотношений \\
+\hline
+{\em f} & Функция, вызванная после открытия файла \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a47ba5f04f361460a404beab8733ac5a8}\label{classdocxtotxt_1_1DocumentLoader_a47ba5f04f361460a404beab8733ac5a8}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!openFileAndParse@{openFileAndParse}}
+\index{openFileAndParse@{openFileAndParse}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{openFileAndParse()}{openFileAndParse()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::open\+File\+And\+Parse (\begin{DoxyParamCaption}\item[{const string \&}]{file\+Name,  }\item[{void(Document\+Loader\+::$\ast$)(X\+M\+L\+Document $\ast$)}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Открывает файл и передает в указанную функцию указатель на корневой элемент 
+\begin{DoxyParams}{Parameters}
+{\em file\+Name} & Имя файла \\
+\hline
+{\em f} & Функция, вызванная после открытия файла \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a8e497e8bcf34c3e922d8c74ffeac523b}\label{classdocxtotxt_1_1DocumentLoader_a8e497e8bcf34c3e922d8c74ffeac523b}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseAppFile@{parseAppFile}}
+\index{parseAppFile@{parseAppFile}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseAppFile()}{parseAppFile()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+App\+File (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает App файл, содержащий мета информацию документа 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a0109b2ad2a8515d9686aa6730ccef248}\label{classdocxtotxt_1_1DocumentLoader_a0109b2ad2a8515d9686aa6730ccef248}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseContentTypes@{parseContentTypes}}
+\index{parseContentTypes@{parseContentTypes}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseContentTypes()}{parseContentTypes()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Content\+Types (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент \mbox{[}Content\+\_\+\+Types\mbox{]} 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a4ea72dec3b4606497b47275bc28bcb40}\label{classdocxtotxt_1_1DocumentLoader_a4ea72dec3b4606497b47275bc28bcb40}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseCoreFile@{parseCoreFile}}
+\index{parseCoreFile@{parseCoreFile}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseCoreFile()}{parseCoreFile()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Core\+File (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает Core файл, содержащий мета информацию документа 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a880662d1760cd137ab0ff40f7b984fee}\label{classdocxtotxt_1_1DocumentLoader_a880662d1760cd137ab0ff40f7b984fee}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseDocFile@{parseDocFile}}
+\index{parseDocFile@{parseDocFile}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseDocFile()}{parseDocFile()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Doc\+File (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает основной файл Wordprocessing\+ML 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_aa9d936682a6136cd236bebc709aaa534}\label{classdocxtotxt_1_1DocumentLoader_aa9d936682a6136cd236bebc709aaa534}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseDocNotes@{parseDocNotes}}
+\index{parseDocNotes@{parseDocNotes}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseDocNotes()}{parseDocNotes()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Doc\+Notes (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент файла, содержащего заметки 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Документ заметок \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a71189206e24cc726ce6379105e883171}\label{classdocxtotxt_1_1DocumentLoader_a71189206e24cc726ce6379105e883171}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseDraw@{parseDraw}}
+\index{parseDraw@{parseDraw}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseDraw()}{parseDraw()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Draw (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+T\+O\+DO Обрабатывает элемент Drawing\+ML 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_ab76d58cf5d7440b5d1c921bcae3ccb8e}\label{classdocxtotxt_1_1DocumentLoader_ab76d58cf5d7440b5d1c921bcae3ccb8e}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseParagraph@{parseParagraph}}
+\index{parseParagraph@{parseParagraph}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseParagraph()}{parseParagraph()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Paragraph (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{paragraph,  }\item[{\+::docxtotxt\+::paragraph \&}]{par }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает параграф и заполняет переданную структуру 
+\begin{DoxyParams}{Parameters}
+{\em paragraph} & Элемент параграфа \\
+\hline
+{\em par} & Структура параграфа \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a73cdf4a4ca1f70a2fd30a5cb7f4cc41d}\label{classdocxtotxt_1_1DocumentLoader_a73cdf4a4ca1f70a2fd30a5cb7f4cc41d}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parsePresentationSettings@{parsePresentationSettings}}
+\index{parsePresentationSettings@{parsePresentationSettings}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parsePresentationSettings()}{parsePresentationSettings()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Presentation\+Settings (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент настроек презентации 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a177894c79932fc88a907a14e9bab4fff}\label{classdocxtotxt_1_1DocumentLoader_a177894c79932fc88a907a14e9bab4fff}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parsePresentationSlide@{parsePresentationSlide}}
+\index{parsePresentationSlide@{parsePresentationSlide}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parsePresentationSlide()}{parsePresentationSlide()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Presentation\+Slide (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент содержащий информацию о слайде 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a56d7f0d9500f81e5b51c6f8d7d77345a}\label{classdocxtotxt_1_1DocumentLoader_a56d7f0d9500f81e5b51c6f8d7d77345a}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseRelationShip@{parseRelationShip}}
+\index{parseRelationShip@{parseRelationShip}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseRelationShip()}{parseRelationShip()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Relation\+Ship (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc,  }\item[{relations\+\_\+t \&}]{relations }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент взаимотношений 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_abf03902984415249fc7f1cede0e27b15}\label{classdocxtotxt_1_1DocumentLoader_abf03902984415249fc7f1cede0e27b15}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseSection@{parseSection}}
+\index{parseSection@{parseSection}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseSection()}{parseSection()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Section (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{section }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает раздел секции и устанавливает соответствующие настройки 
+\begin{DoxyParams}{Parameters}
+{\em section} & Элемент секции \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a76737c07531328887f34d3362cfce6fc}\label{classdocxtotxt_1_1DocumentLoader_a76737c07531328887f34d3362cfce6fc}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseSharedStrings@{parseSharedStrings}}
+\index{parseSharedStrings@{parseSharedStrings}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseSharedStrings()}{parseSharedStrings()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Shared\+Strings (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент Shared Strings 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_ab57f6e66da52dcfa1ff8d206bfb0846c}\label{classdocxtotxt_1_1DocumentLoader_ab57f6e66da52dcfa1ff8d206bfb0846c}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseSlideNote@{parseSlideNote}}
+\index{parseSlideNote@{parseSlideNote}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseSlideNote()}{parseSlideNote()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Slide\+Note (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент содержащий информацию о заметке 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_aed636eb15394d4dde0c0f5cebc8b1488}\label{classdocxtotxt_1_1DocumentLoader_aed636eb15394d4dde0c0f5cebc8b1488}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseSlideTable@{parseSlideTable}}
+\index{parseSlideTable@{parseSlideTable}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseSlideTable()}{parseSlideTable()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Slide\+Table (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{element,  }\item[{presentation\+Table \&}]{object }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Извлекает информацию из элемента объекта в структуру таблицы 
+\begin{DoxyParams}{Parameters}
+{\em element} & Элемент объекта \\
+\hline
+{\em object} & Cтруктура объекта таблицы \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_aaa9aec0c23a817fd8f1a752a4f1364cc}\label{classdocxtotxt_1_1DocumentLoader_aaa9aec0c23a817fd8f1a752a4f1364cc}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseSlideText@{parseSlideText}}
+\index{parseSlideText@{parseSlideText}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseSlideText()}{parseSlideText()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Slide\+Text (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{element,  }\item[{presentation\+Text \&}]{object }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Извлекает информацию из элемента объекта в структуру текста 
+\begin{DoxyParams}{Parameters}
+{\em element} & Элемент объекта \\
+\hline
+{\em object} & Cтруктура объекта текста \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a7a6edbd940471ae62aab86e12dd9145d}\label{classdocxtotxt_1_1DocumentLoader_a7a6edbd940471ae62aab86e12dd9145d}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseStyles@{parseStyles}}
+\index{parseStyles@{parseStyles}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseStyles()}{parseStyles()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Styles (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент стилей 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a69092dbea1a6b079439c8890e1367b36}\label{classdocxtotxt_1_1DocumentLoader_a69092dbea1a6b079439c8890e1367b36}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseTable@{parseTable}}
+\index{parseTable@{parseTable}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseTable()}{parseTable()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Table (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{paragraph,  }\item[{\+::docxtotxt\+::paragraph \&}]{par,  }\item[{bool}]{row }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает таблицу и заполняет переданную структуру 
+\begin{DoxyParams}{Parameters}
+{\em paragraph} & Элемент параграфа \\
+\hline
+{\em par} & Структура параграфа \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_abd37bb1b65a485cccf82a02802fcbe95}\label{classdocxtotxt_1_1DocumentLoader_abd37bb1b65a485cccf82a02802fcbe95}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseTextProperties@{parseTextProperties}}
+\index{parseTextProperties@{parseTextProperties}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseTextProperties()}{parseTextProperties()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Text\+Properties (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{properties,  }\item[{paragraph \&}]{paragraph }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обабрабатывает текстовое содержание параграфа и заполняет переданную структуру 
+\begin{DoxyParams}{Parameters}
+{\em properties} & Элемент текстового содержания параграфа \\
+\hline
+{\em paragraph} & Структура параграфа \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_ab779ef7b11c2d5c025431f2a82c8a9af}\label{classdocxtotxt_1_1DocumentLoader_ab779ef7b11c2d5c025431f2a82c8a9af}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseWorkbook@{parseWorkbook}}
+\index{parseWorkbook@{parseWorkbook}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseWorkbook()}{parseWorkbook()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Workbook (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент настроек таблиц 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_a48629b81376a8486bf7c7f0867680d9c}\label{classdocxtotxt_1_1DocumentLoader_a48629b81376a8486bf7c7f0867680d9c}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!parseWorksheet@{parseWorksheet}}
+\index{parseWorksheet@{parseWorksheet}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{parseWorksheet()}{parseWorksheet()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::parse\+Worksheet (\begin{DoxyParamCaption}\item[{X\+M\+L\+Document $\ast$}]{doc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Обрабатывает элемент содержимого таблицы 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1DocumentLoader_afcc1f24e9241ecd377c94943a60a2355}\label{classdocxtotxt_1_1DocumentLoader_afcc1f24e9241ecd377c94943a60a2355}} 
+\index{docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}!setDefaultSettings@{setDefaultSettings}}
+\index{setDefaultSettings@{setDefaultSettings}!docxtotxt::DocumentLoader@{docxtotxt::DocumentLoader}}
+\doxysubsubsection{\texorpdfstring{setDefaultSettings()}{setDefaultSettings()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Document\+Loader\+::set\+Default\+Settings (\begin{DoxyParamCaption}\item[{X\+M\+L\+Element $\ast$}]{element }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Устанавливает дефолтные стили 
+\begin{DoxyParams}{Parameters}
+{\em doc} & Корневой элемент \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/headers/Document\+Loader.\+h\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/source/Document\+Loader.\+cpp\end{DoxyCompactItemize}

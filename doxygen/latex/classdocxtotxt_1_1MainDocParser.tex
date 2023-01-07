@@ -1,0 +1,63 @@
+\hypertarget{classdocxtotxt_1_1MainDocParser}{}\doxysection{docxtotxt\+::Main\+Doc\+Parser Class Reference}
+\label{classdocxtotxt_1_1MainDocParser}\index{docxtotxt::MainDocParser@{docxtotxt::MainDocParser}}
+
+
+Класс для вызова загрузчика и обработки сторонних файлов  
+
+
+
+
+{\ttfamily \#include $<$Main\+Doc\+Parser.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1MainDocParser_a027d719c97b83e54675906d518faaf8b}{parse\+File}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1MainDocParser_abfa50cbd2e0cb937e200568d1396a175}{insert\+Hyperlinks}} (std\+::map$<$ std\+::string, std\+::string $>$ hyperlink\+Relationship)
+\item 
+void \mbox{\hyperlink{classdocxtotxt_1_1MainDocParser_a31cd3484c2d4edc77715147a2704ba31}{save\+Images}} (const std\+::map$<$ std\+::string, std\+::string $>$ \&image\+Relationship) const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Класс для вызова загрузчика и обработки сторонних файлов 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classdocxtotxt_1_1MainDocParser_abfa50cbd2e0cb937e200568d1396a175}\label{classdocxtotxt_1_1MainDocParser_abfa50cbd2e0cb937e200568d1396a175}} 
+\index{docxtotxt::MainDocParser@{docxtotxt::MainDocParser}!insertHyperlinks@{insertHyperlinks}}
+\index{insertHyperlinks@{insertHyperlinks}!docxtotxt::MainDocParser@{docxtotxt::MainDocParser}}
+\doxysubsubsection{\texorpdfstring{insertHyperlinks()}{insertHyperlinks()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Main\+Doc\+Parser\+::insert\+Hyperlinks (\begin{DoxyParamCaption}\item[{std\+::map$<$ std\+::string, std\+::string $>$}]{hyperlink\+Relationship }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Функция для вставки имеющихся в документе гиперссылок 
+\begin{DoxyParams}{Parameters}
+{\em hyperlink\+Relationship} & Массив взаимотношений гиперссылок \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classdocxtotxt_1_1MainDocParser_a027d719c97b83e54675906d518faaf8b}\label{classdocxtotxt_1_1MainDocParser_a027d719c97b83e54675906d518faaf8b}} 
+\index{docxtotxt::MainDocParser@{docxtotxt::MainDocParser}!parseFile@{parseFile}}
+\index{parseFile@{parseFile}!docxtotxt::MainDocParser@{docxtotxt::MainDocParser}}
+\doxysubsubsection{\texorpdfstring{parseFile()}{parseFile()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Main\+Doc\+Parser\+::parse\+File (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Вызывает загрузчик обрабатывающий входные файлы и выводящий результат в поток вывода \mbox{\Hypertarget{classdocxtotxt_1_1MainDocParser_a31cd3484c2d4edc77715147a2704ba31}\label{classdocxtotxt_1_1MainDocParser_a31cd3484c2d4edc77715147a2704ba31}} 
+\index{docxtotxt::MainDocParser@{docxtotxt::MainDocParser}!saveImages@{saveImages}}
+\index{saveImages@{saveImages}!docxtotxt::MainDocParser@{docxtotxt::MainDocParser}}
+\doxysubsubsection{\texorpdfstring{saveImages()}{saveImages()}}
+{\footnotesize\ttfamily void docxtotxt\+::\+Main\+Doc\+Parser\+::save\+Images (\begin{DoxyParamCaption}\item[{const std\+::map$<$ std\+::string, std\+::string $>$ \&}]{image\+Relationship }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+Функция для сохранения картинок в документе 
+\begin{DoxyParams}{Parameters}
+{\em image\+Relationship} & Массив взаимотношений изабражений \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/headers/Main\+Doc\+Parser.\+h\item 
+/home/borzor/\+C\+Lion\+Projects/docxtotxt/main\+Doc/source/Main\+Doc\+Parser.\+cpp\end{DoxyCompactItemize}

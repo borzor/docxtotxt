@@ -155,21 +155,12 @@ namespace docxtotxt {
     }
 
     void DocumentLoader::parseContentTypes(XMLDocument *xmlDocument) {
-        XMLPrinter printer;
-        string tmp, tmp2;
         auto *current_element = xmlDocument->RootElement()->FirstChildElement();
         while (current_element != nullptr) {
-            current_element->Accept(&printer);
-            tmp = printer.CStr();
-            auto pos1 = tmp.find('\"');
-            auto pos2 = tmp.find('\"', pos1 + 1);
-            auto pos3 = tmp.find('\"', pos2 + 1);
-            auto pos4 = tmp.find('\"', pos3 + 1);
-            tmp2 = tmp.substr(pos1 + 1, pos2 - pos1 - 1);
-            if (tmp2.rfind('/', 0) == 0)
-                tmp2.erase(0, 1);
-            this->content_types.emplace(tmp2, tmp.substr(pos3 + 1, pos4 - pos3 - 1));
-            printer.ClearBuffer();
+            auto partName = current_element->Attribute("PartName");
+            auto contentType = current_element->Attribute("ContentType");
+            if(partName != nullptr)
+                this->content_types.emplace(std::string(partName).erase(0,1), contentType);
             current_element = current_element->NextSiblingElement();
         }
         free(current_element);
@@ -663,16 +654,21 @@ namespace docxtotxt {
         while (mainElement != nullptr) {
             paragraph par;
             par.type = paragraphType::par;
-            if (!strcmp(mainElement->Value(), "w:p")) {
-                parseParagraph(mainElement, par);
-            } else if (!strcmp(mainElement->Value(), "w:tbl")) {
-                par.type = paragraphType::table;
-                parseTable(mainElement, par, (options.flags >> 5) & 1);
-            } else if (!strcmp(mainElement->Value(), "w:sdt")) {
-                auto sdtContent = mainElement->FirstChildElement("w:sdtContent");
-                if (sdtContent != nullptr) {
-                    addSdtContent(sdtContent, docInfo.body);
+            try{
+                if (!strcmp(mainElement->Value(), "w:p")) {
+                    parseParagraph(mainElement, par);
+                } else if (!strcmp(mainElement->Value(), "w:tbl")) {
+                    par.type = paragraphType::table;
+                    parseTable(mainElement, par, (options.flags >> 5) & 1);
+                } else if (!strcmp(mainElement->Value(), "w:sdt")) {
+                    auto sdtContent = mainElement->FirstChildElement("w:sdtContent");
+                    if (sdtContent != nullptr) {
+                        addSdtContent(sdtContent, docInfo.body);
+                    }
                 }
+            } catch (exception &ignore) {
+                //std::cout<<ignore.what()<<'\n';
+                std::wcout<<L"Произошла неожиданная ошибка, элемент проигнорирован\n";
             }
             docInfo.body.emplace_back(par);
             mainElement = mainElement->NextSiblingElement();
@@ -705,8 +701,7 @@ namespace docxtotxt {
                         if (!strcmp(enumProperty->Value(), "w:ilvl")) {
                             if (enumProperty->FirstAttribute() != nullptr) {
                                 size_t indentationSize = enumProperty->FirstAttribute()->IntValue();
-                                par.body.back().append(
-                                        writer.convertString(std::string(indentationSize, ' ') + (" · ")));
+                                par.body.back().append(writer.convertString(std::string(indentationSize, ' ') + (" · ")));
                             }
                         }
                         setJustify(enumProperty, par.settings.justify);
@@ -843,30 +838,12 @@ namespace docxtotxt {
         size_t line = 0;
         size_t currentColumn = 0;
         while (element != nullptr) {
-//            if (!strcmp(element->Value(), "w:tblPr")) {// table Properties
-//                auto tblStyle = element->FirstChildElement("w:tblStyle");
-//                if (tblStyle == nullptr) {
-//                    settings.settings = docInfo.styles.defaultStyles.table;
-//                } else {
-//                    settings.settings = docInfo.styles.tableStyles[tblStyle->Attribute("w:val")];
-//                }
-//                XMLElement *tableProperty = element->FirstChildElement();
-//                while (tableProperty != nullptr) {
-//                    if (!strcmp(tableProperty->Value(), "w:tblInd")) {
-//                        if (tableProperty->FirstAttribute() != nullptr) {
-//                            auto tblInd = tableProperty->Attribute("w:w");
-//                            settings.settings.ind = atoi(tblInd);
-//                        }
-//                    } else if (!strcmp(tableProperty->Value(), "w:tblpPr")) {
-//
-//                    }
-//                    tableProperty = tableProperty->NextSiblingElement();
-//                }
-//            } else
             if (!strcmp(element->Value(), "w:tblGrid")) {
-                XMLElement *gridCol = element->FirstChildElement();
+                XMLElement *gridCol = element->FirstChildElement("w:gridCol");
                 while (gridCol != nullptr) {
-                    settings.tblGrids.emplace_back(std::stoi(gridCol->Attribute("w:w")));
+                    auto gridColValue = gridCol->Attribute("w:w");
+                    if(gridColValue != nullptr)
+                        settings.tblGrids.emplace_back(std::stoi(gridColValue));
                     gridCol = gridCol->NextSiblingElement();
                 }
                 settings.columnAmount = settings.tblGrids.size();
@@ -888,6 +865,7 @@ namespace docxtotxt {
                                 XMLElement *gridCol = tcElement->FirstChildElement();
                                 size_t gridSpan = 1;
                                 cell tmpCell;
+                                tmpCell.width = settings.tblGrids[currentColumn]/ TWIP_TO_CHARACTER;
                                 while (gridCol != nullptr) {
                                     if (!strcmp(gridCol->Value(), "w:tcW")) {
                                         auto size = gridCol->Attribute("w:w");

@@ -51,7 +51,8 @@ namespace docxtotxt {
         zip_fclose(zip_file);
         if (document.Parse(buff, file_info.size) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse " + fileName + " file");
-        ::free(buff);
+        if(buff != nullptr)
+            ::free(buff);
         (this->*f)(&document);
     }
 
@@ -69,7 +70,8 @@ namespace docxtotxt {
         zip_fclose(zip_file);
         if (document.Parse(buff, file_info.size) != tinyxml2::XML_SUCCESS)
             throw runtime_error("Error: Cannot parse " + fileName + " file");
-        ::free(buff);
+        if(buff != nullptr)
+            ::free(buff);
         (this->*f)(&document, relations);
     }
 

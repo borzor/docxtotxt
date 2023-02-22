@@ -27,7 +27,7 @@ namespace docxtotxt {
 
     void BufferWriter::writeResult() {
         for (const auto &kv: buffer) {
-            *options.output << kv << std::endl;
+            *options.output << kv.c_str() << std::endl;
         }
         options.output->flush();
     }

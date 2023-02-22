@@ -110,6 +110,7 @@ using namespace std;
 //}
 
 int main(int argc, char *argv[]) {
+    setlocale(LC_ALL,"");
     auto start = std::chrono::steady_clock::now();
     int opt;
     docxtotxt::options_t options = {&std::wcout};
@@ -136,10 +137,8 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case 'o': {//output file
-                std::locale loco(std::locale(""));
                 options.flags |= 1 << 0;
                 options.output = new std::wofstream(optarg);
-                options.output->imbue(loco);
                 break;
             }
             case 'l': {//external hyperlinks
@@ -172,6 +171,8 @@ int main(int argc, char *argv[]) {
         if (options.filePath == nullptr) {
             throw std::invalid_argument("No input file by parameter -i");
         }
+        std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
+        options.output->imbue(loc);
         docxtotxt::MainDocParser parser(options);
         parser.parseFile();
         std::cout << "Elapsed(ms)="

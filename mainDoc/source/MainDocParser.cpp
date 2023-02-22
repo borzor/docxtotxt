@@ -56,7 +56,6 @@ namespace docxtotxt {
             }
         }
         zip_close(options.input);
-        delete (options.output);
     }
 
     MainDocParser::MainDocParser(options_t &options) :
@@ -87,7 +86,8 @@ namespace docxtotxt {
             if (zip_fread(currentImage, buff, file_info.size) == -1)throw runtime_error("Error: Cannot read " + kv.second + " file");
             zip_fclose(currentImage);
             if (!std::ofstream(string(options.pathToDraws) + "/" + kv.second) .write(buff, (long) file_info.size))throw runtime_error("Error writing file" + kv.second);
-            ::free(buff);
+            if(buff != nullptr)
+                ::free(buff);
         }
     }
 }

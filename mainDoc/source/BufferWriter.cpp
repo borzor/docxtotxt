@@ -33,7 +33,10 @@ namespace docxtotxt {
     }
 
     std::wstring BufferWriter::convertString(const std::string &str) {
-        return convertor.from_bytes(str);
+        auto result =  convertor.from_bytes(str);
+        if(result.find(L'\n') != std::string::npos)
+            std::replace(result.begin(), result.end(), '\n', ' ');
+        return result;
     }
 
     void BufferWriter::insertMetadata() {

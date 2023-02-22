@@ -20,8 +20,6 @@ namespace docxtotxt {
             auto ext = xfrm->FirstChildElement("a:ext");
             if (off != nullptr) {
                 object.offsetX = strtol(off->Attribute("x"), nullptr, 10);
-                if(object.offsetX == NULL)
-                    object.offsetX = 0;
                 object.offsetY = strtol(off->Attribute("y"), nullptr, 10);
             }
             if (ext != nullptr) {

@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case 'o': {//output file
-                std::locale loco(std::locale(), new std::codecvt_utf8<wchar_t>);
+                std::locale loco(std::locale(""));
                 options.flags |= 1 << 0;
                 options.output = new std::wofstream(optarg);
                 options.output->imbue(loco);
